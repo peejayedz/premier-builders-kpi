@@ -127,16 +127,16 @@
   .pwfield input[type=password] { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 9px 10px; }
   .muted { color: var(--ink-3); }
   /* section accents: thin colored bar beside each heading, neutral hairline after it */
-  :root { --sec-1: #2066bd; --sec-2: #6352c9; --sec-3: #b84a1b; --sec-4: #1b7a33; --sec-5: #0f7378; --sec-6: #8f5f00; }
-  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --sec-1: #4a94ec; --sec-2: #9a8ff0; --sec-3: #ef7a45; --sec-4: #3cba62; --sec-5: #2bb5ba; --sec-6: #e5ad2e; } }
-  :root[data-theme="dark"] { --sec-1: #4a94ec; --sec-2: #9a8ff0; --sec-3: #ef7a45; --sec-4: #3cba62; --sec-5: #2bb5ba; --sec-6: #e5ad2e; }
+  :root { --sec-1: #2066bd; --sec-2: #6352c9; --sec-3: #b84a1b; --sec-4: #1b7a33; --sec-5: #0f7378; --sec-6: #8f5f00; --sec-7: #b0306a; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --sec-1: #4a94ec; --sec-2: #9a8ff0; --sec-3: #ef7a45; --sec-4: #3cba62; --sec-5: #2bb5ba; --sec-6: #e5ad2e; --sec-7: #f0709f; } }
+  :root[data-theme="dark"] { --sec-1: #4a94ec; --sec-2: #9a8ff0; --sec-3: #ef7a45; --sec-4: #3cba62; --sec-5: #2bb5ba; --sec-6: #e5ad2e; --sec-7: #f0709f; }
   .row { margin-top: 28px; }
   .row h2 { display: flex; align-items: center; gap: 10px; color: var(--ink); font-size: 12px; margin-bottom: 10px; }
   .row h2::before { content: ""; width: 4px; height: 16px; border-radius: 2px; background: var(--sec, var(--ink-3)); flex: none; }
   .row h2::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, color-mix(in srgb, var(--sec, var(--border)) 45%, transparent), var(--border) 30%, transparent); }
   .row h2 .num { color: var(--sec); font-variant-numeric: tabular-nums; }
   .sec-1 { --sec: var(--sec-1); } .sec-2 { --sec: var(--sec-2); } .sec-3 { --sec: var(--sec-3); }
-  .sec-4 { --sec: var(--sec-4); } .sec-5 { --sec: var(--sec-5); } .sec-6 { --sec: var(--sec-6); }
+  .sec-4 { --sec: var(--sec-4); } .sec-5 { --sec: var(--sec-5); } .sec-6 { --sec: var(--sec-6); } .sec-7 { --sec: var(--sec-7); }
   /* executive summary */
   .exec { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-top: 12px; }
   .exec h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-2); margin: 0 0 10px; font-weight: 600; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
@@ -151,6 +151,15 @@
   .exec .lnk { display: inline; background: none; border: 0; padding: 0; color: var(--link); cursor: pointer; text-align: left; font: inherit; }
   .exec .lnk:hover { text-decoration: underline; }
   .exec .none { color: var(--ink-3); font-size: 13px; }
+  /* Voice AI */
+  .tiles + .tiles { margin-top: 12px; }
+  .vsum { margin-top: 12px; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; border-left: 4px solid var(--sec); }
+  .vsum h3 { margin: 0 0 4px; font-size: 13px; color: var(--ink-2); }
+  .vsum p { margin: 0; font-size: 14px; line-height: 1.5; max-width: 760px; }
+  .vsum .lnk { background: none; border: 0; padding: 0; color: var(--link); cursor: pointer; font: inherit; font-weight: 600; }
+  .vsum .lnk:hover { text-decoration: underline; }
+  .vnote { margin-top: 8px; font-size: 12px; color: var(--ink-3); }
+  .tile .hint2 { font-size: 12px; color: var(--ink-3); line-height: 1.35; }
 </style>
 </head>
 <body>
@@ -191,7 +200,7 @@
 <div class="tip" id="tip" role="tooltip"></div>
 
 <script type="module">
-import { buildLists, summarize, periodRange, customRange, tzOffsetMin, decryptJSON } from './scripts/kpi-core.mjs';
+import { buildLists, summarize, buildVoiceLists, summarizeVoice, periodRange, customRange, tzOffsetMin, decryptJSON } from './scripts/kpi-core.mjs';
 
 // ---------- state ----------
 const store = {
@@ -214,6 +223,7 @@ const fmt = {
   usd: v => v === null || v === undefined ? '—' : '$' + Math.round(v).toLocaleString(),
   min: v => v === null || v === undefined ? '—' : `${v} min`,
   dt: v => v ? new Date(v).toLocaleString('en-US', { timeZone: TZ(), month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '—',
+  dur: v => { if (v === null || v === undefined) return '—'; v = Math.round(v); const h = Math.floor(v / 3600), m = Math.floor((v % 3600) / 60), s = v % 60; return h ? `${h}h ${m}m` : m ? `${m}m ${String(s).padStart(2, '0')}s` : `${s}s`; },
   date: v => v ? new Date(v).toLocaleDateString('en-US', { timeZone: TZ(), month: 'short', day: 'numeric', year: 'numeric' }) : '—',
 };
 const userName = id => (id && records?.users?.[id]) || (id ? 'Unknown user' : 'Unassigned');
@@ -251,6 +261,14 @@ function compute() {
     lists = null;
     cur = pub.periods[sel.key].current;
     prev = pub.periods[sel.key].previous;
+  }
+  // Voice AI: from decrypted records (or the design preview's own data); otherwise the public numbers.
+  const vsrc = window.__VOICE_PREVIEW__?.calls ?? records?.voiceCalls ?? null;
+  if (vsrc) {
+    const V = buildVoiceLists(vsrc, range.from, range.to);
+    lists = { ...(lists || {}), ...V };
+    cur = { ...cur, ...summarizeVoice(V) };
+    prev = { ...prev, ...summarizeVoice(buildVoiceLists(vsrc, range.prevFrom, range.prevTo)) };
   }
   store.set('kpi-range', JSON.stringify(sel));
 }
@@ -317,6 +335,19 @@ DRILLS.leadToShow = { ...DRILLS.showed, title: 'Lead → show', denom: L => L.ne
 DRILLS.contactToQuote = { ...DRILLS.quotes, title: 'Contact → quote', denom: L => L.contacted.length, denomLabel: 'contacted leads' };
 DRILLS.quoteToContract = { ...DRILLS.quotes, title: 'Quote → contract', numerator: L => L.contracts.length, numLabel: 'reached contract' };
 DRILLS.quoteToClose = { ...DRILLS.quotes, title: 'Quote → close', numerator: L => L.won.length, numLabel: 'closed won' };
+const yesNo = v => (v === null || v === undefined ? 'Not tracked' : v ? 'Yes' : 'No');
+const aiPrep = r => ({ ...r, _ans: 'Answered by AI', _booked: yesNo(r.booked), _xfer: yesNo(r.transferred), _lead: yesNo(r.leadCreated), _cb: yesNo(r.callbackRequested),
+  _outcome: r.summary ? (r.summary.length > 140 ? r.summary.slice(0, 137) + '…' : r.summary) : null });
+const aiCols = [col.name, { label: 'Phone', key: 'phone', type: 'phone' }, { label: 'Date / time', key: 'at', type: 'dt' }, { label: 'Duration', key: 'durationSec', type: 'dur', num: true },
+  { label: 'Answered / missed', key: '_ans', type: 'badge' }, { label: 'AI outcome', key: '_outcome' }, { label: 'Booked?', key: '_booked', type: 'badge', filter: '_booked' },
+  { label: 'Transferred?', key: '_xfer', type: 'badge', filter: '_xfer' }, { label: 'Lead created?', key: '_lead', type: 'badge', filter: '_lead' }, { label: 'Lead source', key: 'source', filter: 'source' }];
+const AI_DEF = 'Live calls the Voice AI agent handled in the selected dates (test calls excluded). GHL only logs a Voice AI call when the agent picked up.';
+DRILLS.aiCalls = { title: 'Voice AI calls', unit: 'calls', list: L => L.aiCalls || [], def: AI_DEF, cols: aiCols, prep: aiPrep };
+DRILLS.aiDuration = { ...DRILLS.aiCalls, title: 'Voice AI call time' };
+DRILLS.aiBooked = { ...DRILLS.aiCalls, title: 'Voice AI calls that booked an appointment', list: L => L.aiBooked || [], def: 'Voice AI calls where the agent ran its Appointment Booking action.' };
+DRILLS.aiTransferred = { ...DRILLS.aiCalls, title: 'Voice AI calls transferred to the team', list: L => L.aiTransferred || [], def: 'Voice AI calls where the agent ran its Call Transfer action.' };
+DRILLS.aiLeads = { ...DRILLS.aiCalls, title: 'Voice AI calls that became a lead', list: L => L.aiLeads || [], def: 'Voice AI calls whose caller got a new opportunity within 24 hours of the call.' };
+DRILLS.aiCallbacks = { ...DRILLS.aiCalls, title: 'Voice AI callback requests', list: L => L.aiCallbacks || [], def: 'Voice AI calls where the agent recorded that the caller asked for a callback.' };
 DRILLS.revenue = { ...DRILLS.won, title: 'Revenue (won deals)' };
 DRILLS.quoteValue = { ...DRILLS.quotes, title: 'Total $ of quotes' };
 DRILLS.missedRate = { ...DRILLS.missed, title: 'Missed call rate', denom: L => (L.inboundCalls || []).length, denomLabel: 'inbound calls' };
@@ -363,14 +394,15 @@ function deltaTxt(c, p, f) {
   const v = f === 'pct' ? `${Math.abs(Math.round(d * 10) / 10)} pts` : fmt[f](Math.abs(d));
   return `<span>${d > 0 ? '▲' : '▼'} ${v} vs prior</span>`;
 }
-function tile(k, label, f, goalKey, lowerBetter, drill) {
+function tile(k, label, f, goalKey, lowerBetter, drill, note) {
   const v = cur[k];
-  const can = !!drill && (records || pub.detailsAvailable);
+  if (note && (v === null || v === undefined)) return `<div class="tile"><div class="label">${esc(label)}</div><div class="value muted">—</div><div class="foot"><span class="chip none">Not tracked yet</span></div><div class="hint2">${esc(note)}</div></div>`;
+  const can = !!drill && (records || pub.detailsAvailable || window.__VOICE_PREVIEW__);
   const tag = can ? 'button' : 'div';
   return `<${tag} class="tile" ${can ? `data-drill="${drill}" aria-label="${esc(label)}: view the list"` : ''}>
     <div class="label">${esc(label)}</div>
     <div class="value ${v === null || v === undefined ? 'muted' : ''}">${fmt[f](v)}</div>
-    <div class="foot">${goalChip(v, goalKey ? pub.targets[goalKey] : null, lowerBetter, f)}${deltaTxt(v, prev[k], f)}${can ? `<span class="view">${records ? 'View list →' : '🔒 View list'}</span>` : ''}</div>
+    <div class="foot">${goalChip(v, goalKey ? pub.targets[goalKey] : null, lowerBetter, f)}${deltaTxt(v, prev[k], f)}${can ? `<span class="view">${records || window.__VOICE_PREVIEW__ ? 'View list →' : '🔒 View list'}</span>` : ''}</div>
   </${tag}>`;
 }
 function barList(entries, total, drillFor) {
@@ -407,6 +439,7 @@ function render() {
     ${tile('showed', 'Showed', 'n', null, false, 'showed')}
     ${tile('contacted', 'Contacted leads', 'n', null, false, 'contacted')}
   </div></section>`;
+  html += voiceSection();
   $('app').innerHTML = html;
   execSummary();
   const n = pub.dataNotes || {};
@@ -415,6 +448,51 @@ function render() {
   renderPresets();
 }
 
+
+// ---------- Voice AI ----------
+function rangePhrase() {
+  const l = range.label;
+  if (/^(today|yesterday)$/i.test(l)) return l.toLowerCase();
+  if (/^(last|this) /i.test(l)) return 'in the ' + l.charAt(0).toLowerCase() + l.slice(1);
+  return `in ${l}`;
+}
+const plural = (n, one, many) => `${n.toLocaleString()} ${n === 1 ? one : many}`;
+function voiceSentence() {
+  const c = cur, can = !!(records || pub.detailsAvailable || window.__VOICE_PREVIEW__);
+  const link = (text, drill) => can ? `<button class="lnk" data-drill="${drill}">${text}</button>` : text;
+  if (!c.aiCalls) return `Voice AI hasn't handled any calls ${rangePhrase()}.`;
+  const parts = [`Voice AI handled ${link(plural(c.aiCalls, 'call', 'calls'), 'aiCalls')} ${rangePhrase()}, averaging ${fmt.dur(c.aiAvgDurationSec)} per call.`];
+  const outs = [];
+  outs.push(`${link(plural(c.aiBooked, 'caller', 'callers'), 'aiBooked')} booked an appointment`);
+  outs.push(`${link(plural(c.aiTransferred, 'call was', 'calls were'), 'aiTransferred')} transferred to the sales team`);
+  outs.push(`${link(plural(c.aiLeads, 'call', 'calls'), 'aiLeads')} became a new lead`);
+  parts.push(outs.slice(0, -1).join(', ') + ' and ' + outs.slice(-1) + '.');
+  if (c.aiCallbacks) parts.push(`${link(plural(c.aiCallbacks, 'caller', 'callers'), 'aiCallbacks')} asked for a callback.`);
+  return parts.join(' ');
+}
+function voiceSection() {
+  // Shown only when the sync could actually read GHL Voice AI call logs (never with made-up numbers).
+  if (cur.aiCalls === null || cur.aiCalls === undefined) return '';
+  const can = !!(records || pub.detailsAvailable || window.__VOICE_PREVIEW__);
+  const NOT_LOGGED = 'GHL only logs calls the Voice AI picked up, so unanswered calls to its numbers aren\'t in the Voice AI data.';
+  return `<section class="row sec-7">${'<h2><span><span class="num">7</span> · Voice AI performance</span></h2>'}
+    <div class="tiles">
+      ${tile('aiCalls', 'AI calls received', 'n', null, false, 'aiCalls')}
+      ${tile('aiAnswerRatePct', 'AI answer rate', 'pct', null, false, null, NOT_LOGGED)}
+      ${tile('aiAvgDurationSec', 'Avg call duration', 'dur', null, false, 'aiDuration')}
+      ${tile('aiBooked', 'Appointments booked', 'n', null, false, 'aiBooked')}
+    </div>
+    <div class="tiles">
+      ${tile('aiTotalDurationSec', 'Total call time', 'dur', null, false, 'aiDuration')}
+      ${tile('aiLeads', 'Calls that became a lead', 'n', null, false, 'aiLeads')}
+      ${tile('aiTransferred', 'Transferred to team', 'n', null, false, 'aiTransferred')}
+      ${tile('aiCallbacks', 'Callback requested', 'n', null, false, 'aiCallbacks', 'Ashley doesn\'t capture a "callback requested" field yet. Add it as a data-extraction field to track this.')}
+    </div>
+    <div class="panel vsum"><div><h3>Voice AI summary</h3><p>${voiceSentence()}</p></div>
+      ${can ? '<button class="lnk" data-drill="aiCalls">View AI calls →</button>' : ''}</div>
+    <div class="vnote">Answered calls = AI calls received (every logged Voice AI call was picked up by the agent). Missed / unanswered calls: not tracked yet. ${esc(NOT_LOGGED)}</div>
+  </section>`;
+}
 
 // ---------- executive summary (rule-based, computed from the same numbers as the tiles) ----------
 const GOALS = [
@@ -511,7 +589,7 @@ function execSummary() {
 let view = null; // { def, rows, q, filters, sortKey, sortDir, page }
 const PAGE = 25;
 function openDrill(key) {
-  if (!records) { openUnlock(key); return; }
+  if (!records && !(window.__VOICE_PREVIEW__ && key.startsWith('ai'))) { openUnlock(key); return; }
   let def, rows;
   if (key.startsWith('source:')) {
     const src = key.slice(7);
@@ -537,12 +615,13 @@ function cell(c, r) {
     case 'phone': return v ? `<a href="tel:${esc(v)}">${esc(v)}</a>` : '<span class="muted">—</span>';
     case 'dt': return v ? esc(fmt.dt(v)) : '<span class="muted">—</span>';
     case 'usd': return fmt.usd(v);
+    case 'dur': return esc(fmt.dur(v));
     case 'user': return esc(userName(v));
     case 'cap': return esc(cap(v));
     case 'stl': return v === null || v === undefined ? '<span class="chip warn">Not called yet</span>' : `<span class="chip ${v <= 5 ? 'good' : 'bad'}">${v} min</span>`;
     case 'badge': {
       const s = String(v ?? '—'); const l = s.toLowerCase();
-      const cls = /success|replied|showed|yes|won|signed|confirmed/.test(l) ? 'good' : /missed|no.?show|not yet|cancel|lost|not attempted/.test(l) ? 'bad' : /attempt|sent|booked|open/.test(l) ? 'warn' : 'none';
+      const cls = /not tracked/.test(l) ? 'none' : /success|replied|showed|yes|won|signed|confirmed|answered/.test(l) ? 'good' : /missed|no.?show|not yet|cancel|lost|not attempted/.test(l) ? 'bad' : /attempt|sent|booked|open/.test(l) ? 'warn' : 'none';
       return `<span class="chip ${cls}">${esc(cap(s))}</span>`;
     }
     default: return v === null || v === undefined || v === '' ? '<span class="muted">—</span>' : esc(v);
@@ -573,7 +652,7 @@ function renderModal() {
   if (def.numerator) sum = `<span><b>${def.numerator(lists).toLocaleString()}</b> of <b>${all.toLocaleString()}</b> ${unit} ${def.numLabel}</span>`;
   if (def.denom) sum += `<span>out of <b>${def.denom(lists).toLocaleString()}</b> ${def.denomLabel}</span>`;
   if (def.total) sum += `<span>Total <b>${fmt.usd(rows.reduce((t, r) => t + (Number(r.value) || 0), 0))}</b></span>`;
-  if (def.unit !== 'leads') { const u = new Set(rows.map(r => r.contactId).filter(Boolean)).size; if (u !== all && def.unit !== 'quotes' && def.unit !== 'deals') sum += `<span class="muted">${u} unique people</span>`; }
+  if (def.unit !== 'leads') { const u = new Set(rows.map(r => r.contactId || r.phone).filter(Boolean)).size; if (u !== all && def.unit !== 'quotes' && def.unit !== 'deals') sum += `<span class="muted">${u} unique people</span>`; }
   // filters available from the columns
   const fcols = def.cols.filter(c => c.filter);
   const selects = fcols.map(c => {
