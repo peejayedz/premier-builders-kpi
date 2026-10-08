@@ -117,5 +117,11 @@
       "status:not qualified",
       "lead:not qualified"
     ]
+  },
+  "voiceAi": {
+    "_note": "Voice AI section. Needs the Voice AI dashboard (call logs) read scope on GHL_TOKEN. Calls = LIVE calls the agent handled.",
+    "apiVersion": "v3",
+    "leadWindowHours": 24,
+    "callbackFieldPattern": "call.?back"
   }
 }
