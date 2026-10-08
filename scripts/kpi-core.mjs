@@ -36,9 +36,18 @@ export function classify(lead, cfg) {
   const st = k => cfg.stages[k].map(norm).includes(stage);
   const won = lead.status === 'won' || (st('closed') && lead.status !== 'lost');
   const contacted = (lead.tags || []).map(norm).includes(norm(cfg.contactedTag)) || !!lead.firstContactedAt || st('contacted') || won;
+  // Lisa's call (Status overlay, synced into GHL by Jered's hook) wins; a quote or later stage also implies qualified.
+  const Q = cfg.qualification || {};
+  const tags = (lead.tags || []).map(norm);
+  const vals = (lead.qualValues || []).map(norm);
+  const markedNo = (Q.notTags || []).map(norm).some(t => tags.includes(t)) || vals.some(v => (Q.noValues || []).map(norm).includes(v));
+  const markedYes = !markedNo && ((Q.tags || []).map(norm).some(t => tags.includes(t)) || vals.some(v => (Q.yesValues || []).map(norm).includes(v)));
+  const qualifiedBy = markedYes ? 'Marked by Lisa' : (!markedNo && (st('qualified') || won)) ? (won ? 'Won' : 'Quote stage or later') : null;
   return {
     contacted,
-    qualified: st('qualified') || won,
+    qualified: !!qualifiedBy,
+    qualifiedBy,
+    notQualified: markedNo,
     quote: st('quote') || won,
     contract: st('contract'),
     won,
