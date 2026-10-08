@@ -1,0 +1,69 @@
+{
+  "locationName": "Premier Builders",
+  "timezone": "America/Indiana/Indianapolis",
+  "lookbackDays": 400,
+  "targets": {
+    "speedToLeadMin": 5,
+    "calledWithin5Pct": 80,
+    "contactRatePct": 80,
+    "leadToBookedPct": 65,
+    "bookedToShowPct": 60,
+    "leadToShowPct": 39,
+    "contactToQuotePct": 40,
+    "quoteToContractPct": 40,
+    "quoteToClosePct": 30,
+    "missedCallPct": 10
+  },
+  "contactedTag": "contacted",
+  "consultCalendars": [],
+  "siteVisitCalendarKeywords": [
+    "scott"
+  ],
+  "stages": {
+    "contacted": [
+      "Contacted",
+      "In Conversation",
+      "Engaged",
+      "Warm Leads",
+      "Booked Call",
+      "No Show",
+      "Scheduled With Scott",
+      "Scheduled w/ Scott",
+      "Scheduled with Scott",
+      "Sent Quote",
+      "Quote Sent",
+      "Under Contract",
+      "Closed"
+    ],
+    "qualified": [
+      "Booked Call",
+      "No Show",
+      "Scheduled With Scott",
+      "Scheduled w/ Scott",
+      "Scheduled with Scott",
+      "Sent Quote",
+      "Quote Sent",
+      "Under Contract",
+      "Closed"
+    ],
+    "quote": [
+      "Sent Quote",
+      "Quote Sent",
+      "Under Contract",
+      "Closed"
+    ],
+    "contract": [
+      "Under Contract",
+      "Closed"
+    ],
+    "closed": [
+      "Closed"
+    ]
+  },
+  "ghlAppBase": "https://app.unleashed-leads.com",
+  "fields": {
+    "speedToLead": "Speed to Lead (min)",
+    "firstContacted": "First Contacted Date",
+    "contactMethod": "Contact Method"
+  }
+}
