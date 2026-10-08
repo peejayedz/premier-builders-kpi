@@ -1,0 +1,895 @@
+{
+  "generatedAt": "2026-10-08T11:19:37.599Z",
+  "location": "Premier Builders",
+  "targets": {
+    "speedToLeadMin": 5,
+    "calledWithin5Pct": 80,
+    "contactRatePct": 80,
+    "leadToBookedPct": 65,
+    "bookedToShowPct": 60,
+    "leadToShowPct": 39,
+    "contactToQuotePct": 40,
+    "quoteToContractPct": 40,
+    "quoteToClosePct": 30,
+    "missedCallPct": 10
+  },
+  "dataNotes": {
+    "speedToLead": "Field not created yet in GHL",
+    "appointments": "Consult calendars, by appointment start date",
+    "calls": "Inbound calls from conversation messages"
+  },
+  "detailsAvailable": true,
+  "periods": {
+    "today": {
+      "label": "Today",
+      "from": 1791432000000,
+      "to": 1791458377599,
+      "current": {
+        "totalLeads": 0,
+        "speedToLeadAvgMin": null,
+        "calledWithin5Pct": null,
+        "contacted": 0,
+        "contactRatePct": null,
+        "bookedCalls": 0,
+        "showed": 0,
+        "leadToBookedPct": null,
+        "bookedToShowPct": null,
+        "leadToShowPct": null,
+        "qualified": 0,
+        "quotesSent": 0,
+        "quoteValue": 0,
+        "contactToQuotePct": null,
+        "underContract": 0,
+        "quoteToContractPct": null,
+        "closedDeals": 0,
+        "revenue": 0,
+        "quoteToClosePct": null,
+        "missedCallPct": null,
+        "missedCalls": 0,
+        "inboundCalls": 0,
+        "bySource": {},
+        "funnel": [
+          [
+            "Leads",
+            0,
+            "newLeads"
+          ],
+          [
+            "Contacted",
+            0,
+            "contacted"
+          ],
+          [
+            "Qualified",
+            0,
+            "qualified"
+          ],
+          [
+            "Quotes",
+            0,
+            "quotes"
+          ],
+          [
+            "Under contract",
+            0,
+            "contracts"
+          ],
+          [
+            "Closed",
+            0,
+            "won"
+          ]
+        ]
+      },
+      "previous": {
+        "totalLeads": 1,
+        "speedToLeadAvgMin": null,
+        "calledWithin5Pct": null,
+        "contacted": 0,
+        "contactRatePct": 0,
+        "bookedCalls": 0,
+        "showed": 0,
+        "leadToBookedPct": 0,
+        "bookedToShowPct": null,
+        "leadToShowPct": 0,
+        "qualified": 0,
+        "quotesSent": 0,
+        "quoteValue": 0,
+        "contactToQuotePct": null,
+        "underContract": 0,
+        "quoteToContractPct": null,
+        "closedDeals": 0,
+        "revenue": 0,
+        "quoteToClosePct": null,
+        "missedCallPct": null,
+        "missedCalls": 0,
+        "inboundCalls": 0,
+        "bySource": {
+          "PPC Launch": 1
+        },
+        "funnel": [
+          [
+            "Leads",
+            1,
+            "newLeads"
+          ],
+          [
+            "Contacted",
+            0,
+            "contacted"
+          ],
+          [
+            "Qualified",
+            0,
+            "qualified"
+          ],
+          [
+            "Quotes",
+            0,
+            "quotes"
+          ],
+          [
+            "Under contract",
+            0,
+            "contracts"
+          ],
+          [
+            "Closed",
+            0,
+            "won"
+          ]
+        ]
+      }
+    },
+    "yesterday": {
+      "label": "Yesterday",
+      "from": 1791345600000,
+      "to": 1791432000000,
+      "current": {
+        "totalLeads": 1,
+        "speedToLeadAvgMin": null,
+        "calledWithin5Pct": null,
+        "contacted": 0,
+        "contactRatePct": 0,
+        "bookedCalls": 0,
+        "showed": 0,
+        "leadToBookedPct": 0,
+        "bookedToShowPct": null,
+        "leadToShowPct": 0,
+        "qualified": 0,
+        "quotesSent": 0,
+        "quoteValue": 0,
+        "contactToQuotePct": null,
+        "underContract": 0,
+        "quoteToContractPct": null,
+        "closedDeals": 0,
+        "revenue": 0,
+        "quoteToClosePct": null,
+        "missedCallPct": null,
+        "missedCalls": 0,
+        "inboundCalls": 0,
+        "bySource": {
+          "PPC Launch": 1
+        },
+        "funnel": [
+          [
+            "Leads",
+            1,
+            "newLeads"
+          ],
+          [
+            "Contacted",
+            0,
+            "contacted"
+          ],
+          [
+            "Qualified",
+            0,
+            "qualified"
+          ],
+          [
+            "Quotes",
+            0,
+            "quotes"
+          ],
+          [
+            "Under contract",
+            0,
+            "contracts"
+          ],
+          [
+            "Closed",
+            0,
+            "won"
+          ]
+        ]
+      },
+      "previous": {
+        "totalLeads": 2,
+        "speedToLeadAvgMin": null,
+        "calledWithin5Pct": null,
+        "contacted": 1,
+        "contactRatePct": 50,
+        "bookedCalls": 0,
+        "showed": 0,
+        "leadToBookedPct": 0,
+        "bookedToShowPct": null,
+        "leadToShowPct": 0,
+        "qualified": 0,
+        "quotesSent": 0,
+        "quoteValue": 0,
+        "contactToQuotePct": 0,
+        "underContract": 0,
+        "quoteToContractPct": null,
+        "closedDeals": 0,
+        "revenue": 0,
+        "quoteToClosePct": null,
+        "missedCallPct": null,
+        "missedCalls": 0,
+        "inboundCalls": 0,
+        "bySource": {
+          "PPC Launch": 2
+        },
+        "funnel": [
+          [
+            "Leads",
+            2,
+            "newLeads"
+          ],
+          [
+            "Contacted",
+            1,
+            "contacted"
+          ],
+          [
+            "Qualified",
+            0,
+            "qualified"
+          ],
+          [
+            "Quotes",
+            0,
+            "quotes"
+          ],
+          [
+            "Under contract",
+            0,
+            "contracts"
+          ],
+          [
+            "Closed",
+            0,
+            "won"
+          ]
+        ]
+      }
+    },
+    "last7": {
+      "label": "Last 7 days",
+      "from": 1790853577599,
+      "to": 1791458377599,
+      "current": {
+        "totalLeads": 7,
+        "speedToLeadAvgMin": null,
+        "calledWithin5Pct": null,
+        "contacted": 2,
+        "contactRatePct": 28.6,
+        "bookedCalls": 0,
+        "showed": 0,
+        "leadToBookedPct": 0,
+        "bookedToShowPct": null,
+        "leadToShowPct": 0,
+        "qualified": 1,
+        "quotesSent": 0,
+        "quoteValue": 0,
+        "contactToQuotePct": 0,
+        "underContract": 0,
+        "quoteToContractPct": null,
+        "closedDeals": 0,
+        "revenue": 0,
+        "quoteToClosePct": null,
+        "missedCallPct": 50,
+        "missedCalls": 2,
+        "inboundCalls": 4,
+        "bySource": {
+          "PPC Launch": 6,
+          "Contact Form": 1
+        },
+        "funnel": [
+          [
+            "Leads",
+            7,
+            "newLeads"
+          ],
+          [
+            "Contacted",
+            2,
+            "contacted"
+          ],
+          [
+            "Qualified",
+            1,
+            "qualified"
+          ],
+          [
+            "Quotes",
+            0,
+            "quotes"
+          ],
+          [
+            "Under contract",
+            0,
+            "contracts"
+          ],
+          [
+            "Closed",
+            0,
+            "won"
+          ]
+        ]
+      },
+      "previous": {
+        "totalLeads": 14,
+        "speedToLeadAvgMin": null,
+        "calledWithin5Pct": null,
+        "contacted": 6,
+        "contactRatePct": 42.9,
+        "bookedCalls": 4,
+        "showed": 0,
+        "leadToBookedPct": 28.6,
+        "bookedToShowPct": 0,
+        "leadToShowPct": 0,
+        "qualified": 1,
+        "quotesSent": 0,
+        "quoteValue": 0,
+        "contactToQuotePct": 0,
+        "underContract": 0,
+        "quoteToContractPct": null,
+        "closedDeals": 0,
+        "revenue": 0,
+        "quoteToClosePct": null,
+        "missedCallPct": 62.5,
+        "missedCalls": 5,
+        "inboundCalls": 8,
+        "bySource": {
+          "PPC Launch": 13,
+          "Unknown": 1
+        },
+        "funnel": [
+          [
+            "Leads",
+            14,
+            "newLeads"
+          ],
+          [
+            "Contacted",
+            6,
+            "contacted"
+          ],
+          [
+            "Qualified",
+            1,
+            "qualified"
+          ],
+          [
+            "Quotes",
+            0,
+            "quotes"
+          ],
+          [
+            "Under contract",
+            0,
+            "contracts"
+          ],
+          [
+            "Closed",
+            0,
+            "won"
+          ]
+        ]
+      }
+    },
+    "last30": {
+      "label": "Last 30 days",
+      "from": 1788866377599,
+      "to": 1791458377599,
+      "current": {
+        "totalLeads": 29,
+        "speedToLeadAvgMin": null,
+        "calledWithin5Pct": null,
+        "contacted": 12,
+        "contactRatePct": 41.4,
+        "bookedCalls": 10,
+        "showed": 0,
+        "leadToBookedPct": 34.5,
+        "bookedToShowPct": 0,
+        "leadToShowPct": 0,
+        "qualified": 4,
+        "quotesSent": 0,
+        "quoteValue": 0,
+        "contactToQuotePct": 0,
+        "underContract": 0,
+        "quoteToContractPct": null,
+        "closedDeals": 0,
+        "revenue": 0,
+        "quoteToClosePct": null,
+        "missedCallPct": 53.8,
+        "missedCalls": 14,
+        "inboundCalls": 26,
+        "bySource": {
+          "PPC Launch": 22,
+          "Contact Form": 5,
+          "Unknown": 1,
+          "Book a Call with Lisa": 1
+        },
+        "funnel": [
+          [
+            "Leads",
+            29,
+            "newLeads"
+          ],
+          [
+            "Contacted",
+            12,
+            "contacted"
+          ],
+          [
+            "Qualified",
+            4,
+            "qualified"
+          ],
+          [
+            "Quotes",
+            0,
+            "quotes"
+          ],
+          [
+            "Under contract",
+            0,
+            "contracts"
+          ],
+          [
+            "Closed",
+            0,
+            "won"
+          ]
+        ]
+      },
+      "previous": {
+        "totalLeads": 42,
+        "speedToLeadAvgMin": null,
+        "calledWithin5Pct": null,
+        "contacted": 14,
+        "contactRatePct": 33.3,
+        "bookedCalls": 23,
+        "showed": 0,
+        "leadToBookedPct": 54.8,
+        "bookedToShowPct": 0,
+        "leadToShowPct": 0,
+        "qualified": 11,
+        "quotesSent": 5,
+        "quoteValue": 0,
+        "contactToQuotePct": 35.7,
+        "underContract": 0,
+        "quoteToContractPct": 0,
+        "closedDeals": 0,
+        "revenue": 0,
+        "quoteToClosePct": 0,
+        "missedCallPct": 100,
+        "missedCalls": 1,
+        "inboundCalls": 1,
+        "bySource": {
+          "Contact Form": 42
+        },
+        "funnel": [
+          [
+            "Leads",
+            42,
+            "newLeads"
+          ],
+          [
+            "Contacted",
+            14,
+            "contacted"
+          ],
+          [
+            "Qualified",
+            11,
+            "qualified"
+          ],
+          [
+            "Quotes",
+            5,
+            "quotes"
+          ],
+          [
+            "Under contract",
+            0,
+            "contracts"
+          ],
+          [
+            "Closed",
+            0,
+            "won"
+          ]
+        ]
+      }
+    },
+    "last90": {
+      "label": "Last 90 days",
+      "from": 1783682377599,
+      "to": 1791458377599,
+      "current": {
+        "totalLeads": 147,
+        "speedToLeadAvgMin": null,
+        "calledWithin5Pct": null,
+        "contacted": 53,
+        "contactRatePct": 36.1,
+        "bookedCalls": 75,
+        "showed": 0,
+        "leadToBookedPct": 51,
+        "bookedToShowPct": 0,
+        "leadToShowPct": 0,
+        "qualified": 36,
+        "quotesSent": 10,
+        "quoteValue": 0,
+        "contactToQuotePct": 18.9,
+        "underContract": 0,
+        "quoteToContractPct": 0,
+        "closedDeals": 1,
+        "revenue": 0,
+        "quoteToClosePct": 10,
+        "missedCallPct": 61.3,
+        "missedCalls": 19,
+        "inboundCalls": 31,
+        "bySource": {
+          "PPC Launch": 22,
+          "Contact Form": 123,
+          "Unknown": 1,
+          "Book a Call with Lisa": 1
+        },
+        "funnel": [
+          [
+            "Leads",
+            147,
+            "newLeads"
+          ],
+          [
+            "Contacted",
+            53,
+            "contacted"
+          ],
+          [
+            "Qualified",
+            36,
+            "qualified"
+          ],
+          [
+            "Quotes",
+            10,
+            "quotes"
+          ],
+          [
+            "Under contract",
+            0,
+            "contracts"
+          ],
+          [
+            "Closed",
+            1,
+            "won"
+          ]
+        ]
+      },
+      "previous": {
+        "totalLeads": 128,
+        "speedToLeadAvgMin": null,
+        "calledWithin5Pct": null,
+        "contacted": 32,
+        "contactRatePct": 25,
+        "bookedCalls": 74,
+        "showed": 0,
+        "leadToBookedPct": 57.8,
+        "bookedToShowPct": 0,
+        "leadToShowPct": 0,
+        "qualified": 27,
+        "quotesSent": 6,
+        "quoteValue": 0,
+        "contactToQuotePct": 18.8,
+        "underContract": 0,
+        "quoteToContractPct": 0,
+        "closedDeals": 0,
+        "revenue": 0,
+        "quoteToClosePct": 0,
+        "missedCallPct": 40,
+        "missedCalls": 2,
+        "inboundCalls": 5,
+        "bySource": {
+          "Contact Form": 128
+        },
+        "funnel": [
+          [
+            "Leads",
+            128,
+            "newLeads"
+          ],
+          [
+            "Contacted",
+            32,
+            "contacted"
+          ],
+          [
+            "Qualified",
+            27,
+            "qualified"
+          ],
+          [
+            "Quotes",
+            6,
+            "quotes"
+          ],
+          [
+            "Under contract",
+            0,
+            "contracts"
+          ],
+          [
+            "Closed",
+            0,
+            "won"
+          ]
+        ]
+      }
+    },
+    "thisMonth": {
+      "label": "This month",
+      "from": 1790827200000,
+      "to": 1791458377599,
+      "current": {
+        "totalLeads": 8,
+        "speedToLeadAvgMin": null,
+        "calledWithin5Pct": null,
+        "contacted": 2,
+        "contactRatePct": 25,
+        "bookedCalls": 0,
+        "showed": 0,
+        "leadToBookedPct": 0,
+        "bookedToShowPct": null,
+        "leadToShowPct": 0,
+        "qualified": 1,
+        "quotesSent": 0,
+        "quoteValue": 0,
+        "contactToQuotePct": 0,
+        "underContract": 0,
+        "quoteToContractPct": null,
+        "closedDeals": 0,
+        "revenue": 0,
+        "quoteToClosePct": null,
+        "missedCallPct": 50,
+        "missedCalls": 2,
+        "inboundCalls": 4,
+        "bySource": {
+          "PPC Launch": 7,
+          "Contact Form": 1
+        },
+        "funnel": [
+          [
+            "Leads",
+            8,
+            "newLeads"
+          ],
+          [
+            "Contacted",
+            2,
+            "contacted"
+          ],
+          [
+            "Qualified",
+            1,
+            "qualified"
+          ],
+          [
+            "Quotes",
+            0,
+            "quotes"
+          ],
+          [
+            "Under contract",
+            0,
+            "contracts"
+          ],
+          [
+            "Closed",
+            0,
+            "won"
+          ]
+        ]
+      },
+      "previous": {
+        "totalLeads": 5,
+        "speedToLeadAvgMin": null,
+        "calledWithin5Pct": null,
+        "contacted": 2,
+        "contactRatePct": 40,
+        "bookedCalls": 3,
+        "showed": 0,
+        "leadToBookedPct": 60,
+        "bookedToShowPct": 0,
+        "leadToShowPct": 0,
+        "qualified": 1,
+        "quotesSent": 0,
+        "quoteValue": 0,
+        "contactToQuotePct": 0,
+        "underContract": 0,
+        "quoteToContractPct": null,
+        "closedDeals": 0,
+        "revenue": 0,
+        "quoteToClosePct": null,
+        "missedCallPct": null,
+        "missedCalls": 0,
+        "inboundCalls": 0,
+        "bySource": {
+          "Contact Form": 5
+        },
+        "funnel": [
+          [
+            "Leads",
+            5,
+            "newLeads"
+          ],
+          [
+            "Contacted",
+            2,
+            "contacted"
+          ],
+          [
+            "Qualified",
+            1,
+            "qualified"
+          ],
+          [
+            "Quotes",
+            0,
+            "quotes"
+          ],
+          [
+            "Under contract",
+            0,
+            "contracts"
+          ],
+          [
+            "Closed",
+            0,
+            "won"
+          ]
+        ]
+      }
+    },
+    "lastMonth": {
+      "label": "Last month",
+      "from": 1788235200000,
+      "to": 1790827200000,
+      "current": {
+        "totalLeads": 26,
+        "speedToLeadAvgMin": null,
+        "calledWithin5Pct": null,
+        "contacted": 12,
+        "contactRatePct": 46.2,
+        "bookedCalls": 13,
+        "showed": 0,
+        "leadToBookedPct": 50,
+        "bookedToShowPct": 0,
+        "leadToShowPct": 0,
+        "qualified": 4,
+        "quotesSent": 0,
+        "quoteValue": 0,
+        "contactToQuotePct": 0,
+        "underContract": 0,
+        "quoteToContractPct": null,
+        "closedDeals": 0,
+        "revenue": 0,
+        "quoteToClosePct": null,
+        "missedCallPct": 54.5,
+        "missedCalls": 12,
+        "inboundCalls": 22,
+        "bySource": {
+          "Unknown": 1,
+          "PPC Launch": 15,
+          "Book a Call with Lisa": 1,
+          "Contact Form": 9
+        },
+        "funnel": [
+          [
+            "Leads",
+            26,
+            "newLeads"
+          ],
+          [
+            "Contacted",
+            12,
+            "contacted"
+          ],
+          [
+            "Qualified",
+            4,
+            "qualified"
+          ],
+          [
+            "Quotes",
+            0,
+            "quotes"
+          ],
+          [
+            "Under contract",
+            0,
+            "contracts"
+          ],
+          [
+            "Closed",
+            0,
+            "won"
+          ]
+        ]
+      },
+      "previous": {
+        "totalLeads": 58,
+        "speedToLeadAvgMin": null,
+        "calledWithin5Pct": null,
+        "contacted": 20,
+        "contactRatePct": 34.5,
+        "bookedCalls": 34,
+        "showed": 0,
+        "leadToBookedPct": 58.6,
+        "bookedToShowPct": 0,
+        "leadToShowPct": 0,
+        "qualified": 17,
+        "quotesSent": 7,
+        "quoteValue": 0,
+        "contactToQuotePct": 35,
+        "underContract": 0,
+        "quoteToContractPct": 0,
+        "closedDeals": 1,
+        "revenue": 0,
+        "quoteToClosePct": 14.3,
+        "missedCallPct": 100,
+        "missedCalls": 1,
+        "inboundCalls": 1,
+        "bySource": {
+          "Contact Form": 58
+        },
+        "funnel": [
+          [
+            "Leads",
+            58,
+            "newLeads"
+          ],
+          [
+            "Contacted",
+            20,
+            "contacted"
+          ],
+          [
+            "Qualified",
+            17,
+            "qualified"
+          ],
+          [
+            "Quotes",
+            7,
+            "quotes"
+          ],
+          [
+            "Under contract",
+            0,
+            "contracts"
+          ],
+          [
+            "Closed",
+            1,
+            "won"
+          ]
+        ]
+      }
+    }
+  }
+}
