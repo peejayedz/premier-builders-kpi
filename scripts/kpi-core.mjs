@@ -108,6 +108,37 @@ export function buildLists(records, cfg, from, to) {
     showed,
     inboundCalls,
     missed,
+    ...(buildVoiceLists(records.voiceCalls, from, to) || {}),
+  };
+}
+
+// ---- Voice AI (GHL Voice AI call logs) ----
+// One row per LIVE call the Voice AI agent handled (trial/test calls are excluded at sync time).
+// GHL only writes a Voice AI call log when the agent picked up, so every row is an answered call.
+export function buildVoiceLists(voiceCalls, from, to) {
+  if (!voiceCalls) return null;
+  const calls = voiceCalls.filter(c => inRange(c.at, from, to)).sort((a, b) => Date.parse(b.at) - Date.parse(a.at));
+  const callbackTracked = voiceCalls.some(c => c.callbackRequested !== null && c.callbackRequested !== undefined);
+  return {
+    aiCalls: calls,
+    aiBooked: calls.filter(c => c.booked),
+    aiTransferred: calls.filter(c => c.transferred),
+    aiLeads: calls.filter(c => c.leadCreated),
+    aiCallbacks: callbackTracked ? calls.filter(c => c.callbackRequested) : null,
+  };
+}
+export function summarizeVoice(V) {
+  if (!V) return { aiCalls: null, aiTotalDurationSec: null, aiAvgDurationSec: null, aiBooked: null, aiTransferred: null, aiLeads: null, aiCallbacks: null };
+  const secs = V.aiCalls.map(c => Number(c.durationSec) || 0);
+  const total = secs.reduce((t, x) => t + x, 0);
+  return {
+    aiCalls: V.aiCalls.length,
+    aiTotalDurationSec: total,
+    aiAvgDurationSec: V.aiCalls.length ? Math.round(total / V.aiCalls.length) : null,
+    aiBooked: V.aiBooked.length,
+    aiTransferred: V.aiTransferred.length,
+    aiLeads: V.aiLeads.length,
+    aiCallbacks: V.aiCallbacks ? V.aiCallbacks.length : null,
   };
 }
 
@@ -139,6 +170,7 @@ export function summarize(L) {
     missedCallPct: L.inboundCalls ? pct(L.missed.length, L.inboundCalls.length) : null,
     missedCalls: L.missed ? L.missed.length : null,
     inboundCalls: L.inboundCalls ? L.inboundCalls.length : null,
+    ...summarizeVoice(L.aiCalls ? L : null),
     bySource,
     funnel: [
       ['Leads', L.newLeads.length, 'newLeads'], ['Contacted', L.contacted.length, 'contacted'],

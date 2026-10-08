@@ -250,9 +250,54 @@ for (const l of leads) {
 console.log(`Derived speed-to-lead for ${stlComputed} leads and first contact for ${contactComputed} leads (of ${leads.length}).`);
 console.log('Message export diagnostics:', JSON.stringify(diag));
 
+// ---------- Voice AI call logs ----------
+// GET /voice-ai/dashboard/call-logs (Version: v3). Needs the Voice AI dashboard read scope on the token.
+// GHL only logs calls the agent actually picked up, so these are "calls handled by the Voice AI".
+const VAI = cfg.voiceAi || {};
+const voiceCalls = await optional('voice AI call logs', async () => {
+  const out = [];
+  for (let page = 1; page <= 200; page++) {
+    const q = new URLSearchParams({ locationId: LOC, callType: 'LIVE', startDate: String(since), endDate: String(now), sortBy: 'createdAt', sort: 'descend', page: String(page), pageSize: '50' });
+    const r = await ghl(`/voice-ai/dashboard/call-logs?${q}`, { version: VAI.apiVersion || 'v3' });
+    const batch = r.callLogs || [];
+    out.push(...batch);
+    if (batch.length < 50 || out.length >= (r.total ?? Infinity)) break;
+    await sleep(200);
+  }
+  return out.filter(c => !c.trialCall && (Date.parse(c.createdAt) || 0) >= since);
+});
+let voiceRecords = null;
+if (voiceCalls) {
+  await loadContacts(voiceCalls.map(c => c.contactId));
+  const cbKey = new RegExp(VAI.callbackFieldPattern || 'call.?back', 'i');
+  const truthy = v => v === true || /^(y|yes|true|1|requested)$/i.test(String(v ?? '').trim());
+  const LEAD_WINDOW = (VAI.leadWindowHours ?? 24) * 3600e3;
+  voiceRecords = voiceCalls.map(c => {
+    const t = Date.parse(c.createdAt);
+    const actions = (c.executedCallActions || []).map(a => String(a.actionType || '').toUpperCase());
+    const cbEntry = Object.entries(c.extractedData || {}).find(([k]) => cbKey.test(k));
+    const lead = leads.filter(l => l.contactId && l.contactId === c.contactId)
+      .find(l => { const lt = Date.parse(l.createdAt); return lt >= t - 10 * 60e3 && lt <= t + LEAD_WINDOW; });
+    const ct = contacts[c.contactId] || {};
+    return {
+      id: c.id, contactId: c.contactId || null, agentId: c.agentId || null,
+      name: ct.name || c.extractedData?.customerName || 'Unknown caller',
+      phone: ct.phone || c.fromNumber || null, email: ct.email || null,
+      at: iso(c.createdAt), durationSec: Number(c.duration) || 0,
+      summary: c.summary || null, actions: [...new Set(actions)],
+      booked: actions.includes('APPOINTMENT_BOOKING'),
+      transferred: actions.includes('CALL_TRANSFER'),
+      callbackRequested: cbEntry ? truthy(cbEntry[1]) : null,     // null = this agent doesn't capture it
+      leadCreated: !!lead, oppId: lead?.oppId || null,
+      source: lead?.source || ct.source || null,
+    };
+  });
+}
+
 // ---------- Compute + write ----------
 const records = {
   generatedAt: new Date(now).toISOString(), locationId: LOC, ghlBase: cfg.ghlAppBase, users, leads, appointments, calls,
+  voiceCalls: voiceRecords,
   // Lets unlocked viewers press "Refresh data": a fine-grained token that can ONLY start this repo's workflow.
   refresh: process.env.DISPATCH_TOKEN ? { repo: process.env.GITHUB_REPOSITORY, workflow: 'sync-kpis.yml', token: process.env.DISPATCH_TOKEN } : null,
 };
@@ -264,6 +309,7 @@ const out = {
     speedToLead: `Lead created to first outbound call${STL.useBusinessHours ? ' (business hours only)' : ''}, from GHL call logs`,
     appointments: appointments ? 'Lisa\'s calendars / appointments assigned to Lisa, by appointment start date' : 'Calendar scope missing',
     calls: calls ? 'Inbound calls from conversation messages' : 'Conversation message scope missing',
+    voiceAi: voiceRecords ? 'Live calls handled by the Voice AI agent, from GHL Voice AI call logs' : null,
   },
   detailsAvailable: !!PASS,
   periods,
@@ -278,4 +324,4 @@ if (PASS) {
   await rm(new URL('details.enc.json', dataDir), { force: true });
   console.warn('DASHBOARD_PASSPHRASE not set: drill-downs disabled, no contact data written.');
 }
-console.log(`Wrote data/kpis.json (${leads.length} leads, ${appointments?.length ?? 'n/a'} appointments, ${calls?.length ?? 'n/a'} calls)`);
+console.log(`Wrote data/kpis.json (${leads.length} leads, ${appointments?.length ?? 'n/a'} appointments, ${calls?.length ?? 'n/a'} calls, ${voiceRecords?.length ?? 'n/a'} Voice AI calls)`);
