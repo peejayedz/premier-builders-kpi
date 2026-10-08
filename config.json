@@ -15,7 +15,6 @@
     "missedCallPct": 10
   },
   "contactedTag": "contacted",
-  "consultCalendars": [],
   "siteVisitCalendarKeywords": [
     "scott"
   ],
@@ -36,11 +35,6 @@
       "Closed"
     ],
     "qualified": [
-      "Booked Call",
-      "No Show",
-      "Scheduled With Scott",
-      "Scheduled w/ Scott",
-      "Scheduled with Scott",
       "Sent Quote",
       "Quote Sent",
       "Under Contract",
@@ -81,5 +75,48 @@
       "end": 18
     },
     "connectedCallSeconds": 60
+  },
+  "booking": {
+    "calendarKeywords": [
+      "lisa"
+    ],
+    "userNames": [
+      "lisa"
+    ],
+    "_note": "Booked call = any appointment on a calendar whose name contains a keyword OR assigned to a user whose name contains one of userNames."
+  },
+  "qualification": {
+    "_note": "Lisa marks Qualified in the PPC Launch Status overlay. Jered's hook writes it into GHL; any of these signals counts. Quote/contract/closed stages also count.",
+    "contactFields": [
+      "Qualified?"
+    ],
+    "opportunityFields": [
+      "Qualified"
+    ],
+    "yesValues": [
+      "yes",
+      "qualified",
+      "true",
+      "1"
+    ],
+    "noValues": [
+      "no",
+      "not qualified",
+      "unqualified",
+      "disqualified",
+      "false",
+      "0"
+    ],
+    "tags": [
+      "qualified",
+      "status:qualified",
+      "lead:qualified"
+    ],
+    "notTags": [
+      "not qualified",
+      "unqualified",
+      "status:not qualified",
+      "lead:not qualified"
+    ]
   }
 }
