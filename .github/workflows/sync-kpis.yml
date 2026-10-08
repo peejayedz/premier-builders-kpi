@@ -26,7 +26,7 @@ jobs:
       - name: Pull GHL and compute KPIs
         env:
           GHL_TOKEN: ${{ secrets.GHL_TOKEN }}
-          GHL_LOCATION_ID: ${{ vars.GHL_LOCATION_ID }}
+          GHL_LOCATION_ID: ${{ vars.GHL_LOCATION_ID|| 'my5ArG3gKkE3zHdJp821'  }}
           DASHBOARD_PASSPHRASE: ${{ secrets.DASHBOARD_PASSPHRASE }}
           DISPATCH_TOKEN: ${{ secrets.DISPATCH_TOKEN }}
         run: node scripts/sync.mjs
