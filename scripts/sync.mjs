@@ -8,7 +8,7 @@
 //      DISPATCH_TOKEN (optional; fine-grained PAT, Actions: write on this repo only, for the Refresh button)
 
 import { readFile, writeFile, mkdir, rm } from 'node:fs/promises';
-import { computeAll, encryptJSON } from './kpi-core.mjs';
+import { computeAll, encryptJSON, tzOffsetMin } from './kpi-core.mjs';
 
 const API = 'https://services.leadconnectorhq.com';
 const TOKEN = process.env.GHL_TOKEN;
@@ -130,6 +130,39 @@ if (appointments) {
   for (const a of appointments) { const c = contacts[a.contactId] || {}; Object.assign(a, { name: c.name || a.title || 'Unknown', email: c.email || null, phone: c.phone || null }); }
 }
 
+// ---------- Conversation messages (calls + inbound replies) ----------
+const diag = {};
+async function exportChannel(channel, maxPages = 100) {
+  const out = [];
+  let cursor;
+  for (let guard = 0; guard < maxPages; guard++) {
+    const q = new URLSearchParams({ locationId: LOC, channel, limit: '100' });
+    if (cursor) q.set('cursor', cursor);
+    const r = await ghl(`/conversations/messages/export?${q}`);
+    const batch = r.messages || [];
+    out.push(...batch);
+    if (guard === 0 && batch[0]) diag[channel + '_keys'] = Object.keys(batch[0]).sort().join(',');
+    const oldest = Math.min(...batch.map(m => Date.parse(m.dateAdded) || now));
+    if (!r.nextCursor || batch.length === 0 || oldest < since) break;
+    cursor = r.nextCursor;
+  }
+  const kept = out.filter(m => (Date.parse(m.dateAdded) || 0) >= since);
+  const tally = {};
+  for (const m of kept) { const k = `${norm(m.direction)}/${norm(m.meta?.call?.status || m.status)}`; tally[k] = (tally[k] || 0) + 1; }
+  diag[channel] = { count: kept.length, byDirectionStatus: tally };
+  return kept;
+}
+const OPT_OUT = /^\s*(stop|stopall|unsubscribe|cancel|end|quit)\s*[.!]?\s*$/i;
+const replies = [];
+for (const [channel, label] of [['SMS', 'SMS reply'], ['Email', 'Email reply'], ['FB', 'Facebook reply'], ['IG', 'Instagram reply'], ['GMB', 'Google message reply'], ['Live_Chat', 'Chat reply'], ['WhatsApp', 'WhatsApp reply']]) {
+  const msgs = await optional(`${channel} messages`, () => exportChannel(channel));
+  for (const m of msgs || []) {
+    if (norm(m.direction) !== 'inbound' || !m.contactId) continue;
+    if (OPT_OUT.test(String(m.body ?? m.message ?? ''))) continue;   // a STOP is not a conversation
+    replies.push({ contactId: m.contactId, at: iso(m.dateAdded), method: label });
+  }
+}
+
 // ---------- Calls ----------
 const calls = await optional('calls', async () => {
   const out = [];
@@ -142,7 +175,7 @@ const calls = await optional('calls', async () => {
     for (const m of batch) {
       const status = norm(m.meta?.call?.status || m.status);
       out.push({ id: m.id, contactId: m.contactId, direction: norm(m.direction), status, answered: ['completed', 'answered'].includes(status),
-        at: iso(m.dateAdded), assignedTo: m.userId || null, durationSec: m.meta?.call?.duration ?? null });
+        at: iso(m.dateAdded), assignedTo: m.userId || null, durationSec: Number(m.meta?.call?.duration ?? m.meta?.duration ?? m.duration ?? NaN) });
     }
     const oldest = Math.min(...batch.map(m => Date.parse(m.dateAdded) || now));
     if (!r.nextCursor || batch.length === 0 || oldest < since) break;
@@ -155,6 +188,55 @@ if (calls) {
   for (const k of calls) { const c = contacts[k.contactId] || {}; Object.assign(k, { name: c.name || 'Unknown caller', phone: c.phone || null }); }
 }
 
+// ---------- Speed to lead + first contact, computed from the logs ----------
+// Speed to lead = lead created -> first OUTBOUND call to that contact (answered or not).
+// First contact  = earliest of: inbound reply on any channel, a connected call of
+//                  >= 60 s (either direction), or an appointment booked after the lead came in.
+// A GHL custom field value, if a workflow ever fills it, takes priority.
+const STL = cfg.speedToLead || {};
+const businessMinutes = (fromMs, toMs) => {
+  const bh = STL.businessHours;
+  if (!STL.useBusinessHours || !bh) return Math.round((toMs - fromMs) / 60000);
+  let total = 0;
+  for (let day = Math.floor(fromMs / DAY) * DAY - DAY; day <= toMs + DAY; day += DAY) {
+    const off = tzOffsetMin(cfg.timezone, day + 12 * 3600e3) * 60000;
+    const localMidnight = Math.floor((day + off) / DAY) * DAY - off;
+    const dow = new Date(localMidnight + off).getUTCDay();
+    if (!bh.days.includes(dow)) continue;
+    const open = localMidnight + bh.start * 3600e3, close = localMidnight + bh.end * 3600e3;
+    const a = Math.max(open, fromMs), b = Math.min(close, toMs);
+    if (b > a) total += b - a;
+  }
+  return Math.round(total / 60000);
+};
+const byContact = (rows, key = 'contactId') => { const m = {}; for (const r of rows || []) (m[r[key]] ||= []).push(r); for (const l of Object.values(m)) l.sort((x, y) => Date.parse(x.at) - Date.parse(y.at)); return m; };
+const callsBy = byContact(calls), repliesBy = byContact(replies);
+const apptsBy = byContact((appointments || []).map(a => ({ ...a, at: a.bookedAt })));
+const minCallSec = STL.connectedCallSeconds ?? 60;
+let stlComputed = 0, contactComputed = 0;
+for (const l of leads) {
+  const t0 = Date.parse(l.createdAt);
+  const after = list => (list || []).filter(x => Date.parse(x.at) >= t0 - 60000);
+  const cl = after(callsBy[l.contactId]);
+  const firstOut = cl.find(k => k.direction === 'outbound');
+  const events = [];
+  for (const k of cl) {
+    const connected = k.answered && (Number.isNaN(k.durationSec) || k.durationSec >= minCallSec);
+    if (connected) events.push({ at: k.at, method: k.direction === 'inbound' ? 'Inbound call' : 'Answered call' });
+  }
+  for (const r of after(repliesBy[l.contactId])) events.push({ at: r.at, method: r.method });
+  for (const a of after(apptsBy[l.contactId])) events.push({ at: a.at, method: 'Booked appointment' });
+  events.sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
+  const first = events[0];
+  if (l.stlMin === null) {
+    if (firstOut) { l.stlMin = businessMinutes(t0, Date.parse(firstOut.at)); l.firstCallAt = firstOut.at; stlComputed++; }
+    else if (first && first.method === 'Inbound call') { l.stlMin = 0; l.firstCallAt = first.at; stlComputed++; }   // they called us and we answered
+  }
+  if (!l.firstContactedAt && first) { l.firstContactedAt = first.at; l.contactMethod = first.method; contactComputed++; }
+}
+console.log(`Derived speed-to-lead for ${stlComputed} leads and first contact for ${contactComputed} leads (of ${leads.length}).`);
+console.log('Message export diagnostics:', JSON.stringify(diag));
+
 // ---------- Compute + write ----------
 const records = {
   generatedAt: new Date(now).toISOString(), locationId: LOC, ghlBase: cfg.ghlAppBase, users, leads, appointments, calls,
@@ -166,7 +248,7 @@ const periods = computeAll(records, cfg, now);
 const out = {
   generatedAt: records.generatedAt, location: cfg.locationName, targets: cfg.targets,
   dataNotes: {
-    speedToLead: fieldIds.stl ? 'From the Speed to Lead (min) contact field' : 'Field not created yet in GHL',
+    speedToLead: `Lead created to first outbound call${STL.useBusinessHours ? ' (business hours only)' : ''}, from GHL call logs`,
     appointments: appointments ? 'Consult calendars, by appointment start date' : 'Calendar scope missing',
     calls: calls ? 'Inbound calls from conversation messages' : 'Conversation message scope missing',
   },
