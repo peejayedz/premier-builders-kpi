@@ -218,7 +218,7 @@ for (const l of leads) {
   const t0 = Date.parse(l.createdAt);
   const after = list => (list || []).filter(x => Date.parse(x.at) >= t0 - 60000);
   const cl = after(callsBy[l.contactId]);
-  const firstOut = cl.find(k => k.direction === 'outbound');
+  const firstOut = cl.find(k => k.direction === 'outbound' && Date.parse(k.at) - t0 <= (STL.maxDays ?? 7) * DAY);
   const events = [];
   for (const k of cl) {
     const connected = k.answered && (Number.isNaN(k.durationSec) || k.durationSec >= minCallSec);
