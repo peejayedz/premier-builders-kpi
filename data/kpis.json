@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-08T16:22:13.590Z",
+  "generatedAt": "2026-10-08T17:50:42.848Z",
   "location": "Premier Builders",
   "targets": {
     "speedToLeadMin": 5,
@@ -23,7 +23,7 @@
     "today": {
       "label": "Today",
       "from": 1791432000000,
-      "to": 1791476533590,
+      "to": 1791481842848,
       "current": {
         "totalLeads": 1,
         "speedToLeadAvgMin": 80,
@@ -268,8 +268,8 @@
     },
     "last7": {
       "label": "Last 7 days",
-      "from": 1790871733590,
-      "to": 1791476533590,
+      "from": 1790877042848,
+      "to": 1791481842848,
       "current": {
         "totalLeads": 8,
         "speedToLeadAvgMin": 27,
@@ -290,9 +290,9 @@
         "closedDeals": 0,
         "revenue": 0,
         "quoteToClosePct": null,
-        "missedCallPct": 40,
-        "missedCalls": 2,
-        "inboundCalls": 5,
+        "missedCallPct": 25,
+        "missedCalls": 1,
+        "inboundCalls": 4,
         "bySource": {
           "PPC Launch": 7,
           "Contact Form": 1
@@ -350,9 +350,9 @@
         "closedDeals": 0,
         "revenue": 0,
         "quoteToClosePct": null,
-        "missedCallPct": 62.5,
-        "missedCalls": 5,
-        "inboundCalls": 8,
+        "missedCallPct": 66.7,
+        "missedCalls": 6,
+        "inboundCalls": 9,
         "bySource": {
           "PPC Launch": 13,
           "Unknown": 1
@@ -393,8 +393,8 @@
     },
     "last30": {
       "label": "Last 30 days",
-      "from": 1788884533590,
-      "to": 1791476533590,
+      "from": 1788889842848,
+      "to": 1791481842848,
       "current": {
         "totalLeads": 30,
         "speedToLeadAvgMin": 174,
@@ -519,8 +519,8 @@
     },
     "last90": {
       "label": "Last 90 days",
-      "from": 1783700533590,
-      "to": 1791476533590,
+      "from": 1783705842848,
+      "to": 1791481842848,
       "current": {
         "totalLeads": 148,
         "speedToLeadAvgMin": 265,
@@ -646,7 +646,7 @@
     "thisMonth": {
       "label": "This month",
       "from": 1790827200000,
-      "to": 1791476533590,
+      "to": 1791481842848,
       "current": {
         "totalLeads": 9,
         "speedToLeadAvgMin": 53,
