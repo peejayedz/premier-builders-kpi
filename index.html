@@ -278,7 +278,7 @@ const DRILLS = {
     def: 'All new leads, with how far contact got. Filter by Contact status to see who still needs a call.',
     cols: [col.name, col.email, col.phone, col.created, { label: 'Contact status', key: 'contactStatus', type: 'badge', filter: 'contactStatus' }, { label: 'Method', key: 'contactMethod' }, col.assigned] },
   speed: { title: 'Speed to lead', unit: 'leads', list: L => L.speed,
-    def: 'Business-hours minutes (Mon–Sat 8am–6pm) from lead created to the first outbound call. Slowest first; leads nobody has called yet are at the top.',
+    def: 'Business-hours minutes (Mon–Fri 8am–6pm Indiana time) from lead created to the first outbound call. Slowest first; leads nobody has called yet are at the top.',
     cols: [col.name, col.created, { label: 'First response', key: '_firstResponse', type: 'dt' }, { label: 'Speed to lead', key: 'stlMin', type: 'stl', num: true }, { label: 'Method', key: 'contactMethod' }, col.assigned, col.phone],
     prep: r => ({ ...r, _firstResponse: r.firstCallAt || (r.stlMin === null || r.stlMin === undefined ? null : new Date(Date.parse(r.createdAt) + r.stlMin * 60000).toISOString()) }) },
   qualified: { title: 'Qualified leads', unit: 'leads', list: L => L.qualified,
