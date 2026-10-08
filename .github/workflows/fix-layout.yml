@@ -1,0 +1,27 @@
+name: One-off fix file layout
+on:
+  push:
+    paths: [".github/workflows/fix-layout.yml"]
+  workflow_dispatch: {}
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Move uploaded files to the right place
+        run: |
+          set -e
+          ls -R scripts
+          [ -f scripts/index.html ] && git mv -f scripts/index.html index.html
+          [ -f scripts/config.json ] && git mv -f scripts/config.json config.json
+          [ -f scripts/scripts/sync.mjs ] && git mv -f scripts/scripts/sync.mjs scripts/sync.mjs
+          [ -f scripts/scripts/kpi-core.mjs ] && git mv -f scripts/scripts/kpi-core.mjs scripts/kpi-core.mjs
+          [ -f scripts/README.md ] && git rm -q scripts/README.md
+          for f in scripts/scripts/*; do [ -e "$f" ] && git rm -rq "$f"; done
+          git status --short
+          git config user.name "kpi-sync-bot"
+          git config user.email "kpi-sync-bot@users.noreply.github.com"
+          git commit -m "Move uploaded files to repo root and scripts/" || echo "nothing to move"
+          git push
