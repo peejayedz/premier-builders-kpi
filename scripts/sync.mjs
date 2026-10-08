@@ -17,6 +17,7 @@ const PASS = process.env.DASHBOARD_PASSPHRASE || '';
 if (!TOKEN || !LOC) { console.error('Missing GHL_TOKEN or GHL_LOCATION_ID'); process.exit(1); }
 
 const cfg = JSON.parse(await readFile(new URL('../config.json', import.meta.url), 'utf8'));
+const QUAL = cfg.qualification || {};
 const DAY = 864e5;
 const now = Date.now();
 const since = now - cfg.lookbackDays * DAY;
@@ -69,8 +70,17 @@ const recentOpps = opps.filter(o => (Date.parse(o.createdAt) || 0) >= since);
 const fieldIds = (await optional('customFields', async () => {
   const { customFields = [] } = await ghl(`/locations/${LOC}/customFields?model=contact`);
   const find = name => customFields.find(f => norm(f.name) === norm(name))?.id || null;
-  return { stl: find(cfg.fields.speedToLead), firstContacted: find(cfg.fields.firstContacted), method: find(cfg.fields.contactMethod) };
+  return {
+    stl: find(cfg.fields.speedToLead), firstContacted: find(cfg.fields.firstContacted), method: find(cfg.fields.contactMethod),
+    qual: (QUAL.contactFields || []).map(find).filter(Boolean),
+  };
 })) || {};
+const oppQualIds = (await optional('opportunity customFields', async () => {
+  const { customFields = [] } = await ghl(`/locations/${LOC}/customFields?model=opportunity`);
+  const names = (QUAL.opportunityFields || []).map(norm);
+  return customFields.filter(f => names.includes(norm(f.name))).map(f => f.id);
+})) || [];
+const fieldVal = f => f?.fieldValueString ?? f?.fieldValue ?? f?.value ?? null;
 
 const contacts = {};
 async function loadContacts(ids) {
@@ -85,6 +95,7 @@ async function loadContacts(ids) {
         name: c.contactName || [c.firstName, c.lastName].filter(Boolean).join(' ') || c.companyName || c.phone || 'Unnamed',
         email: c.email || null, phone: c.phone || null, tags: c.tags || [], source: c.source || null,
         stl: cf(fieldIds.stl), firstContacted: cf(fieldIds.firstContacted), method: cf(fieldIds.method),
+        qualValues: (fieldIds.qual || []).map(cf).filter(v => v !== null && v !== ''),
       };
     }));
     await sleep(250);
@@ -104,6 +115,7 @@ const leads = recentOpps.map(o => {
     status: o.status, value: Number(o.monetaryValue) || 0,
     stageChangedAt: iso(o.lastStageChangeAt || o.updatedAt), statusChangedAt: iso(o.lastStatusChangeAt || o.updatedAt),
     tags: c.tags || o.contact?.tags || [],
+    qualValues: [...(c.qualValues || []), ...(o.customFields || []).filter(f => oppQualIds.includes(f.id)).map(fieldVal)].filter(v => v !== null && v !== '').map(String),
     stlMin: Number.isNaN(stl) ? null : stl, firstContactedAt: c.firstContacted ? iso(c.firstContacted) : null, contactMethod: c.method || null,
   };
 });
@@ -111,14 +123,15 @@ const leads = recentOpps.map(o => {
 // ---------- Appointments ----------
 const appointments = await optional('appointments', async () => {
   const { calendars = [] } = await ghl(`/calendars/?locationId=${LOC}`);
-  const isSite = c => cfg.siteVisitCalendarKeywords.some(k => norm(c.name).includes(norm(k)));
-  const isConsult = c => (cfg.consultCalendars.length ? cfg.consultCalendars.map(norm).includes(norm(c.name)) : !isSite(c));
+  const BK = cfg.booking || {};
+  const lisaIds = Object.entries(users || {}).filter(([, n]) => (BK.userNames || []).some(k => norm(n).includes(norm(k)))).map(([id]) => id);
+  const calIsLisa = c => (BK.calendarKeywords || []).some(k => norm(c.name).includes(norm(k)));
   const out = [];
   for (const cal of calendars) {
     const q = new URLSearchParams({ locationId: LOC, calendarId: cal.id, startTime: String(since), endTime: String(now + 60 * DAY) });
     const { events = [] } = await ghl(`/calendars/events?${q}`);
     for (const e of events) out.push({
-      id: e.id, contactId: e.contactId, calendar: cal.name, consult: isConsult(cal),
+      id: e.id, contactId: e.contactId, calendar: cal.name, consult: calIsLisa(cal) || lisaIds.includes(e.assignedUserId),
       assignedTo: e.assignedUserId || null, startTime: iso(e.startTime), bookedAt: iso(e.dateAdded), status: e.appointmentStatus || e.status || '—',
       title: e.title || null,
     });
@@ -249,7 +262,7 @@ const out = {
   generatedAt: records.generatedAt, location: cfg.locationName, targets: cfg.targets,
   dataNotes: {
     speedToLead: `Lead created to first outbound call${STL.useBusinessHours ? ' (business hours only)' : ''}, from GHL call logs`,
-    appointments: appointments ? 'Consult calendars, by appointment start date' : 'Calendar scope missing',
+    appointments: appointments ? 'Lisa\'s calendars / appointments assigned to Lisa, by appointment start date' : 'Calendar scope missing',
     calls: calls ? 'Inbound calls from conversation messages' : 'Conversation message scope missing',
   },
   detailsAvailable: !!PASS,
