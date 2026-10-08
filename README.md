@@ -53,13 +53,14 @@ Create the token in the Premier Builders sub-account: Settings → Private Integ
 | `users.readonly` | "Assigned to" names |
 | `locations.readonly` | Location lookup |
 | `locations/customFields.readonly` | Finding the custom field ids |
-| `calendars.readonly` | Calendar names (consult vs. site visit) |
+| `calendars.readonly` | Calendar names (which ones are Lisa's) |
 | `calendars/events.readonly` | Booked / showed appointments |
 | `conversations.readonly` | Call log |
 | `conversations/message.readonly` | Call direction and status, for missed calls and callbacks |
 
 ## Notes on specific metrics
 
+- **Quotes:** quotes are sent outside GHL (Lisa's email). A quote counts when the card moves to **Sent Quote**. Quote $ is the opportunity value.
 - **Leads, contacted, qualified, quotes, contracts, closed, revenue:** one row per opportunity created in the selected dates. "Date qualified", "Quote date" and "Contract date" are the date the card entered its current stage, because GHL doesn't keep earlier stage dates.
 - **Booked calls / showed:** one row per appointment, by appointment date. The modal also shows the unique-people count.
 - **Missed calls:** one row per missed inbound call (events, not people). It shows whether and when it was called back.
@@ -69,5 +70,6 @@ Create the token in the Premier Builders sub-account: Settings → Private Integ
 
 - `targets`: the goals.
 - `stages`: which stage names count as contacted / qualified / quote / contract / closed. It covers both the current and the planned stage names.
-- `consultCalendars` / `siteVisitCalendarKeywords`: which calendars count as booked calls.
+- `booking`: a booked call is any appointment on a calendar whose name contains `calendarKeywords` ("lisa") or assigned to a user matching `userNames`.
+- `qualification`: Lisa marks leads Qualified in the PPC Launch **Status** overlay. Jered's hook copies that into GHL (tag, the contact "Qualified?" field or the opportunity "Qualified" field), and any of those counts. Sent Quote or a later stage also counts. "Not qualified" overrides.
 - `lookbackDays`: how far back custom dates can go (400).

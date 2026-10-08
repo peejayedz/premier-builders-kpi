@@ -126,6 +126,17 @@
   .pwfield { display: grid; gap: 6px; margin: 14px 0 8px; }
   .pwfield input[type=password] { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 9px 10px; }
   .muted { color: var(--ink-3); }
+  /* section accents: thin colored bar beside each heading, neutral hairline after it */
+  :root { --sec-1: #2066bd; --sec-2: #6352c9; --sec-3: #b84a1b; --sec-4: #1b7a33; --sec-5: #0f7378; --sec-6: #8f5f00; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --sec-1: #4a94ec; --sec-2: #9a8ff0; --sec-3: #ef7a45; --sec-4: #3cba62; --sec-5: #2bb5ba; --sec-6: #e5ad2e; } }
+  :root[data-theme="dark"] { --sec-1: #4a94ec; --sec-2: #9a8ff0; --sec-3: #ef7a45; --sec-4: #3cba62; --sec-5: #2bb5ba; --sec-6: #e5ad2e; }
+  .row { margin-top: 28px; }
+  .row h2 { display: flex; align-items: center; gap: 10px; color: var(--ink); font-size: 12px; margin-bottom: 10px; }
+  .row h2::before { content: ""; width: 4px; height: 16px; border-radius: 2px; background: var(--sec, var(--ink-3)); flex: none; }
+  .row h2::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, color-mix(in srgb, var(--sec, var(--border)) 45%, transparent), var(--border) 30%, transparent); }
+  .row h2 .num { color: var(--sec); font-variant-numeric: tabular-nums; }
+  .sec-1 { --sec: var(--sec-1); } .sec-2 { --sec: var(--sec-2); } .sec-3 { --sec: var(--sec-3); }
+  .sec-4 { --sec: var(--sec-4); } .sec-5 { --sec: var(--sec-5); } .sec-6 { --sec: var(--sec-6); }
   /* executive summary */
   .exec { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-top: 12px; }
   .exec h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-2); margin: 0 0 10px; font-weight: 600; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
@@ -271,12 +282,12 @@ const DRILLS = {
     cols: [col.name, col.created, { label: 'First response', key: '_firstResponse', type: 'dt' }, { label: 'Speed to lead', key: 'stlMin', type: 'stl', num: true }, { label: 'Method', key: 'contactMethod' }, col.assigned, col.phone],
     prep: r => ({ ...r, _firstResponse: r.firstCallAt || (r.stlMin === null || r.stlMin === undefined ? null : new Date(Date.parse(r.createdAt) + r.stlMin * 60000).toISOString()) }) },
   qualified: { title: 'Qualified leads', unit: 'leads', list: L => L.qualified,
-    def: 'New leads that reached Booked Call or a later stage (or Won).',
+    def: 'New leads Lisa marked Qualified (Status overlay), plus any lead that reached Sent Quote or later (or Won). Leads she marked Not Qualified are excluded.',
     cols: [col.name, col.email, col.phone, { label: 'Qualification', key: '_qual', type: 'badge' }, col.source, col.assigned, { label: 'Date qualified*', key: 'stageChangedAt', type: 'dt' }, col.stage],
-    prep: r => ({ ...r, _qual: r.won ? 'Won' : (/scott|quote|contract/i.test(r.stage) ? 'Site visit or later' : 'Booked call') }),
+    prep: r => ({ ...r, _qual: r.qualifiedBy || '—' }),
     foot: '* Date the card entered its current stage. GHL keeps no history of earlier stage dates.' },
   booked: { title: 'Booked calls', unit: 'appointments', list: L => L.booked,
-    def: 'Consult-call appointments starting in the selected dates, excluding cancelled and invalid. One row per appointment.',
+    def: 'Any appointment with Lisa (her calendars or assigned to her) starting in the selected dates, excluding cancelled and invalid. One row per appointment.',
     cols: [col.name, col.email, col.phone, { label: 'Appointment', key: 'startTime', type: 'dt' }, { label: 'Type', key: 'calendar', filter: 'calendar' }, col.assigned, { label: 'Booked on', key: 'bookedAt', type: 'dt' }, { label: 'Status', key: 'status', type: 'badge', filter: 'status' }] },
   showed: { title: 'Showed calls', unit: 'appointments', list: L => L.showed,
     def: 'Booked calls in the selected dates marked Showed in the calendar.',
@@ -383,13 +394,14 @@ function render() {
   const ts = new Date((records || pub).generatedAt);
   $('updated').textContent = `Data as of ${ts.toLocaleString('en-US', { timeZone: TZ(), dateStyle: 'medium', timeStyle: 'short' })} · syncs from GoHighLevel every 30 min`;
   let html = '';
-  for (const [title, tiles] of ROWS) html += `<section class="row"><h2>${title}</h2><div class="tiles">${tiles.map(t => tile(...t)).join('')}</div></section>`;
+  const head = (i, title) => `<h2><span><span class="num">${i}</span> · ${title}</span></h2>`;
+  ROWS.forEach(([title, tiles], i) => { html += `<section class="row sec-${i + 1}">${head(i + 1, title.replace(/^\d+ · /, ''))}<div class="tiles">${tiles.map(t => tile(...t)).join('')}</div></section>`; });
   const sources = Object.entries(cur.bySource || {}).sort((a, b) => b[1] - a[1]);
-  html += `<section class="row"><h2>5 · Where leads drop off</h2><div class="panels">
+  html += `<section class="row sec-5">${head(5, 'Where leads drop off')}<div class="panels">
     <div class="panel"><h3>Funnel · ${esc(range.label)}</h3>${barList(cur.funnel, cur.totalLeads, 'funnel')}</div>
     <div class="panel"><h3>Leads by source</h3>${sources.length ? barList(sources, cur.totalLeads, 'source') : '<div class="sub">No leads in these dates.</div>'}</div>
   </div></section>`;
-  html += `<section class="row"><h2>6 · Phones & appointments</h2><div class="tiles">
+  html += `<section class="row sec-6">${head(6, 'Phones & appointments')}<div class="tiles">
     ${tile('missedCallPct', 'Missed call rate (inbound)', 'pct', 'missedCallPct', true, 'missedRate')}
     ${tile('bookedCalls', 'Booked calls', 'n', null, false, 'booked')}
     ${tile('showed', 'Showed', 'n', null, false, 'showed')}
@@ -435,7 +447,7 @@ const STEP_ACTION = {
 };
 function execSummary() {
   const t = pub.targets, can = !!(records || pub.detailsAvailable);
-  const link = (text, drill) => can && drill ? `<button class="lnk" data-drill="${esc(drill)}">${text}</button>` : text;
+  const link = (text, drill) => can && drill ? `<a class="lnk" href="#" role="button" data-drill="${esc(drill)}">${text}</a>` : text;
   const v = (k, u) => u === 'min' ? `${cur[k]} min` : `${cur[k]}%`;
   const g = (k, u, low) => (low ? '≤ ' : '') + (u === 'min' ? `${t[k]} min` : `${t[k]}%`);
   const n = cur.totalLeads;
@@ -682,7 +694,7 @@ async function reloadAll() {
 // ---------- events ----------
 document.addEventListener('click', e => {
   const t = e.target;
-  const drill = t.closest('[data-drill]'); if (drill) { openDrill(drill.dataset.drill); return; }
+  const drill = t.closest('[data-drill]'); if (drill) { e.preventDefault(); openDrill(drill.dataset.drill); return; }
   if (t.closest('[data-close]') || t === $('scrim')) { closeModal(); return; }
   const th = t.closest('th[data-sort]'); if (th && view) { const k = th.dataset.sort; view.sortDir = view.sortKey === k ? -view.sortDir : (/(at|At|value|Min|stl)$/.test(k) ? -1 : 1); view.sortKey = k; renderModal(); return; }
   const pg = t.closest('[data-page]'); if (pg && view) { view.page += Number(pg.dataset.page); renderModal(); return; }
