@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-09T21:51:29.847Z",
+  "generatedAt": "2026-10-10T01:39:45.901Z",
   "location": "Premier Builders",
   "targets": {
     "speedToLeadMin": 5,
@@ -24,7 +24,7 @@
     "today": {
       "label": "Today",
       "from": 1791518400000,
-      "to": 1791582689847,
+      "to": 1791596385901,
       "current": {
         "totalLeads": 0,
         "speedToLeadAvgMin": null,
@@ -295,14 +295,14 @@
     },
     "last7": {
       "label": "Last 7 days",
-      "from": 1790977889847,
-      "to": 1791582689847,
+      "from": 1790991585901,
+      "to": 1791596385901,
       "current": {
-        "totalLeads": 8,
-        "speedToLeadAvgMin": 29,
-        "calledWithin5Pct": 42.9,
+        "totalLeads": 7,
+        "speedToLeadAvgMin": 34,
+        "calledWithin5Pct": 33.3,
         "contacted": 2,
-        "contactRatePct": 25,
+        "contactRatePct": 28.6,
         "bookedCalls": 0,
         "showed": 0,
         "leadToBookedPct": 0,
@@ -328,12 +328,12 @@
         "aiLeads": 0,
         "aiCallbacks": null,
         "bySource": {
-          "PPC Launch": 8
+          "PPC Launch": 7
         },
         "funnel": [
           [
             "Leads",
-            8,
+            7,
             "newLeads"
           ],
           [
@@ -364,14 +364,14 @@
         ]
       },
       "previous": {
-        "totalLeads": 13,
+        "totalLeads": 12,
         "speedToLeadAvgMin": 169,
         "calledWithin5Pct": 40,
         "contacted": 8,
-        "contactRatePct": 61.5,
+        "contactRatePct": 66.7,
         "bookedCalls": 3,
         "showed": 0,
-        "leadToBookedPct": 23.1,
+        "leadToBookedPct": 25,
         "bookedToShowPct": 0,
         "leadToShowPct": 0,
         "qualified": 1,
@@ -394,14 +394,14 @@
         "aiLeads": 1,
         "aiCallbacks": null,
         "bySource": {
+          "PPC Launch": 10,
           "Contact Form": 1,
-          "PPC Launch": 11,
           "Unknown": 1
         },
         "funnel": [
           [
             "Leads",
-            13,
+            12,
             "newLeads"
           ],
           [
@@ -434,8 +434,8 @@
     },
     "last30": {
       "label": "Last 30 days",
-      "from": 1788990689847,
-      "to": 1791582689847,
+      "from": 1789004385901,
+      "to": 1791596385901,
       "current": {
         "totalLeads": 31,
         "speedToLeadAvgMin": 169,
@@ -506,14 +506,14 @@
         ]
       },
       "previous": {
-        "totalLeads": 38,
+        "totalLeads": 37,
         "speedToLeadAvgMin": null,
         "calledWithin5Pct": null,
         "contacted": 25,
-        "contactRatePct": 65.8,
+        "contactRatePct": 67.6,
         "bookedCalls": 19,
         "showed": 0,
-        "leadToBookedPct": 50,
+        "leadToBookedPct": 51.4,
         "bookedToShowPct": 0,
         "leadToShowPct": 0,
         "qualified": 5,
@@ -536,12 +536,12 @@
         "aiLeads": 0,
         "aiCallbacks": null,
         "bySource": {
-          "Contact Form": 38
+          "Contact Form": 37
         },
         "funnel": [
           [
             "Leads",
-            38,
+            37,
             "newLeads"
           ],
           [
@@ -574,8 +574,8 @@
     },
     "last90": {
       "label": "Last 90 days",
-      "from": 1783806689847,
-      "to": 1791582689847,
+      "from": 1783820385901,
+      "to": 1791596385901,
       "current": {
         "totalLeads": 146,
         "speedToLeadAvgMin": 257,
@@ -715,7 +715,7 @@
     "thisMonth": {
       "label": "This month",
       "from": 1790827200000,
-      "to": 1791582689847,
+      "to": 1791596385901,
       "current": {
         "totalLeads": 10,
         "speedToLeadAvgMin": 51,
