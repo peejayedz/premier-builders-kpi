@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-11T23:35:33.728Z",
+  "generatedAt": "2026-10-12T02:38:01.479Z",
   "location": "Premier Builders",
   "targets": {
     "speedToLeadMin": 5,
@@ -24,7 +24,7 @@
     "today": {
       "label": "Today",
       "from": 1791691200000,
-      "to": 1791761733728,
+      "to": 1791772681479,
       "current": {
         "totalLeads": 3,
         "speedToLeadAvgMin": 0,
@@ -297,8 +297,8 @@
     },
     "last7": {
       "label": "Last 7 days",
-      "from": 1791156933728,
-      "to": 1791761733728,
+      "from": 1791167881479,
+      "to": 1791772681479,
       "current": {
         "totalLeads": 11,
         "speedToLeadAvgMin": 26,
@@ -437,8 +437,8 @@
     },
     "last30": {
       "label": "Last 30 days",
-      "from": 1789169733728,
-      "to": 1791761733728,
+      "from": 1789180681479,
+      "to": 1791772681479,
       "current": {
         "totalLeads": 34,
         "speedToLeadAvgMin": 98,
@@ -509,20 +509,20 @@
         ]
       },
       "previous": {
-        "totalLeads": 34,
+        "totalLeads": 32,
         "speedToLeadAvgMin": 1328,
         "calledWithin5Pct": 0,
-        "contacted": 21,
-        "contactRatePct": 61.8,
+        "contacted": 19,
+        "contactRatePct": 59.4,
         "bookedCalls": 19,
         "showed": 0,
-        "leadToBookedPct": 55.9,
+        "leadToBookedPct": 59.4,
         "bookedToShowPct": 0,
         "leadToShowPct": 0,
         "qualified": 6,
         "quotesSent": 4,
         "quoteValue": 0,
-        "contactToQuotePct": 19,
+        "contactToQuotePct": 21.1,
         "underContract": 0,
         "quoteToContractPct": 0,
         "closedDeals": 0,
@@ -539,17 +539,17 @@
         "aiLeads": 0,
         "aiCallbacks": null,
         "bySource": {
-          "Contact Form": 34
+          "Contact Form": 32
         },
         "funnel": [
           [
             "Leads",
-            34,
+            32,
             "newLeads"
           ],
           [
             "Contacted",
-            21,
+            19,
             "contacted"
           ],
           [
@@ -577,8 +577,8 @@
     },
     "last90": {
       "label": "Last 90 days",
-      "from": 1783985733728,
-      "to": 1791761733728,
+      "from": 1783996681479,
+      "to": 1791772681479,
       "current": {
         "totalLeads": 148,
         "speedToLeadAvgMin": 224,
@@ -718,7 +718,7 @@
     "thisMonth": {
       "label": "This month",
       "from": 1790827200000,
-      "to": 1791761733728,
+      "to": 1791772681479,
       "current": {
         "totalLeads": 16,
         "speedToLeadAvgMin": 34,
