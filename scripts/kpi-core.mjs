@@ -8,24 +8,39 @@ const inRange = (iso, from, to) => { const t = Date.parse(iso); return t >= from
 const pct = (a, b) => (b > 0 ? Math.round((a / b) * 1000) / 10 : null);
 const sum = rows => rows.reduce((t, r) => t + (Number(r.value) || 0), 0);
 
-export const PERIOD_KEYS = ['today', 'yesterday', 'last7', 'last30', 'last90', 'thisMonth', 'lastMonth'];
+export const PERIOD_KEYS = ['today', 'yesterday', 'thisWeek', 'lastWeek', 'last7', 'last30', 'last90', 'thisMonth', 'lastMonth', 'thisQuarter', 'lastQuarter'];
 
 // Calendar boundaries are computed in the business time zone offset given
 // (minutes east of UTC, e.g. -240 for EDT) so "Today" means Indiana's today.
-export function periodRange(key, now, tzOffsetMin = 0) {
+export function periodRange(key, now, tzOffsetMin = 0, timeZone = null) {
   const off = tzOffsetMin * 60000;
   const local = new Date(now + off);
-  const dayStart = Date.UTC(local.getUTCFullYear(), local.getUTCMonth(), local.getUTCDate()) - off;
-  const month = (y, m) => Date.UTC(y, m, 1) - off;
-  const y = local.getUTCFullYear(), m = local.getUTCMonth();
+  const y = local.getUTCFullYear(), m = local.getUTCMonth(), dd = local.getUTCDate();
+  // Local midnight of a calendar date. With a time zone, each boundary uses its own UTC offset (daylight saving safe).
+  const at = (yy, mo, d) => {
+    let t = Date.UTC(yy, mo, d) - off;
+    if (timeZone) t = Date.UTC(yy, mo, d) - tzOffsetMinFn(timeZone, t) * 60000;
+    return t;
+  };
+  const dayStart = at(y, m, dd);
+  const dow = (local.getUTCDay() + 6) % 7;                 // 0 = Monday; weeks run Monday–Sunday
+  const weekStart = at(y, m, dd - dow);
+  const qm = m - (m % 3);                                  // first month of this quarter
+  const sinceMidnight = now - dayStart;
+  const sameTime = (yy, mo, d, cap) => Math.min(at(yy, mo, d) + sinceMidnight, cap);   // same clock time on an earlier date
+  // "This …" periods are compared with the same elapsed time of the previous period (a fair, partial-period comparison).
   switch (key) {
-    case 'today': return { key, label: 'Today', from: dayStart, to: now, prevFrom: dayStart - DAY, prevTo: dayStart };
-    case 'yesterday': return { key, label: 'Yesterday', from: dayStart - DAY, to: dayStart, prevFrom: dayStart - 2 * DAY, prevTo: dayStart - DAY };
+    case 'today': return { key, label: 'Today', from: dayStart, to: now, prevFrom: at(y, m, dd - 1), prevTo: sameTime(y, m, dd - 1, dayStart) };
+    case 'yesterday': return { key, label: 'Yesterday', from: at(y, m, dd - 1), to: dayStart, prevFrom: at(y, m, dd - 2), prevTo: at(y, m, dd - 1) };
+    case 'thisWeek': return { key, label: 'This week', from: weekStart, to: now, prevFrom: at(y, m, dd - dow - 7), prevTo: sameTime(y, m, dd - 7, weekStart) };
+    case 'lastWeek': return { key, label: 'Last week', from: at(y, m, dd - dow - 7), to: weekStart, prevFrom: at(y, m, dd - dow - 14), prevTo: at(y, m, dd - dow - 7) };
     case 'last7': return { key, label: 'Last 7 days', from: now - 7 * DAY, to: now, prevFrom: now - 14 * DAY, prevTo: now - 7 * DAY };
     case 'last30': return { key, label: 'Last 30 days', from: now - 30 * DAY, to: now, prevFrom: now - 60 * DAY, prevTo: now - 30 * DAY };
     case 'last90': return { key, label: 'Last 90 days', from: now - 90 * DAY, to: now, prevFrom: now - 180 * DAY, prevTo: now - 90 * DAY };
-    case 'thisMonth': { const s = month(y, m), p = month(y, m - 1); return { key, label: 'This month', from: s, to: now, prevFrom: p, prevTo: p + (now - s) }; }
-    case 'lastMonth': { const s = month(y, m - 1), e = month(y, m), p = month(y, m - 2); return { key, label: 'Last month', from: s, to: e, prevFrom: p, prevTo: s }; }
+    case 'thisMonth': { const s = at(y, m, 1), p = at(y, m - 1, 1); return { key, label: 'This month', from: s, to: now, prevFrom: p, prevTo: sameTime(y, m - 1, Math.min(dd, new Date(Date.UTC(y, m, 0)).getUTCDate()), s) }; }
+    case 'lastMonth': { const s = at(y, m - 1, 1), e = at(y, m, 1), p = at(y, m - 2, 1); return { key, label: 'Last month', from: s, to: e, prevFrom: p, prevTo: s }; }
+    case 'thisQuarter': { const s = at(y, qm, 1), p = at(y, qm - 3, 1); return { key, label: 'This quarter', from: s, to: now, prevFrom: p, prevTo: sameTime(y, m - 3, Math.min(dd, new Date(Date.UTC(y, m - 2, 0)).getUTCDate()), s) }; }
+    case 'lastQuarter': { const s = at(y, qm - 3, 1), e = at(y, qm, 1), p = at(y, qm - 6, 1); return { key, label: 'Last quarter', from: s, to: e, prevFrom: p, prevTo: s }; }
     default: throw new Error('Unknown period ' + key);
   }
 }
@@ -180,16 +195,49 @@ export function summarize(L) {
   };
 }
 
+// What the selected range is compared against.
+//   prev   = the previous period of the same length; for "This …" periods, up to the same point in time (default)
+//   full   = the whole previous period (only differs for Today / This week / This month / This quarter)
+//   custom = two dates picked by the user
+//   off    = no comparison
+const FULL_PREV = { today: 'yesterday', thisWeek: 'lastWeek', thisMonth: 'lastMonth', thisQuarter: 'lastQuarter' };
+export function compareRange(range, mode, now, tzOffsetMin = 0, custom = null, timeZone = null) {
+  if (mode === 'off') return null;
+  if (mode === 'custom' && custom?.from && custom?.to) { const r = customRange(custom.from, custom.to, now, tzOffsetMin, timeZone); return { mode, from: r.from, to: r.to }; }
+  if (mode === 'full' && FULL_PREV[range.key]) { const k = FULL_PREV[range.key], r = periodRange(k, now, tzOffsetMin, timeZone); return { mode, from: r.from, to: r.to, periodKey: k }; }
+  return { mode: 'prev', from: range.prevFrom, to: range.prevTo };
+}
+export const hasFullPrev = key => !!FULL_PREV[key];
+
+// Local-midnight day boundaries covering [from, to) in an IANA zone (handles daylight saving).
+export function dayStarts(from, to, timeZone) {
+  const out = [];
+  const startOf = t => { const l = new Date(t + tzOffsetMin(timeZone, t) * 60000); const base = Date.UTC(l.getUTCFullYear(), l.getUTCMonth(), l.getUTCDate()); let g = base - tzOffsetMin(timeZone, t) * 60000; return base - tzOffsetMin(timeZone, g) * 60000; };
+  for (let d = startOf(from), guard = 0; d < to && guard < 400; guard++) {
+    out.push(d);
+    let next = startOf(d + DAY + 3 * 3600e3);       // jump past the next midnight, then snap back to it
+    if (next <= d) next = d + DAY;
+    d = next;
+  }
+  return out;
+}
+
 // Custom range from two calendar dates 'YYYY-MM-DD' (inclusive) in the business zone.
-export function customRange(fromDate, toDate, now, tzOffsetMin = 0) {
+export function customRange(fromDate, toDate, now, tzOffsetMin = 0, timeZone = null) {
   const off = tzOffsetMin * 60000;
-  const d = s => { const [y, m, dd] = s.split('-').map(Number); return Date.UTC(y, m - 1, dd) - off; };
-  const from = d(fromDate), to = Math.min(d(toDate) + DAY, now), len = to - from;
-  const fmt = s => new Date(d(s) + off).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
-  return { key: 'custom', label: fromDate === toDate ? fmt(fromDate) : `${fmt(fromDate)} – ${fmt(toDate)}`, from, to, prevFrom: from - len, prevTo: from };
+  const d = s => { const [y, m, dd] = s.split('-').map(Number); let t = Date.UTC(y, m - 1, dd) - off; if (timeZone) t = Date.UTC(y, m - 1, dd) - tzOffsetMinFn(timeZone, t) * 60000; return t; };
+  const [ty, tm, td] = toDate.split('-').map(Number);
+  const next = new Date(Date.UTC(ty, tm - 1, td + 1)).toISOString().slice(0, 10);
+  const from = d(fromDate), to = Math.min(d(next), now);
+  const [fy, fm, fd] = fromDate.split('-').map(Number);
+  const nDays = Math.round((Date.UTC(ty, tm - 1, td) - Date.UTC(fy, fm - 1, fd)) / DAY) + 1;
+  const prevStart = new Date(Date.UTC(fy, fm - 1, fd - nDays)).toISOString().slice(0, 10);
+  const fmt = s => new Date(s + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+  return { key: 'custom', label: fromDate === toDate ? fmt(fromDate) : `${fmt(fromDate)} – ${fmt(toDate)}`, from, to, prevFrom: d(prevStart), prevTo: from };
 }
 
 // Minutes east of UTC for an IANA zone at a moment (handles daylight saving).
+function tzOffsetMinFn(timeZone, now) { return tzOffsetMin(timeZone, now); }
 export function tzOffsetMin(timeZone, now) {
   const parts = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone, hourCycle: 'h23',
     year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' })
@@ -202,7 +250,7 @@ export function computeAll(records, cfg, now) {
   const periods = {};
   const off = tzOffsetMin(cfg.timezone || 'UTC', now);
   for (const key of PERIOD_KEYS) {
-    const r = periodRange(key, now, off);
+    const r = periodRange(key, now, off, cfg.timezone || null);
     periods[key] = {
       label: r.label, from: r.from, to: r.to,
       current: summarize(buildLists(records, cfg, r.from, r.to)),
