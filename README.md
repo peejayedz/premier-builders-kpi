@@ -64,6 +64,7 @@ Create the token in the Premier Builders sub-account: Settings → Private Integ
 - **Quotes:** quotes are sent outside GHL (Lisa's email). A quote counts when the card moves to **Sent Quote**. Quote $ is the opportunity value.
 - **Leads, contacted, qualified, quotes, contracts, closed, revenue:** one row per opportunity created in the selected dates. "Date qualified", "Quote date" and "Contract date" are the date the card entered its current stage, because GHL doesn't keep earlier stage dates.
 - **Booked calls / showed:** one row per appointment, by appointment date. The modal also shows the unique-people count.
+- **Booked call → no-show:** past booked calls (Lisa) that were a no-show ÷ booked calls that have already happened. GHL appointments are rarely marked, so a call also counts as a no-show when the lead's card is in the **No Show** stage (only the lead's most recent booked call). Goal ≤ 40% (the flip side of the 60% show goal). Marking appointments No-show/Showed in the calendar makes this exact.
 - **Missed calls:** one row per missed inbound call (events, not people). It shows whether and when it was called back.
 - **Speed to lead / contact method / first contacted date:** show "Not called yet" or "—" until the GHL workflows that fill those fields are live.
 

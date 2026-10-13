@@ -8,6 +8,7 @@
     "contactRatePct": 80,
     "leadToBookedPct": 65,
     "bookedToShowPct": 60,
+    "noShowPct": 40,
     "leadToShowPct": 39,
     "contactToQuotePct": 40,
     "quoteToContractPct": 40,
@@ -52,6 +53,9 @@
     ],
     "closed": [
       "Closed"
+    ],
+    "noShow": [
+      "No Show"
     ]
   },
   "ghlAppBase": "https://app.unleashed-leads.com",

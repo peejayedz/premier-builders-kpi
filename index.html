@@ -408,6 +408,9 @@ const DRILLS = {
   showed: { title: 'Showed calls', unit: 'appointments', list: L => L.showed,
     def: 'Booked calls in the selected dates marked Showed in the calendar.',
     cols: [col.name, col.email, col.phone, { label: 'Appointment', key: 'startTime', type: 'dt' }, col.assigned, { label: 'Outcome', key: 'status', type: 'badge' }] },
+  noShows: { title: 'No-shows', unit: 'appointments', list: L => L.noShows || [],
+    def: 'Booked calls in the selected dates whose time has passed and that were a no-show: the appointment is marked No-show, or the lead card is now in the No Show stage (counted on the lead\'s most recent booked call only). Future calls are not counted.',
+    cols: [col.name, col.email, col.phone, { label: 'Appointment', key: 'startTime', type: 'dt' }, { label: 'How we know', key: 'noShowBy', type: 'badge', filter: 'noShowBy' }, { label: 'Pipeline stage now', key: 'leadStage', filter: 'leadStage' }, col.assigned, { label: 'Booked on', key: 'bookedAt', type: 'dt' }] },
   quotes: { title: 'Quotes sent', unit: 'quotes', list: L => L.quotes, total: true,
     def: 'New leads in the selected dates that reached Quote Sent or later, whatever happened after.',
     cols: [col.name, col.email, col.phone, { label: 'Quote date*', key: 'stageChangedAt', type: 'dt' }, { label: 'Quote amount', key: 'value', type: 'usd', num: true }, col.assigned, col.stage],
@@ -429,6 +432,7 @@ DRILLS.speed.numerator = L => L.speedMeasured.length; DRILLS.speed.numLabel = 'h
 DRILLS.speedWithin5 = { ...DRILLS.speed, title: 'Called within 5 minutes', numerator: L => L.within5.length, numLabel: 'called within 5 min' };
 DRILLS.leadToBooked = { ...DRILLS.booked, title: 'Lead → booked call', denom: L => L.newLeads.length, denomLabel: 'new leads' };
 DRILLS.bookedToShow = { ...DRILLS.booked, title: 'Booked call → show', numerator: L => L.showed.length, numLabel: 'showed' };
+DRILLS.noShowRate = { ...DRILLS.noShows, title: 'Booked call → no-show', denom: L => (L.bookedPast || []).length, denomLabel: 'booked calls that have already happened' };
 DRILLS.leadToShow = { ...DRILLS.showed, title: 'Lead → show', denom: L => L.newLeads.length, denomLabel: 'new leads' };
 DRILLS.contactToQuote = { ...DRILLS.quotes, title: 'Contact → quote', denom: L => L.contacted.length, denomLabel: 'contacted leads' };
 DRILLS.quoteToContract = { ...DRILLS.quotes, title: 'Quote → contract', numerator: L => L.contracts.length, numLabel: 'reached contract' };
@@ -460,7 +464,7 @@ const ROWS = [
   ]],
   ['2 · Appointments', [
     ['leadToBookedPct', 'Lead → booked call', 'pct', 'leadToBookedPct', false, 'leadToBooked'],
-    ['bookedToShowPct', 'Booked call → show', 'pct', 'bookedToShowPct', false, 'bookedToShow'],
+    ['noShowPct', 'Booked call → no-show', 'pct', 'noShowPct', true, 'noShowRate'],
     ['leadToShowPct', 'Lead → show', 'pct', 'leadToShowPct', false, 'leadToShow'],
     ['qualified', 'Qualified leads', 'n', null, false, 'qualified'],
   ]],
@@ -493,7 +497,7 @@ function deltaTxt(c, p, f) {
   return `<span>${d > 0 ? '▲' : '▼'} ${v} vs prior</span>`;
 }
 // ---------- period comparison helpers ----------
-const LOWER_BETTER = new Set(['speedToLeadAvgMin', 'missedCallPct']);
+const LOWER_BETTER = new Set(['speedToLeadAvgMin', 'missedCallPct', 'noShowPct']);
 const NEUTRAL = new Set(['aiAvgDurationSec', 'aiTotalDurationSec']);   // longer or shorter isn't better or worse
 const PCT_KEYS = k => /Pct$/.test(k);
 const fmtSpan = (from, to) => {
@@ -575,7 +579,7 @@ function render() {
   html += `<section class="row sec-6">${head(6, 'Phones & appointments')}<div class="tiles">
     ${tile('missedCallPct', 'Missed call rate (inbound)', 'pct', 'missedCallPct', true, 'missedRate')}
     ${tile('bookedCalls', 'Booked calls', 'n', null, false, 'booked')}
-    ${tile('showed', 'Showed', 'n', null, false, 'showed')}
+    ${tile('bookedToShowPct', 'Booked call → show', 'pct', 'bookedToShowPct', false, 'bookedToShow')}
     ${tile('contacted', 'Contacted leads', 'n', null, false, 'contacted')}
   </div></section>`;
   html += voiceSection();
@@ -672,7 +676,7 @@ const SUM_KEYS = [['totalLeads', 'New leads', 'newLeads'], ['speedToLeadAvgMin',
   ['leadToBookedPct', 'Lead → booked call', 'leadToBooked'], ['quotesSent', 'Quotes sent', 'quotes'], ['quoteValue', 'Total $ of quotes', 'quoteValue']];
 const MOVER_KEYS = [['totalLeads', 'New leads', 'newLeads'], ['speedToLeadAvgMin', 'Speed to lead', 'speed', 'speedToLeadMin'], ['calledWithin5Pct', 'Called within 5 min', 'speedWithin5', 'calledWithin5Pct'],
   ['contactRatePct', 'Contact rate', 'contactRate', 'contactRatePct'], ['bookedCalls', 'Booked calls', 'booked'], ['leadToBookedPct', 'Lead → booked call', 'leadToBooked', 'leadToBookedPct'],
-  ['bookedToShowPct', 'Booked call → show', 'bookedToShow', 'bookedToShowPct'], ['leadToShowPct', 'Lead → show', 'leadToShow', 'leadToShowPct'], ['qualified', 'Qualified leads', 'qualified'],
+  ['noShowPct', 'Booked call → no-show', 'noShowRate', 'noShowPct'], ['bookedToShowPct', 'Booked call → show', 'bookedToShow', 'bookedToShowPct'], ['leadToShowPct', 'Lead → show', 'leadToShow', 'leadToShowPct'], ['qualified', 'Qualified leads', 'qualified'],
   ['quotesSent', 'Quotes sent', 'quotes'], ['quoteValue', 'Total $ of quotes', 'quoteValue'], ['contactToQuotePct', 'Contact → quote', 'contactToQuote', 'contactToQuotePct'],
   ['quoteToContractPct', 'Quote → contract', 'quoteToContract', 'quoteToContractPct'], ['underContract', 'Under contract', 'contracts'], ['closedDeals', 'Closed deals', 'won'],
   ['quoteToClosePct', 'Quote → close', 'quoteToClose', 'quoteToClosePct'], ['missedCallPct', 'Missed call rate', 'missedRate', 'missedCallPct'], ['aiCalls', 'Voice AI calls', 'aiCalls'], ['aiBooked', 'Voice AI bookings', 'aiBooked']];
@@ -723,7 +727,7 @@ function compareSummary() {
 }
 
 const TREND_KPIS = [['totalLeads', 'New leads'], ['contacted', 'Contacted leads'], ['contactRatePct', 'Contact rate'], ['speedToLeadAvgMin', 'Speed to lead (avg)'],
-  ['calledWithin5Pct', 'Called within 5 min'], ['bookedCalls', 'Booked calls'], ['leadToBookedPct', 'Lead → booked call'], ['qualified', 'Qualified leads'],
+  ['calledWithin5Pct', 'Called within 5 min'], ['bookedCalls', 'Booked calls'], ['leadToBookedPct', 'Lead → booked call'], ['noShowPct', 'Booked call → no-show'], ['qualified', 'Qualified leads'],
   ['quotesSent', 'Quotes sent'], ['quoteValue', 'Total $ of quotes'], ['missedCallPct', 'Missed call rate'], ['aiCalls', 'Voice AI calls']];
 let trendKey = store.get('kpi-trend') || 'totalLeads';
 let trendData = null;
@@ -812,6 +816,7 @@ const GOALS = [
   ['calledWithin5Pct', 'Leads called within 5 min', 'calledWithin5Pct', false, 'speedWithin5', 'pct'],
   ['contactRatePct', 'Contact rate', 'contactRatePct', false, 'contactRate', 'pct'],
   ['leadToBookedPct', 'Lead → booked call', 'leadToBookedPct', false, 'leadToBooked', 'pct'],
+  ['noShowPct', 'Booked call → no-show', 'noShowPct', true, 'noShowRate', 'pct'],
   ['bookedToShowPct', 'Booked call → show', 'bookedToShowPct', false, 'bookedToShow', 'pct'],
   ['leadToShowPct', 'Lead → show', 'leadToShowPct', false, 'leadToShow', 'pct'],
   ['contactToQuotePct', 'Contact → quote', 'contactToQuotePct', false, 'contactToQuote', 'pct'],
@@ -826,6 +831,7 @@ const ACTIONS = {
   missedCallPct: 'Call back every missed call within 15 minutes and keep the missed-call text-back on.',
   leadToBookedPct: 'Ask for the consult call on the first conversation; every contacted lead should leave with a booking.',
   bookedToShowPct: 'Confirm each booked call by text the day before and again 1 hour before.',
+  noShowPct: 'Confirm each booked call by text the day before and 1 hour before, and call no-shows the same day to rebook.',
   leadToShowPct: 'Confirm each booked call by text the day before and again 1 hour before.',
   contactToQuotePct: 'Get quotes out faster after site visits; aim for within 48 hours of Scott’s visit.',
   quoteToContractPct: 'Follow up on every open quote within 48 hours and again at day 5.',
