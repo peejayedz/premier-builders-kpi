@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T17:31:45.131Z",
+  "generatedAt": "2026-10-13T17:41:26.578Z",
   "location": "Premier Builders",
   "targets": {
     "speedToLeadMin": 5,
@@ -24,11 +24,11 @@
     "today": {
       "label": "Today",
       "from": 1791864000000,
-      "to": 1791912705131,
+      "to": 1791913286578,
       "current": {
         "totalLeads": 3,
-        "speedToLeadAvgMin": 6,
-        "calledWithin5Pct": 33.3,
+        "speedToLeadAvgMin": 4,
+        "calledWithin5Pct": 66.7,
         "contacted": 2,
         "contactRatePct": 66.7,
         "bookedCalls": 0,
@@ -297,12 +297,12 @@
     },
     "last7": {
       "label": "Last 7 days",
-      "from": 1791307905131,
-      "to": 1791912705131,
+      "from": 1791308486578,
+      "to": 1791913286578,
       "current": {
         "totalLeads": 14,
-        "speedToLeadAvgMin": 39,
-        "calledWithin5Pct": 38.5,
+        "speedToLeadAvgMin": 24,
+        "calledWithin5Pct": 61.5,
         "contacted": 8,
         "contactRatePct": 57.1,
         "bookedCalls": 1,
@@ -368,7 +368,7 @@
       },
       "previous": {
         "totalLeads": 4,
-        "speedToLeadAvgMin": 52,
+        "speedToLeadAvgMin": 37,
         "calledWithin5Pct": 75,
         "contacted": 1,
         "contactRatePct": 25,
@@ -435,12 +435,12 @@
     },
     "last30": {
       "label": "Last 30 days",
-      "from": 1789320705131,
-      "to": 1791912705131,
+      "from": 1789321286578,
+      "to": 1791913286578,
       "current": {
         "totalLeads": 35,
-        "speedToLeadAvgMin": 92,
-        "calledWithin5Pct": 45.2,
+        "speedToLeadAvgMin": 74,
+        "calledWithin5Pct": 61.3,
         "contacted": 20,
         "contactRatePct": 57.1,
         "bookedCalls": 8,
@@ -508,7 +508,7 @@
       },
       "previous": {
         "totalLeads": 26,
-        "speedToLeadAvgMin": 1328,
+        "speedToLeadAvgMin": 1148,
         "calledWithin5Pct": 0,
         "contacted": 16,
         "contactRatePct": 61.5,
@@ -575,12 +575,12 @@
     },
     "last90": {
       "label": "Last 90 days",
-      "from": 1784136705131,
-      "to": 1791912705131,
+      "from": 1784137286578,
+      "to": 1791913286578,
       "current": {
         "totalLeads": 144,
-        "speedToLeadAvgMin": 173,
-        "calledWithin5Pct": 42.9,
+        "speedToLeadAvgMin": 146,
+        "calledWithin5Pct": 57.1,
         "contacted": 98,
         "contactRatePct": 68.1,
         "bookedCalls": 71,
@@ -648,7 +648,7 @@
       },
       "previous": {
         "totalLeads": 139,
-        "speedToLeadAvgMin": 1201,
+        "speedToLeadAvgMin": 1081,
         "calledWithin5Pct": 0,
         "contacted": 97,
         "contactRatePct": 69.8,
@@ -716,11 +716,11 @@
     "thisMonth": {
       "label": "This month",
       "from": 1790827200000,
-      "to": 1791912705131,
+      "to": 1791913286578,
       "current": {
         "totalLeads": 18,
-        "speedToLeadAvgMin": 42,
-        "calledWithin5Pct": 47.1,
+        "speedToLeadAvgMin": 27,
+        "calledWithin5Pct": 64.7,
         "contacted": 9,
         "contactRatePct": 50,
         "bookedCalls": 1,
@@ -786,7 +786,7 @@
       },
       "previous": {
         "totalLeads": 8,
-        "speedToLeadAvgMin": 1328,
+        "speedToLeadAvgMin": 1148,
         "calledWithin5Pct": 0,
         "contacted": 4,
         "contactRatePct": 50,
@@ -857,8 +857,8 @@
       "to": 1790827200000,
       "current": {
         "totalLeads": 25,
-        "speedToLeadAvgMin": 231,
-        "calledWithin5Pct": 40,
+        "speedToLeadAvgMin": 198,
+        "calledWithin5Pct": 53.3,
         "contacted": 15,
         "contactRatePct": 60,
         "bookedCalls": 13,
