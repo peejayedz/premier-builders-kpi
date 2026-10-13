@@ -9,7 +9,7 @@
   :root {
     --page: #f9f9f7; --surface: #fcfcfb; --raised: #ffffff; --border: #e4e3de; --grid: #ecebe7; --hover: #f2f1ed;
     --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #75746f;
-    --series: #2a78d6; --link: #1c5cab;
+    --series: #2a78d6; --link: #1c5cab; --prev: #c2620f;
     --good-ink: #006300; --bad-ink: #b02a2a; --warn-ink: #8a5a00;
     --chip-good: #e6f5e6; --chip-bad: #fbeaea; --chip-warn: #fdf3dc; --chip-none: #f0efec;
     --shadow: 0 12px 40px rgba(0,0,0,.18);
@@ -18,7 +18,7 @@
     :root:not([data-theme="light"]) {
       --page: #0d0d0d; --surface: #1a1a19; --raised: #222221; --border: #2e2e2c; --grid: #2a2a28; --hover: #262624;
       --ink: #ffffff; --ink-2: #c3c2b7; --ink-3: #9a998f;
-      --series: #3987e5; --link: #86b6ef;
+      --series: #3987e5; --link: #86b6ef; --prev: #d27028;
       --good-ink: #5fd35f; --bad-ink: #f08a8a; --warn-ink: #f5c35a;
       --chip-good: #13301a; --chip-bad: #3a1a1a; --chip-warn: #3a2e12; --chip-none: #2a2a28;
       --shadow: 0 12px 40px rgba(0,0,0,.6);
@@ -27,7 +27,7 @@
   :root[data-theme="dark"] {
     --page: #0d0d0d; --surface: #1a1a19; --raised: #222221; --border: #2e2e2c; --grid: #2a2a28; --hover: #262624;
     --ink: #ffffff; --ink-2: #c3c2b7; --ink-3: #9a998f;
-    --series: #3987e5; --link: #86b6ef;
+    --series: #3987e5; --link: #86b6ef; --prev: #d27028;
     --good-ink: #5fd35f; --bad-ink: #f08a8a; --warn-ink: #f5c35a;
     --chip-good: #13301a; --chip-bad: #3a1a1a; --chip-warn: #3a2e12; --chip-none: #2a2a28;
     --shadow: 0 12px 40px rgba(0,0,0,.6);
@@ -160,6 +160,72 @@
   .vsum .lnk:hover { text-decoration: underline; }
   .vnote { margin-top: 8px; font-size: 12px; color: var(--ink-3); }
   .tile .hint2 { font-size: 12px; color: var(--ink-3); line-height: 1.35; }
+  /* ---------- period comparison ---------- */
+  .btn.on { border-color: var(--series); box-shadow: inset 0 0 0 1px var(--series); }
+  .pop.cmp-pop { width: 340px; max-width: calc(100vw - 32px); }
+  .switch { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 13px; font-weight: 600; margin-bottom: 10px; }
+  .switch input { width: 34px; height: 18px; accent-color: var(--series); }
+  .cmp-presets { display: grid; gap: 4px; }
+  .cmp-presets button { text-align: left; background: none; border: 1px solid transparent; padding: 7px 9px; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; justify-content: space-between; gap: 8px; }
+  .cmp-presets button:hover:not([disabled]) { background: var(--hover); }
+  .cmp-presets button[aria-pressed="true"] { border-color: var(--series); background: var(--hover); font-weight: 600; }
+  .cmp-presets button[disabled] { opacity: .55; cursor: default; }
+  .cmp-presets .lock { font-size: 11px; color: var(--ink-3); font-weight: 400; }
+  .cmp-match { display: flex; gap: 8px; align-items: flex-start; font-size: 12px; color: var(--ink-2); margin: 10px 0 0; }
+  .cmp-dates { border-top: 1px solid var(--border); margin-top: 10px; padding-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .cmp-dates .per { grid-column: 1 / -1; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+  .cmp-dates label { font-size: 12px; color: var(--ink-2); display: grid; gap: 3px; }
+  .cmp-dates input { background: var(--surface); border: 1px solid var(--border); border-radius: 7px; padding: 6px 6px; min-width: 0; }
+  .cmp-dates .btn { grid-column: 1 / -1; justify-content: center; }
+  .sw { display: inline-block; width: 14px; height: 0; border-top: 2px solid var(--series); vertical-align: middle; }
+  .sw.prev { border-top: 2px dashed var(--prev); }
+  .cmp-line { font-size: 12px; color: var(--ink-2); margin-top: 4px; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; }
+  .cmp-line b { color: var(--ink); font-weight: 600; }
+  .cmp-line .off { background: none; border: 0; padding: 0; color: var(--link); cursor: pointer; font-size: 12px; }
+  .tile .cmpbox { margin-top: auto; display: grid; gap: 3px; font-size: 12px; color: var(--ink-2); }
+  .tile .cmpbox .pv { display: flex; justify-content: space-between; gap: 8px; }
+  .tile .cmpbox .pv b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .tile .cmpbox .chg { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .chg.good { color: var(--good-ink); } .chg.bad { color: var(--bad-ink); } .chg.flat, .chg.neutral { color: var(--ink-2); } .chg.none { color: var(--ink-3); font-weight: 500; }
+  .tile.cmp .foot { margin-top: 6px; }
+  .cmpsum { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-top: 12px; }
+  .cmpsum h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-2); margin: 0 0 10px; font-weight: 600; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .cmpsum h2 .muted { text-transform: none; letter-spacing: 0; font-weight: 400; }
+  .kstrip { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
+  @media (max-width: 900px) { .kstrip { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (max-width: 480px) { .kstrip { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .kstrip button { text-align: left; background: var(--page); border: 1px solid var(--border); border-radius: 9px; padding: 8px 10px; cursor: pointer; display: grid; gap: 2px; min-width: 0; }
+  .kstrip button:hover { border-color: var(--series); }
+  .kstrip .kl { font-size: 11px; color: var(--ink-2); font-weight: 600; }
+  .kstrip .kv { font-size: 16px; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .kstrip .kp { font-size: 11px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .kstrip .chg { font-size: 12px; }
+  .cmpsum ul { margin: 0; padding-left: 16px; display: grid; gap: 5px; font-size: 13px; }
+  .cmpsum li::marker { color: var(--ink-3); }
+  .cmpsum h4 { margin: 0 0 6px; font-size: 13px; display: flex; align-items: center; gap: 7px; }
+  .cmpsum h4 .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  .cmpsum .lnk { display: inline; background: none; border: 0; padding: 0; color: var(--link); cursor: pointer; text-align: left; font: inherit; }
+  .cmpsum .lnk:hover { text-decoration: underline; }
+  .cmpsum .none { color: var(--ink-3); font-size: 13px; }
+  .cmpsum .caveat { margin-top: 10px; font-size: 12px; color: var(--ink-3); }
+  .trend { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-top: 12px; }
+  .trend .thead { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .trend h3 { margin: 0; font-size: 14px; }
+  .trend select { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 6px 8px; font-size: 13px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--ink-2); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .chartwrap { position: relative; }
+  .chartwrap svg { display: block; width: 100%; height: 240px; }
+  .chartwrap .ax { font-size: 11px; fill: var(--ink-3); }
+  .chartwrap .grid { stroke: var(--grid); stroke-width: 1; }
+  .chartwrap .base { stroke: var(--border); stroke-width: 1; }
+  .ctip { position: absolute; pointer-events: none; background: var(--raised); border: 1px solid var(--border); box-shadow: var(--shadow); border-radius: 8px; padding: 8px 10px; font-size: 12px; min-width: 180px; opacity: 0; transition: opacity .08s; z-index: 5; }
+  .ctip .r { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+  .ctip .r b { font-variant-numeric: tabular-nums; }
+  .trend details { margin-top: 8px; font-size: 12px; color: var(--ink-2); }
+  .trend details table { margin-top: 6px; font-size: 12px; }
+  .trend details td, .trend details th { padding: 4px 10px 4px 0; text-align: left; }
+  .trend .msg { font-size: 13px; color: var(--ink-3); padding: 24px 0; text-align: center; }
 </style>
 </head>
 <body>
@@ -168,11 +234,16 @@
     <div>
       <h1>Premier Builders · Sales KPI Scorecard</h1>
       <div class="sub" id="updated">Loading…</div>
+      <div class="cmp-line" id="cmpLine" hidden></div>
     </div>
     <div class="controls">
       <button class="btn" id="rangeBtn" aria-haspopup="dialog" aria-expanded="false">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
         <span id="rangeLabel">Last 7 days</span><span aria-hidden="true">▾</span>
+      </button>
+      <button class="btn" id="cmpBtn" aria-haspopup="dialog" aria-expanded="false" title="Compare two periods">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 4v16M7 20l-3-3M7 20l3-3M17 20V4M17 4l-3 3M17 4l3 3"/></svg>
+        <span id="cmpBtnLabel">Compare</span>
       </button>
       <button class="btn" id="refreshBtn" title="Pull the latest numbers from GoHighLevel">
         <svg id="refreshIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
@@ -188,10 +259,27 @@
           <div class="hint" id="customHint"></div>
         </div>
       </div>
+      <div class="pop cmp-pop" id="cmpPop" role="dialog" aria-label="Compare periods">
+        <label class="switch">Compare periods <input type="checkbox" id="cmpOn"></label>
+        <div class="cmp-presets" id="cmpPresets"></div>
+        <label class="cmp-match"><input type="checkbox" id="cmpMatch"> <span>Compare to the same point in the previous period (fair while a day, week, month or quarter is still in progress)</span></label>
+        <div class="cmp-dates">
+          <div class="per"><span class="sw"></span> Period A (current)</div>
+          <label>From <input type="date" id="cmpAFrom"></label>
+          <label>To <input type="date" id="cmpATo"></label>
+          <div class="per"><span class="sw prev"></span> Period B (compare to)</div>
+          <label>From <input type="date" id="cmpBFrom"></label>
+          <label>To <input type="date" id="cmpBTo"></label>
+          <button class="btn primary" id="cmpApply">Compare these dates</button>
+          <div class="hint" id="cmpHint" style="grid-column:1/-1"></div>
+        </div>
+      </div>
     </div>
   </header>
   <div class="status-line" id="statusLine" aria-live="polite"></div>
   <section class="exec" id="exec" aria-label="Executive summary"></section>
+  <section class="cmpsum" id="cmpSum" aria-label="Comparison summary" hidden></section>
+  <section class="trend" id="trend" aria-label="Daily trend" hidden></section>
   <main id="app"></main>
   <div class="notes" id="notes"></div>
 </div>
@@ -200,7 +288,7 @@
 <div class="tip" id="tip" role="tooltip"></div>
 
 <script type="module">
-import { buildLists, summarize, buildVoiceLists, summarizeVoice, periodRange, customRange, tzOffsetMin, decryptJSON } from './scripts/kpi-core.mjs';
+import { buildLists, summarize, buildVoiceLists, summarizeVoice, periodRange, customRange, compareRange, hasFullPrev, dayStarts, tzOffsetMin, decryptJSON } from './scripts/kpi-core.mjs';
 
 // ---------- state ----------
 const store = {
@@ -210,8 +298,12 @@ const store = {
 let pub = null, cfg = null, records = null;        // public aggregates, config, decrypted records
 let sel = JSON.parse(store.get('kpi-range') || '{"key":"last7"}');
 let lists = null, cur = null, prev = null, range = null;
+// Period comparison: on/off, "same point" matching, and optional custom Period B dates.
+let cmp = (() => { try { return { on: false, match: true, b: null, ...JSON.parse(store.get('kpi-compare') || '{}') }; } catch { return { on: false, match: true, b: null }; } })();
+let crange = null;                 // the comparison period actually used: { mode, from, to, periodKey? }
 
-const PRESETS = [['today','Today'],['yesterday','Yesterday'],['last7','Last 7 days'],['last30','Last 30 days'],['last90','Last 90 days'],['thisMonth','This month'],['lastMonth','Last month']];
+const PRESETS = [['today','Today'],['yesterday','Yesterday'],['thisWeek','This week'],['lastWeek','Last week'],['last7','Last 7 days'],['last30','Last 30 days'],['last90','Last 90 days'],['thisMonth','This month'],['lastMonth','Last month'],['thisQuarter','This quarter'],['lastQuarter','Last quarter']];
+const CMP_PRESETS = [['today','Today vs Yesterday'],['thisWeek','This week vs Last week'],['thisMonth','This month vs Last month'],['thisQuarter','This quarter vs Last quarter'],['custom','Custom dates vs previous period']];
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
 
@@ -252,15 +344,20 @@ function compute() {
   const off = tzOffsetMin(TZ(), now);
   if (sel.key === 'custom' && !records) sel = { key: 'last7' };
   if (!records && !pub.periods[sel.key]) sel = { key: 'last7' };
-  range = sel.key === 'custom' ? customRange(sel.from, sel.to, now, off) : periodRange(sel.key, now, off);
+  range = sel.key === 'custom' ? customRange(sel.from, sel.to, now, off, TZ()) : periodRange(sel.key, now, off, TZ());
+  // Period B. Off = the usual "vs prior" deltas (previous period). On = what the Compare menu says.
+  const mode = !cmp.on ? 'prev' : cmp.b && records ? 'custom' : cmp.match ? 'prev' : 'full';
+  crange = compareRange(range, mode, now, off, cmp.b, TZ());
   if (records) {
     lists = buildLists(records, cfg, range.from, range.to);
     cur = summarize(lists);
-    prev = summarize(buildLists(records, cfg, range.prevFrom, range.prevTo));
+    prev = summarize(buildLists(records, cfg, crange.from, crange.to));
   } else {
+    // Locked: only the pre-computed totals exist. Never estimate a period we don't have.
     lists = null;
     cur = pub.periods[sel.key].current;
-    prev = pub.periods[sel.key].previous;
+    if (crange.mode === 'full' && pub.periods[crange.periodKey]) prev = pub.periods[crange.periodKey].current;
+    else { prev = pub.periods[sel.key].previous || null; crange = { mode: 'prev', from: range.prevFrom, to: range.prevTo }; }
   }
   // Voice AI: from decrypted records (or the design preview's own data); otherwise the public numbers.
   const vsrc = window.__VOICE_PREVIEW__?.calls ?? records?.voiceCalls ?? null;
@@ -268,9 +365,10 @@ function compute() {
     const V = buildVoiceLists(vsrc, range.from, range.to);
     lists = { ...(lists || {}), ...V };
     cur = { ...cur, ...summarizeVoice(V) };
-    prev = { ...prev, ...summarizeVoice(buildVoiceLists(vsrc, range.prevFrom, range.prevTo)) };
+    prev = { ...prev, ...summarizeVoice(buildVoiceLists(vsrc, crange.from, crange.to)) };
   }
   store.set('kpi-range', JSON.stringify(sel));
+  store.set('kpi-compare', JSON.stringify(cmp));
 }
 
 // ---------- drill-down definitions ----------
@@ -394,15 +492,53 @@ function deltaTxt(c, p, f) {
   const v = f === 'pct' ? `${Math.abs(Math.round(d * 10) / 10)} pts` : fmt[f](Math.abs(d));
   return `<span>${d > 0 ? '▲' : '▼'} ${v} vs prior</span>`;
 }
+// ---------- period comparison helpers ----------
+const LOWER_BETTER = new Set(['speedToLeadAvgMin', 'missedCallPct']);
+const NEUTRAL = new Set(['aiAvgDurationSec', 'aiTotalDurationSec']);   // longer or shorter isn't better or worse
+const PCT_KEYS = k => /Pct$/.test(k);
+const fmtSpan = (from, to) => {
+  const end = to - 1, o = { timeZone: TZ(), month: 'short', day: 'numeric' };
+  const a = new Date(from).toLocaleDateString('en-US', o), b = new Date(end).toLocaleDateString('en-US', o);
+  const asOf = Math.abs(to - Date.parse((records || pub).generatedAt)) < 60000;
+  return (a === b ? a : `${a} – ${b}`) + (asOf ? ' (to now)' : '');
+};
+const B_NAMES = {
+  prev: { today: 'Yesterday, same time', yesterday: 'Day before', thisWeek: 'Last week, same point', lastWeek: 'Week before', last7: 'Previous 7 days', last30: 'Previous 30 days', last90: 'Previous 90 days', thisMonth: 'Last month, same point', lastMonth: 'Month before', thisQuarter: 'Last quarter, same point', lastQuarter: 'Quarter before', custom: 'Previous period' },
+  full: { today: 'Yesterday', thisWeek: 'Last week', thisMonth: 'Last month', thisQuarter: 'Last quarter' },
+};
+function bName() { if (!crange) return ''; if (crange.mode === 'custom') return 'Period B'; return B_NAMES[crange.mode]?.[sel.key] || 'Previous period'; }
+function aName() { return cmp.on && sel.key === 'custom' ? 'Period A' : range.label; }
+function bShort() { return bName().replace(/, same (point|time)$/, ''); }
+const FMT_OF = { speedToLeadAvgMin: 'min', quoteValue: 'usd', revenue: 'usd', aiAvgDurationSec: 'dur', aiTotalDurationSec: 'dur' };
+const fmtOf = k => FMT_OF[k] || (PCT_KEYS(k) ? 'pct' : 'n');
+// One comparison rule, reused by the tiles, the summary and the chart.
+function change(k, c, p) {
+  if (c === null || c === undefined) return { state: 'none', text: 'No current data' };
+  if (p === null || p === undefined) return { state: 'none', text: 'No previous data' };
+  const d = c - p, pct = PCT_KEYS(k);
+  if (Math.abs(d) < 1e-9) return { state: 'flat', d: 0, text: 'No change' };
+  const dir = NEUTRAL.has(k) ? 0 : (LOWER_BETTER.has(k) ? -1 : 1) * Math.sign(d);
+  const state = dir > 0 ? 'good' : dir < 0 ? 'bad' : 'neutral';
+  let text = `${d > 0 ? '▲ +' : '▼ −'}${pct ? `${Math.abs(Math.round(d * 10) / 10)} pts` : fmt[fmtOf(k)](Math.abs(d))}`;
+  if (!pct) text += p === 0 ? ' (new)' : ` (${d > 0 ? '+' : '−'}${Math.abs(Math.round((d / Math.abs(p)) * 1000) / 10)}%)`;
+  return { state, d, text, rel: pct ? d / Math.max(Math.abs(p), 10) : d / Math.max(Math.abs(p), 1), dir };
+}
+function cmpBox(k, v, f) {
+  const p = prev ? prev[k] : null, ch = change(k, v, p);
+  return `<div class="cmpbox"><div class="pv"><span>${esc(bShort())}</span><b>${p === null || p === undefined ? '—' : fmt[f](p)}</b></div>
+    <div class="chg ${ch.state}">${esc(ch.text)}</div></div>`;
+}
+
 function tile(k, label, f, goalKey, lowerBetter, drill, note) {
   const v = cur[k];
   if (note && (v === null || v === undefined)) return `<div class="tile"><div class="label">${esc(label)}</div><div class="value muted">—</div><div class="foot"><span class="chip none">Not tracked yet</span></div><div class="hint2">${esc(note)}</div></div>`;
   const can = !!drill && (records || pub.detailsAvailable || window.__VOICE_PREVIEW__);
   const tag = can ? 'button' : 'div';
-  return `<${tag} class="tile" ${can ? `data-drill="${drill}" aria-label="${esc(label)}: view the list"` : ''}>
+  return `<${tag} class="tile${cmp.on ? ' cmp' : ''}" ${can ? `data-drill="${drill}" aria-label="${esc(label)}: view the list"` : ''}>
     <div class="label">${esc(label)}</div>
     <div class="value ${v === null || v === undefined ? 'muted' : ''}">${fmt[f](v)}</div>
-    <div class="foot">${goalChip(v, goalKey ? pub.targets[goalKey] : null, lowerBetter, f)}${deltaTxt(v, prev[k], f)}${can ? `<span class="view">${records || window.__VOICE_PREVIEW__ ? 'View list →' : '🔒 View list'}</span>` : ''}</div>
+    ${cmp.on ? cmpBox(k, v, f) : ''}
+    <div class="foot">${goalChip(v, goalKey ? pub.targets[goalKey] : null, lowerBetter, f)}${cmp.on ? '' : deltaTxt(v, prev?.[k], f)}${can ? `<span class="view">${records || window.__VOICE_PREVIEW__ ? 'View list →' : '🔒 View list'}</span>` : ''}</div>
   </${tag}>`;
 }
 function barList(entries, total, drillFor) {
@@ -413,7 +549,9 @@ function barList(entries, total, drillFor) {
     const key = drillFor === 'funnel' ? drill : `source:${name}`;
     const can = records || pub.detailsAvailable;
     const tag = can ? 'button' : 'div';
-    return `<${tag} class="bar" ${can ? `data-drill="${esc(key)}"` : ''} data-tip="${esc(`${name}: ${v.toLocaleString()} (${share}%${step})${can ? ' · click for the list' : ''}`)}">
+    const pv = cmp.on && prev ? (drillFor === 'funnel' ? (prev.funnel || []).find(e => e[0] === name)?.[1] : prev.bySource?.[name]) ?? 0 : null;
+    const bTxt = pv === null ? '' : ` · ${bShort()}: ${pv.toLocaleString()}`;
+    return `<${tag} class="bar" ${can ? `data-drill="${esc(key)}"` : ''} data-tip="${esc(`${name}: ${v.toLocaleString()} (${share}%${step})${bTxt}${can ? ' · click for the list' : ''}`)}">
       <span class="name">${esc(name)}</span><span class="track"><span class="fill" style="display:block;width:${(v / max) * 100}%"></span></span>
       <span class="num">${v.toLocaleString()}<span>${share}%</span></span></${tag}>`;
   }).join('') + '</div>';
@@ -421,6 +559,7 @@ function barList(entries, total, drillFor) {
 
 function render() {
   $('rangeLabel').textContent = range.label;
+  renderCompareLine();
   $('lockBtn').innerHTML = records ? '🔓 Lock' : '🔒 Unlock names';
   $('lockBtn').style.display = pub.detailsAvailable || records ? '' : 'none';
   const ts = new Date((records || pub).generatedAt);
@@ -442,6 +581,9 @@ function render() {
   html += voiceSection();
   $('app').innerHTML = html;
   execSummary();
+  compareSummary();
+  renderTrend();
+  renderCmpPop();
   const n = pub.dataNotes || {};
   $('notes').innerHTML = `Lead KPIs use leads created in the selected dates; appointments use the appointment date; calls use the call date. ` +
     `Speed to lead: ${esc(n.speedToLead)}. Calls: ${esc(n.calls)}. Contact details are encrypted and only shown after unlocking.`;
@@ -492,6 +634,175 @@ function voiceSection() {
       ${can ? '<button class="lnk" data-drill="aiCalls">View AI calls →</button>' : ''}</div>
     <div class="vnote">Answered calls = AI calls received (every logged Voice AI call was picked up by the agent). Missed / unanswered calls: not tracked yet. ${esc(NOT_LOGGED)}</div>
   </section>`;
+}
+
+// ---------- period comparison: header line, menu, summary, trend ----------
+const isoDay = ms => new Date(ms).toLocaleDateString('en-CA', { timeZone: TZ() });
+function renderCompareLine() {
+  const el = $('cmpLine');
+  $('cmpBtn').classList.toggle('on', cmp.on);
+  $('cmpBtnLabel').textContent = cmp.on ? 'Comparing' : 'Compare';
+  if (!cmp.on || !crange) { el.hidden = true; el.innerHTML = ''; return; }
+  el.hidden = false;
+  el.innerHTML = `<span><span class="sw"></span> <b>A · ${esc(aName())}</b> ${esc(fmtSpan(range.from, range.to))}</span>
+    <span><span class="sw prev"></span> <b>B · ${esc(bName())}</b> ${esc(fmtSpan(crange.from, crange.to))}</span>
+    <button class="off" data-cmp-off>Turn off comparison</button>`;
+}
+function renderCmpPop() {
+  $('cmpOn').checked = cmp.on;
+  $('cmpPresets').innerHTML = CMP_PRESETS.map(([k, l]) => {
+    const okLocked = k === 'custom' ? false : !!pub.periods[k];
+    const dis = !records && !okLocked;
+    const pressed = cmp.on && (k === 'custom' ? sel.key === 'custom' : sel.key === k && !cmp.b);
+    return `<button type="button" data-cmp="${k}" aria-pressed="${pressed}" ${dis ? 'disabled' : ''}>${esc(l)}${dis ? '<span class="lock">🔒 unlock names</span>' : ''}</button>`;
+  }).join('');
+  const canMatch = hasFullPrev(sel.key) && !cmp.b;
+  $('cmpMatch').checked = cmp.match; $('cmpMatch').disabled = !canMatch;
+  $('cmpMatch').closest('label').style.opacity = canMatch ? '' : '.55';
+  const max = isoDay(Date.parse((records || pub).generatedAt));
+  const vals = { cmpAFrom: isoDay(range.from), cmpATo: isoDay(range.to - 1), cmpBFrom: crange ? isoDay(crange.from) : '', cmpBTo: crange ? isoDay(crange.to - 1) : '' };
+  for (const [id, v] of Object.entries(vals)) { const i = $(id); if (document.activeElement !== i) i.value = v; i.max = max; i.disabled = !records; }
+  $('cmpApply').disabled = !records;
+  $('cmpHint').textContent = records
+    ? 'Pick any two date ranges. Leave Period B empty to compare with the period just before Period A.'
+    : 'Locked: Today, This month and the presets with totals work now. Unlock names for custom dates, weeks/quarters and the daily chart.';
+}
+
+const SUM_KEYS = [['totalLeads', 'New leads', 'newLeads'], ['speedToLeadAvgMin', 'Speed to lead', 'speed'], ['contactRatePct', 'Contact rate', 'contactRate'],
+  ['leadToBookedPct', 'Lead → booked call', 'leadToBooked'], ['quotesSent', 'Quotes sent', 'quotes'], ['quoteValue', 'Total $ of quotes', 'quoteValue']];
+const MOVER_KEYS = [['totalLeads', 'New leads', 'newLeads'], ['speedToLeadAvgMin', 'Speed to lead', 'speed', 'speedToLeadMin'], ['calledWithin5Pct', 'Called within 5 min', 'speedWithin5', 'calledWithin5Pct'],
+  ['contactRatePct', 'Contact rate', 'contactRate', 'contactRatePct'], ['bookedCalls', 'Booked calls', 'booked'], ['leadToBookedPct', 'Lead → booked call', 'leadToBooked', 'leadToBookedPct'],
+  ['bookedToShowPct', 'Booked call → show', 'bookedToShow', 'bookedToShowPct'], ['leadToShowPct', 'Lead → show', 'leadToShow', 'leadToShowPct'], ['qualified', 'Qualified leads', 'qualified'],
+  ['quotesSent', 'Quotes sent', 'quotes'], ['quoteValue', 'Total $ of quotes', 'quoteValue'], ['contactToQuotePct', 'Contact → quote', 'contactToQuote', 'contactToQuotePct'],
+  ['quoteToContractPct', 'Quote → contract', 'quoteToContract', 'quoteToContractPct'], ['underContract', 'Under contract', 'contracts'], ['closedDeals', 'Closed deals', 'won'],
+  ['quoteToClosePct', 'Quote → close', 'quoteToClose', 'quoteToClosePct'], ['missedCallPct', 'Missed call rate', 'missedRate', 'missedCallPct'], ['aiCalls', 'Voice AI calls', 'aiCalls'], ['aiBooked', 'Voice AI bookings', 'aiBooked']];
+function compareSummary() {
+  const el = $('cmpSum');
+  if (!cmp.on || !prev) { el.hidden = true; el.innerHTML = ''; return; }
+  el.hidden = false;
+  const can = !!(records || pub.detailsAvailable);
+  const link = (text, drill) => can && drill ? `<button class="lnk" data-drill="${esc(drill)}">${text}</button>` : text;
+  const val = (k, v) => v === null || v === undefined ? '—' : fmt[fmtOf(k)](v);
+  const strip = SUM_KEYS.map(([k, label, drill]) => {
+    const ch = change(k, cur[k], prev[k]);
+    return `<button type="button" ${can ? `data-drill="${drill}"` : 'disabled'}><span class="kl">${esc(label)}</span><span class="kv">${val(k, cur[k])}</span>
+      <span class="kp">${esc(bShort())}: ${val(k, prev[k])}</span><span class="chg ${ch.state}">${esc(ch.text)}</span></button>`;
+  }).join('');
+  const t = pub.targets;
+  const rows = MOVER_KEYS.map(([k, label, drill, gk]) => ({ k, label, drill, gk, ch: change(k, cur[k], prev[k]) }))
+    .filter(r => r.ch.dir !== undefined && r.ch.dir !== 0 && !(cur[r.k] === 0 && prev[r.k] === 0));
+  const line = r => link(`${esc(r.label)}: ${val(r.k, cur[r.k])} vs ${val(r.k, prev[r.k])}`, r.drill) + ` <span class="chg ${r.ch.state}">${esc(r.ch.text)}</span>`;
+  const score = r => r.ch.dir * Math.abs(r.ch.rel);
+  const up = rows.filter(r => r.ch.dir > 0).sort((a, b) => score(b) - score(a)).slice(0, 3);
+  const down = rows.filter(r => r.ch.dir < 0).sort((a, b) => score(a) - score(b)).slice(0, 3);
+  // fill "needs attention" with KPIs still below goal (even if they didn't fall)
+  const offGoal = MOVER_KEYS.filter(([k, , , gk]) => gk && t[gk] !== undefined && cur[k] !== null && cur[k] !== undefined && !down.some(d => d.k === k) &&
+    (LOWER_BETTER.has(k) ? cur[k] > t[gk] : cur[k] < t[gk])).map(([k, label, drill, gk]) => ({ k, label, drill, gk, ch: change(k, cur[k], prev[k]), offGoal: true }));
+  const attention = [...down, ...offGoal].slice(0, 3);
+  const goalTxt = r => r.gk && t[r.gk] !== undefined ? ` (goal ${LOWER_BETTER.has(r.k) ? '≤ ' : ''}${r.k === 'speedToLeadAvgMin' ? `${t[r.gk]} min` : `${t[r.gk]}%`})` : '';
+  const attLine = r => link(`${esc(r.label)}: ${val(r.k, cur[r.k])}${r.offGoal && r.ch.dir >= 0 ? ' — still off goal' : ` vs ${val(r.k, prev[r.k])}`}${goalTxt(r)}`, r.drill) + (r.ch.dir < 0 ? ` <span class="chg bad">${esc(r.ch.text)}</span>` : '');
+  // recommendations: tied to the KPIs that actually fell or sit below goal in these two periods
+  const recs = [];
+  for (const r of attention) {
+    const a = ACTIONS[r.k]; if (!a || recs.some(x => x.a === a)) continue;
+    const what = r.ch.dir < 0 ? `${r.label} ${LOWER_BETTER.has(r.k) ? 'got worse' : 'fell'} (${r.ch.text.replace(/^[▲▼] /, '')})` : `${r.label} is off goal at ${val(r.k, cur[r.k])}`;
+    recs.push({ a, txt: `${what}: ${a}` });
+  }
+  if (!recs.length && down.some(r => r.k === 'totalLeads')) recs.push({ txt: `Lead volume is down ${down.find(r => r.k === 'totalLeads').ch.text.replace(/^▼ /, '')}. Check ad spend and lead sources with Jered.` });
+  if (!recs.length) recs.push({ txt: 'No KPI with a goal declined between the two periods. Keep the same follow-up rhythm.' });
+  const small = Math.min(cur.totalLeads ?? 0, prev.totalLeads ?? 0) < 5 ? '<span class="muted">· small numbers (under 5 leads in a period), so read % changes with care</span>' : '';
+  const li = arr => arr.length ? `<ul>${arr.map(x => `<li>${x}</li>`).join('')}</ul>` : '<div class="none">Nothing to show.</div>';
+  el.innerHTML = `<h2>Comparison <span class="muted">· ${esc(aName())} vs ${esc(bName())}</span>${small}</h2>
+    <div class="kstrip">${strip}</div>
+    <div class="exec-cols">
+      <div><h4><span class="dot good"></span>Top improving</h4>${li(up.map(line))}</div>
+      <div><h4><span class="dot bad"></span>Needs attention</h4>${li(attention.map(attLine))}</div>
+      <div><h4><span class="dot focus"></span>Recommended</h4>${li(recs.slice(0, 3).map(r => esc(r.txt)))}</div>
+    </div>
+    <div class="caveat">Rates are recalculated from each period's own counts. Qualified, quotes, contracts and closed deals count leads created in each period by the stage they're in today (GHL keeps no stage history), so an older period has had more time to progress.${records ? '' : ' Locked: comparing the pre-computed totals; unlock names for custom dates and the daily chart.'}</div>`;
+}
+
+const TREND_KPIS = [['totalLeads', 'New leads'], ['contacted', 'Contacted leads'], ['contactRatePct', 'Contact rate'], ['speedToLeadAvgMin', 'Speed to lead (avg)'],
+  ['calledWithin5Pct', 'Called within 5 min'], ['bookedCalls', 'Booked calls'], ['leadToBookedPct', 'Lead → booked call'], ['qualified', 'Qualified leads'],
+  ['quotesSent', 'Quotes sent'], ['quoteValue', 'Total $ of quotes'], ['missedCallPct', 'Missed call rate'], ['aiCalls', 'Voice AI calls']];
+let trendKey = store.get('kpi-trend') || 'totalLeads';
+let trendData = null;
+function bucketsFor(from, to, size) {
+  const days = dayStarts(from, to, TZ()), out = [];
+  for (let i = 0; i < days.length; i += size) out.push({ from: days[i], to: Math.min(days[i + size] ?? to, to) });
+  return out;
+}
+function valueFor(b) {
+  const s = summarize(buildLists(records, cfg, b.from, b.to));
+  if (records.voiceCalls) Object.assign(s, summarizeVoice(buildVoiceLists(records.voiceCalls, b.from, b.to)));
+  return s;
+}
+function renderTrend() {
+  const el = $('trend');
+  if (!cmp.on) { el.hidden = true; el.innerHTML = ''; trendData = null; return; }
+  el.hidden = false;
+  if (!records) { el.innerHTML = `<div class="thead"><h3>Daily trend</h3></div><div class="msg">The daily chart is built from the individual records. Unlock names to see it. Nothing is estimated from totals.</div>`; trendData = null; return; }
+  const lenDays = Math.max(dayStarts(range.from, range.to, TZ()).length, dayStarts(crange.from, crange.to, TZ()).length);
+  const size = lenDays > 62 ? 7 : 1;
+  const A = bucketsFor(range.from, range.to, size), B = bucketsFor(crange.from, crange.to, size);
+  const SA = A.map(valueFor), SB = B.map(valueFor);
+  trendData = { A, B, SA, SB, size };
+  const opts = TREND_KPIS.filter(([k]) => k !== 'aiCalls' || records.voiceCalls).map(([k, l]) => `<option value="${k}" ${k === trendKey ? 'selected' : ''}>${esc(l)}</option>`).join('');
+  el.innerHTML = `<div class="thead"><h3>${size === 7 ? 'Weekly' : 'Daily'} trend</h3>
+      <div class="legend"><span><span class="sw"></span> A · ${esc(aName())}</span><span><span class="sw prev"></span> B · ${esc(bName())}</span></div>
+      <label class="hint">KPI <select id="trendKpi" aria-label="KPI to chart">${opts}</select></label></div>
+    <div class="chartwrap" id="chartwrap"><svg id="chart" role="img"></svg><div class="ctip" id="ctip"></div></div>
+    <details><summary>Show as table</summary><div id="trendTable"></div></details>`;
+  drawTrend();
+}
+// Axis with round steps; counts get whole-number steps so every label is exact.
+function axisFor(v, pct, whole) {
+  if (pct) { const max = v <= 0 ? 100 : Math.min(100, Math.max(20, Math.ceil(v / 20) * 20)); const step = max / (max % 25 === 0 ? 4 : max / 20 > 5 ? 5 : max / 20); return { max, step }; }
+  const raw = Math.max(v, whole ? 4 : 1) / 4, p = 10 ** Math.floor(Math.log10(raw)), n = raw / p;
+  let step = (n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10) * p; if (whole) step = Math.max(1, Math.round(step));
+  return { max: Math.max(step, Math.ceil(v / step) * step), step };
+}
+function drawTrend() {
+  if (!trendData) return;
+  const { A, B, SA, SB, size } = trendData, k = trendKey, f = fmtOf(k), pct = PCT_KEYS(k);
+  const label = (TREND_KPIS.find(x => x[0] === k) || [k, k])[1];
+  const va = SA.map(s => s[k] ?? null), vb = SB.map(s => s[k] ?? null);
+  const svg = $('chart'), wrap = $('chartwrap');
+  const W = Math.max(280, wrap.clientWidth || 800), H = 240, L = 46, R = 12, T = 12, Bm = 28;
+  const n = Math.max(A.length, B.length), ax = axisFor(Math.max(0, ...va.filter(v => v !== null), ...vb.filter(v => v !== null)), pct, f === 'n' || f === 'min'), max = ax.max;
+  const x = i => L + (n <= 1 ? (W - L - R) / 2 : i * (W - L - R) / (n - 1)), y = v => T + (H - T - Bm) * (1 - v / max);
+  const path = vals => { let d = '', pen = false; vals.forEach((v, i) => { if (v === null) { pen = false; return; } d += `${pen ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`; pen = true; }); return d; };
+  const dots = (vals, color) => vals.length <= 1 || vals.filter(v => v !== null).length === 1 ? vals.map((v, i) => v === null ? '' : `<circle cx="${x(i)}" cy="${y(v)}" r="4" fill="${color}"/>`).join('') : '';
+  const ticks = Array.from({ length: Math.round(max / ax.step) + 1 }, (_, i) => i * ax.step);
+  const dayFmt = ms => { const o = { timeZone: TZ() }; const md = new Date(ms).toLocaleDateString('en-US', { ...o, month: 'short', day: 'numeric' }); return size === 1 && n <= 14 ? `${new Date(ms).toLocaleDateString('en-US', { ...o, weekday: 'short' })} ${md.split(' ')[1]}` : md; };
+  const every = Math.max(1, Math.ceil(n / Math.max(2, Math.floor((W - L - R) / 70))));
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.setAttribute('aria-label', `${label} by ${size === 7 ? 'week' : 'day'}: ${range.label} compared with ${bName()}`);
+  svg.innerHTML = `${ticks.map(t => `<line class="${t === 0 ? 'base' : 'grid'}" x1="${L}" x2="${W - R}" y1="${y(t)}" y2="${y(t)}"/><text class="ax" x="${L - 6}" y="${y(t) + 4}" text-anchor="end">${esc(fmt[f](t))}</text>`).join('')}
+    ${A.map((b, i) => i % every === 0 || i === n - 1 ? `<text class="ax" x="${x(i)}" y="${H - 8}" text-anchor="${i === 0 ? 'start' : i === n - 1 ? 'end' : 'middle'}">${esc(dayFmt(b.from))}</text>` : '').join('')}
+    <path d="${path(vb)}" fill="none" stroke="var(--prev)" stroke-width="2" stroke-dasharray="5 4" stroke-linejoin="round" stroke-linecap="round"/>
+    <path d="${path(va)}" fill="none" stroke="var(--series)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+    ${dots(vb, 'var(--prev)')}${dots(va, 'var(--series)')}
+    <g id="hover" style="display:none"><line id="hx" y1="${T}" y2="${H - Bm}" stroke="var(--ink-3)" stroke-width="1"/><circle id="hb" r="4" fill="var(--prev)" stroke="var(--surface)" stroke-width="2"/><circle id="ha" r="4" fill="var(--series)" stroke="var(--surface)" stroke-width="2"/></g>
+    <rect x="${L}" y="${T}" width="${W - L - R}" height="${H - T - Bm}" fill="transparent" id="hit"/>`;
+  const tip = $('ctip'), hover = svg.querySelector('#hover');
+  const spanTxt = b => b ? (size === 7 ? fmtSpan(b.from, b.to) : new Date(b.from).toLocaleDateString('en-US', { timeZone: TZ(), weekday: 'short', month: 'short', day: 'numeric' })) : '—';
+  svg.querySelector('#hit').addEventListener('mousemove', e => {
+    const r = svg.getBoundingClientRect(), px = (e.clientX - r.left) * (W / r.width);
+    const i = Math.max(0, Math.min(n - 1, Math.round(n <= 1 ? 0 : (px - L) / ((W - L - R) / (n - 1)))));
+    hover.style.display = ''; svg.querySelector('#hx').setAttribute('x1', x(i)); svg.querySelector('#hx').setAttribute('x2', x(i));
+    for (const [id, v] of [['ha', va[i]], ['hb', vb[i]]]) { const c = svg.querySelector('#' + id); if (v === null || v === undefined) c.style.display = 'none'; else { c.style.display = ''; c.setAttribute('cx', x(i)); c.setAttribute('cy', y(v)); } }
+    const ch = change(k, va[i], vb[i]);
+    tip.innerHTML = `<div style="font-weight:600;margin-bottom:4px">${esc(label)} · ${size === 7 ? 'week' : 'day'} ${i + 1}</div>
+      <div class="r"><span><span class="sw"></span> ${esc(spanTxt(A[i]))}</span><b>${va[i] === null || va[i] === undefined ? '—' : esc(fmt[f](va[i]))}</b></div>
+      <div class="r"><span><span class="sw prev"></span> ${esc(spanTxt(B[i]))}</span><b>${vb[i] === null || vb[i] === undefined ? '—' : esc(fmt[f](vb[i]))}</b></div>
+      <div class="chg ${ch.state}" style="margin-top:4px">${esc(ch.text)}</div>`;
+    const left = (x(i) / W) * r.width; tip.style.left = Math.min(Math.max(0, left + 12), r.width - 200) + 'px'; tip.style.top = '8px'; tip.style.opacity = 1;
+  });
+  svg.querySelector('#hit').addEventListener('mouseleave', () => { hover.style.display = 'none'; tip.style.opacity = 0; });
+  $('trendTable').innerHTML = `<table><thead><tr><th>${size === 7 ? 'Week' : 'Day'}</th><th>A · ${esc(aName())}</th><th>${esc(label)}</th><th>B · ${esc(bName())}</th><th>${esc(label)}</th></tr></thead><tbody>${
+    Array.from({ length: n }, (_, i) => `<tr><td>${i + 1}</td><td>${esc(spanTxt(A[i]))}</td><td>${va[i] === null || va[i] === undefined ? '—' : esc(fmt[f](va[i]))}</td><td>${esc(spanTxt(B[i]))}</td><td>${vb[i] === null || vb[i] === undefined ? '—' : esc(fmt[f](vb[i]))}</td></tr>`).join('')}</tbody></table>
+    <div class="hint" style="margin-top:6px">A blank (—) means there was nothing to measure that ${size === 7 ? 'week' : 'day'} (e.g. a rate with no leads). Values use the same rules as the tiles: leads by created date, appointments by appointment date, calls by call date.</div>`;
 }
 
 // ---------- executive summary (rule-based, computed from the same numbers as the tiles) ----------
@@ -726,7 +1037,7 @@ function openUnlock(then) {
 
 // ---------- date range ----------
 function renderPresets() {
-  $('presets').innerHTML = PRESETS.map(([k, l]) => `<button type="button" data-preset="${k}" aria-pressed="${sel.key === k}">${l}</button>`).join('');
+  $('presets').innerHTML = PRESETS.map(([k, l]) => { const dis = !records && !pub.periods[k]; return `<button type="button" data-preset="${k}" aria-pressed="${sel.key === k}" ${dis ? 'disabled title="Unlock names to use this range"' : ''}>${l}${dis ? ' 🔒' : ''}</button>`; }).join('');
   const max = new Date((records || pub).generatedAt).toLocaleDateString('en-CA', { timeZone: TZ() });
   const min = new Date(Date.parse((records || pub).generatedAt) - (cfg.lookbackDays - 1) * 864e5).toLocaleDateString('en-CA', { timeZone: TZ() });
   for (const id of ['fromDate', 'toDate']) { $(id).max = max; $(id).min = min; $(id).disabled = !records; }
@@ -734,7 +1045,9 @@ function renderPresets() {
   $('applyCustom').disabled = !records;
   $('customHint').textContent = records ? `Any dates from ${fmt.date(min + 'T12:00:00Z')} to today.` : 'Unlock to pick custom dates.';
 }
-function setRange(next) { sel = next; compute(); render(); $('rangePop').classList.remove('open'); $('rangeBtn').setAttribute('aria-expanded', 'false'); }
+function setRange(next) { sel = next; cmp.b = null; compute(); render(); $('rangePop').classList.remove('open'); $('rangeBtn').setAttribute('aria-expanded', 'false'); }
+function closeCmp() { $('cmpPop').classList.remove('open'); $('cmpBtn').setAttribute('aria-expanded', 'false'); }
+function applyCompare(next) { Object.assign(cmp, next); compute(); render(); }
 
 // ---------- refresh ----------
 async function refresh() {
@@ -778,12 +1091,35 @@ document.addEventListener('click', e => {
   const th = t.closest('th[data-sort]'); if (th && view) { const k = th.dataset.sort; view.sortDir = view.sortKey === k ? -view.sortDir : (/(at|At|value|Min|stl)$/.test(k) ? -1 : 1); view.sortKey = k; renderModal(); return; }
   const pg = t.closest('[data-page]'); if (pg && view) { view.page += Number(pg.dataset.page); renderModal(); return; }
   if (t.closest('#mCsv')) { csv(); return; }
-  const pr = t.closest('[data-preset]'); if (pr) { setRange({ key: pr.dataset.preset }); return; }
-  if (t.closest('#rangeBtn')) { const o = $('rangePop').classList.toggle('open'); $('rangeBtn').setAttribute('aria-expanded', String(o)); return; }
+  const pr = t.closest('[data-preset]'); if (pr) { if (!pr.disabled) setRange({ key: pr.dataset.preset }); return; }
+  if (t.closest('[data-cmp-off]')) { applyCompare({ on: false, b: null }); return; }
+  const cp = t.closest('[data-cmp]');
+  if (cp) {
+    if (cp.disabled) return;
+    const k = cp.dataset.cmp;
+    if (k === 'custom') sel = { key: 'custom', from: isoDay(range.from), to: isoDay(range.to - 1) };
+    else sel = { key: k };
+    applyCompare({ on: true, b: null }); closeCmp(); return;
+  }
+  if (t.closest('#cmpBtn')) { $('rangePop').classList.remove('open'); const o = $('cmpPop').classList.toggle('open'); $('cmpBtn').setAttribute('aria-expanded', String(o)); return; }
+  if (!t.closest('#cmpPop')) closeCmp();
+  if (t.closest('#rangeBtn')) { closeCmp(); const o = $('rangePop').classList.toggle('open'); $('rangeBtn').setAttribute('aria-expanded', String(o)); return; }
   if (!t.closest('#rangePop')) { $('rangePop').classList.remove('open'); $('rangeBtn').setAttribute('aria-expanded', 'false'); }
 });
 document.addEventListener('change', e => { const s = e.target.closest('select[data-filter]'); if (s && view) { view.filters[s.dataset.filter] = s.value; view.page = 0; renderModal(); } });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); $('rangePop').classList.remove('open'); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); $('rangePop').classList.remove('open'); closeCmp(); } });
+$('cmpOn').addEventListener('change', e => applyCompare({ on: e.target.checked }));
+$('cmpMatch').addEventListener('change', e => applyCompare({ match: e.target.checked }));
+$('cmpApply').addEventListener('click', () => {
+  const a = [$('cmpAFrom').value, $('cmpATo').value], b = [$('cmpBFrom').value, $('cmpBTo').value];
+  if (!a[0] || !a[1]) { $('cmpHint').textContent = 'Pick both dates for Period A.'; return; }
+  if ((b[0] && !b[1]) || (!b[0] && b[1])) { $('cmpHint').textContent = 'Pick both dates for Period B, or leave both empty.'; return; }
+  a.sort(); b.sort();
+  sel = { key: 'custom', from: a[0], to: a[1] };
+  applyCompare({ on: true, b: b[0] ? { from: b[0], to: b[1] } : null }); closeCmp();
+});
+document.addEventListener('change', e => { if (e.target.id === 'trendKpi') { trendKey = e.target.value; store.set('kpi-trend', trendKey); drawTrend(); } });
+let rsz; addEventListener('resize', () => { clearTimeout(rsz); rsz = setTimeout(() => { if (trendData) drawTrend(); }, 150); });
 $('applyCustom').addEventListener('click', () => {
   const f = $('fromDate').value, t = $('toDate').value;
   if (!f || !t) return;
