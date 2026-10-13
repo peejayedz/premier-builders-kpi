@@ -93,6 +93,22 @@ export function buildLists(records, cfg, from, to) {
   const consult = (records.appointments || []).filter(a => a.consult && inRange(a.startTime, from, to));
   const booked = consult.filter(a => !['cancelled', 'invalid'].includes(norm(a.status)));
   const showed = booked.filter(a => norm(a.status) === 'showed');
+  // No-shows: GHL appointment status "No-show", or (because appointments are rarely marked) a past booked call
+  // whose lead card now sits in the No Show stage. Only the contact's most recent past booked call is counted
+  // from the stage, so one no-show is never counted twice. Future calls can't be no-shows yet.
+  const nowMs = Date.parse(records.generatedAt) || Date.now();
+  const noShowStages = (cfg.stages.noShow || ['No Show']).map(norm);
+  const latestLead = {};
+  for (const l of records.leads) if (l.contactId && (!latestLead[l.contactId] || Date.parse(l.createdAt) > Date.parse(latestLead[l.contactId].createdAt))) latestLead[l.contactId] = l;
+  const lastPast = {};
+  for (const a of records.appointments || []) {
+    if (!a.consult || ['cancelled', 'invalid'].includes(norm(a.status)) || Date.parse(a.startTime) > nowMs) continue;
+    if (!lastPast[a.contactId] || Date.parse(a.startTime) > Date.parse(lastPast[a.contactId].startTime)) lastPast[a.contactId] = a;
+  }
+  const markedNoShow = a => /no.?show/.test(norm(a.status).replace(/[_\s-]/g, ''));
+  const bookedPast = booked.filter(a => Date.parse(a.startTime) <= nowMs);
+  const noShows = bookedPast.filter(a => markedNoShow(a) || (lastPast[a.contactId]?.id === a.id && noShowStages.includes(norm(latestLead[a.contactId]?.stage))))
+    .map(a => ({ ...a, noShowBy: markedNoShow(a) ? 'Appointment marked No-show' : 'Card in No Show stage', leadStage: latestLead[a.contactId]?.stage || '—' }));
 
   let missed = null, inboundCalls = null;
   if (records.calls) {
@@ -120,6 +136,8 @@ export function buildLists(records, cfg, from, to) {
     contracts: leads.filter(l => l.contract),
     won: leads.filter(l => l.won),
     booked,
+    bookedPast,
+    noShows,
     showed,
     inboundCalls,
     missed,
@@ -172,6 +190,8 @@ export function summarize(L) {
     showed: L.showed.length,
     leadToBookedPct: pct(L.booked.length, L.newLeads.length),
     bookedToShowPct: pct(L.showed.length, L.booked.length),
+    noShows: L.noShows ? L.noShows.length : null,
+    noShowPct: L.noShows ? pct(L.noShows.length, L.bookedPast.length) : null,
     leadToShowPct: pct(L.showed.length, L.newLeads.length),
     qualified: L.qualified.length,
     quotesSent: L.quotes.length,
