@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T20:18:07.526Z",
+  "generatedAt": "2026-10-13T21:56:44.456Z",
   "location": "Premier Builders",
   "targets": {
     "speedToLeadMin": 5,
@@ -25,7 +25,7 @@
     "today": {
       "label": "Today",
       "from": 1791864000000,
-      "to": 1791922687526,
+      "to": 1791928604456,
       "current": {
         "totalLeads": 3,
         "speedToLeadAvgMin": 4,
@@ -307,7 +307,7 @@
     "thisWeek": {
       "label": "This week",
       "from": 1791777600000,
-      "to": 1791922687526,
+      "to": 1791928604456,
       "current": {
         "totalLeads": 4,
         "speedToLeadAvgMin": 27,
@@ -589,8 +589,8 @@
     },
     "last7": {
       "label": "Last 7 days",
-      "from": 1791317887526,
-      "to": 1791922687526,
+      "from": 1791323804456,
+      "to": 1791928604456,
       "current": {
         "totalLeads": 13,
         "speedToLeadAvgMin": 25,
@@ -731,8 +731,8 @@
     },
     "last30": {
       "label": "Last 30 days",
-      "from": 1789330687526,
-      "to": 1791922687526,
+      "from": 1789336604456,
+      "to": 1791928604456,
       "current": {
         "totalLeads": 35,
         "speedToLeadAvgMin": 74,
@@ -875,20 +875,20 @@
     },
     "last90": {
       "label": "Last 90 days",
-      "from": 1784146687526,
-      "to": 1791922687526,
+      "from": 1784152604456,
+      "to": 1791928604456,
       "current": {
         "totalLeads": 144,
         "speedToLeadAvgMin": 146,
         "calledWithin5Pct": 57.1,
         "contacted": 98,
         "contactRatePct": 68.1,
-        "bookedCalls": 71,
+        "bookedCalls": 70,
         "showed": 0,
-        "leadToBookedPct": 49.3,
+        "leadToBookedPct": 48.6,
         "bookedToShowPct": 0,
         "noShows": 11,
-        "noShowPct": 15.5,
+        "noShowPct": 15.7,
         "leadToShowPct": 0,
         "qualified": 19,
         "quotesSent": 10,
@@ -954,12 +954,12 @@
         "calledWithin5Pct": 0,
         "contacted": 97,
         "contactRatePct": 69.8,
-        "bookedCalls": 79,
+        "bookedCalls": 80,
         "showed": 0,
-        "leadToBookedPct": 56.8,
+        "leadToBookedPct": 57.6,
         "bookedToShowPct": 0,
         "noShows": 11,
-        "noShowPct": 13.9,
+        "noShowPct": 13.8,
         "leadToShowPct": 0,
         "qualified": 18,
         "quotesSent": 6,
@@ -1020,7 +1020,7 @@
     "thisMonth": {
       "label": "This month",
       "from": 1790827200000,
-      "to": 1791922687526,
+      "to": 1791928604456,
       "current": {
         "totalLeads": 18,
         "speedToLeadAvgMin": 27,
@@ -1305,7 +1305,7 @@
     "thisQuarter": {
       "label": "This quarter",
       "from": 1790827200000,
-      "to": 1791922687526,
+      "to": 1791928604456,
       "current": {
         "totalLeads": 18,
         "speedToLeadAvgMin": 27,
