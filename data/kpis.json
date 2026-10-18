@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-18T01:27:49.713Z",
+  "generatedAt": "2026-10-18T06:31:04.681Z",
   "location": "Premier Builders",
   "targets": {
     "speedToLeadMin": 5,
@@ -24,8 +24,145 @@
   "periods": {
     "today": {
       "label": "Today",
+      "from": 1792296000000,
+      "to": 1792305064681,
+      "current": {
+        "totalLeads": 0,
+        "speedToLeadAvgMin": null,
+        "calledWithin5Pct": null,
+        "contacted": 0,
+        "contactRatePct": null,
+        "bookedCalls": 0,
+        "showed": 0,
+        "leadToBookedPct": null,
+        "bookedToShowPct": null,
+        "noShows": 0,
+        "noShowPct": null,
+        "leadToShowPct": null,
+        "qualified": 0,
+        "quotesSent": 0,
+        "quoteValue": 0,
+        "contactToQuotePct": null,
+        "underContract": 0,
+        "quoteToContractPct": null,
+        "closedDeals": 0,
+        "revenue": 0,
+        "quoteToClosePct": null,
+        "missedCallPct": null,
+        "missedCalls": 0,
+        "inboundCalls": 0,
+        "aiCalls": 0,
+        "aiTotalDurationSec": 0,
+        "aiAvgDurationSec": null,
+        "aiBooked": 0,
+        "aiTransferred": 0,
+        "aiLeads": 0,
+        "aiCallbacks": null,
+        "bySource": {},
+        "funnel": [
+          [
+            "Leads",
+            0,
+            "newLeads"
+          ],
+          [
+            "Contacted",
+            0,
+            "contacted"
+          ],
+          [
+            "Qualified",
+            0,
+            "qualified"
+          ],
+          [
+            "Quotes",
+            0,
+            "quotes"
+          ],
+          [
+            "Under contract",
+            0,
+            "contracts"
+          ],
+          [
+            "Closed",
+            0,
+            "won"
+          ]
+        ]
+      },
+      "previous": {
+        "totalLeads": 0,
+        "speedToLeadAvgMin": null,
+        "calledWithin5Pct": null,
+        "contacted": 0,
+        "contactRatePct": null,
+        "bookedCalls": 0,
+        "showed": 0,
+        "leadToBookedPct": null,
+        "bookedToShowPct": null,
+        "noShows": 0,
+        "noShowPct": null,
+        "leadToShowPct": null,
+        "qualified": 0,
+        "quotesSent": 0,
+        "quoteValue": 0,
+        "contactToQuotePct": null,
+        "underContract": 0,
+        "quoteToContractPct": null,
+        "closedDeals": 0,
+        "revenue": 0,
+        "quoteToClosePct": null,
+        "missedCallPct": null,
+        "missedCalls": 0,
+        "inboundCalls": 0,
+        "aiCalls": 0,
+        "aiTotalDurationSec": 0,
+        "aiAvgDurationSec": null,
+        "aiBooked": 0,
+        "aiTransferred": 0,
+        "aiLeads": 0,
+        "aiCallbacks": null,
+        "bySource": {},
+        "funnel": [
+          [
+            "Leads",
+            0,
+            "newLeads"
+          ],
+          [
+            "Contacted",
+            0,
+            "contacted"
+          ],
+          [
+            "Qualified",
+            0,
+            "qualified"
+          ],
+          [
+            "Quotes",
+            0,
+            "quotes"
+          ],
+          [
+            "Under contract",
+            0,
+            "contracts"
+          ],
+          [
+            "Closed",
+            0,
+            "won"
+          ]
+        ]
+      }
+    },
+    "yesterday": {
+      "label": "Yesterday",
       "from": 1792209600000,
-      "to": 1792286869713,
+      "to": 1792296000000,
       "current": {
         "totalLeads": 2,
         "speedToLeadAvgMin": 0,
@@ -163,151 +300,10 @@
         ]
       }
     },
-    "yesterday": {
-      "label": "Yesterday",
-      "from": 1792123200000,
-      "to": 1792209600000,
-      "current": {
-        "totalLeads": 1,
-        "speedToLeadAvgMin": 42,
-        "calledWithin5Pct": 0,
-        "contacted": 1,
-        "contactRatePct": 100,
-        "bookedCalls": 0,
-        "showed": 0,
-        "leadToBookedPct": 0,
-        "bookedToShowPct": null,
-        "noShows": 0,
-        "noShowPct": null,
-        "leadToShowPct": 0,
-        "qualified": 0,
-        "quotesSent": 0,
-        "quoteValue": 0,
-        "contactToQuotePct": 0,
-        "underContract": 0,
-        "quoteToContractPct": null,
-        "closedDeals": 0,
-        "revenue": 0,
-        "quoteToClosePct": null,
-        "missedCallPct": 0,
-        "missedCalls": 0,
-        "inboundCalls": 3,
-        "aiCalls": 1,
-        "aiTotalDurationSec": 47,
-        "aiAvgDurationSec": 47,
-        "aiBooked": 0,
-        "aiTransferred": 0,
-        "aiLeads": 0,
-        "aiCallbacks": null,
-        "bySource": {
-          "PPC Launch": 1
-        },
-        "funnel": [
-          [
-            "Leads",
-            1,
-            "newLeads"
-          ],
-          [
-            "Contacted",
-            1,
-            "contacted"
-          ],
-          [
-            "Qualified",
-            0,
-            "qualified"
-          ],
-          [
-            "Quotes",
-            0,
-            "quotes"
-          ],
-          [
-            "Under contract",
-            0,
-            "contracts"
-          ],
-          [
-            "Closed",
-            0,
-            "won"
-          ]
-        ]
-      },
-      "previous": {
-        "totalLeads": 1,
-        "speedToLeadAvgMin": 3,
-        "calledWithin5Pct": 100,
-        "contacted": 1,
-        "contactRatePct": 100,
-        "bookedCalls": 0,
-        "showed": 0,
-        "leadToBookedPct": 0,
-        "bookedToShowPct": null,
-        "noShows": 0,
-        "noShowPct": null,
-        "leadToShowPct": 0,
-        "qualified": 0,
-        "quotesSent": 0,
-        "quoteValue": 0,
-        "contactToQuotePct": 0,
-        "underContract": 0,
-        "quoteToContractPct": null,
-        "closedDeals": 0,
-        "revenue": 0,
-        "quoteToClosePct": null,
-        "missedCallPct": null,
-        "missedCalls": 0,
-        "inboundCalls": 0,
-        "aiCalls": 0,
-        "aiTotalDurationSec": 0,
-        "aiAvgDurationSec": null,
-        "aiBooked": 0,
-        "aiTransferred": 0,
-        "aiLeads": 0,
-        "aiCallbacks": null,
-        "bySource": {
-          "PPC Launch": 1
-        },
-        "funnel": [
-          [
-            "Leads",
-            1,
-            "newLeads"
-          ],
-          [
-            "Contacted",
-            1,
-            "contacted"
-          ],
-          [
-            "Qualified",
-            0,
-            "qualified"
-          ],
-          [
-            "Quotes",
-            0,
-            "quotes"
-          ],
-          [
-            "Under contract",
-            0,
-            "contracts"
-          ],
-          [
-            "Closed",
-            0,
-            "won"
-          ]
-        ]
-      }
-    },
     "thisWeek": {
       "label": "This week",
       "from": 1791777600000,
-      "to": 1792286869713,
+      "to": 1792305064681,
       "current": {
         "totalLeads": 9,
         "speedToLeadAvgMin": 17,
@@ -590,8 +586,8 @@
     },
     "last7": {
       "label": "Last 7 days",
-      "from": 1791682069713,
-      "to": 1792286869713,
+      "from": 1791700264681,
+      "to": 1792305064681,
       "current": {
         "totalLeads": 12,
         "speedToLeadAvgMin": 123,
@@ -732,8 +728,8 @@
     },
     "last30": {
       "label": "Last 30 days",
-      "from": 1789694869713,
-      "to": 1792286869713,
+      "from": 1789713064681,
+      "to": 1792305064681,
       "current": {
         "totalLeads": 39,
         "speedToLeadAvgMin": 87,
@@ -875,8 +871,8 @@
     },
     "last90": {
       "label": "Last 90 days",
-      "from": 1784510869713,
-      "to": 1792286869713,
+      "from": 1784529064681,
+      "to": 1792305064681,
       "current": {
         "totalLeads": 138,
         "speedToLeadAvgMin": 161,
@@ -1020,7 +1016,7 @@
     "thisMonth": {
       "label": "This month",
       "from": 1790827200000,
-      "to": 1792286869713,
+      "to": 1792305064681,
       "current": {
         "totalLeads": 23,
         "speedToLeadAvgMin": 80,
@@ -1305,7 +1301,7 @@
     "thisQuarter": {
       "label": "This quarter",
       "from": 1790827200000,
-      "to": 1792286869713,
+      "to": 1792305064681,
       "current": {
         "totalLeads": 23,
         "speedToLeadAvgMin": 80,
@@ -1376,22 +1372,22 @@
         ]
       },
       "previous": {
-        "totalLeads": 49,
+        "totalLeads": 52,
         "speedToLeadAvgMin": 931,
         "calledWithin5Pct": 0,
-        "contacted": 33,
-        "contactRatePct": 67.3,
+        "contacted": 36,
+        "contactRatePct": 69.2,
         "bookedCalls": 26,
         "showed": 0,
-        "leadToBookedPct": 53.1,
+        "leadToBookedPct": 50,
         "bookedToShowPct": 0,
         "noShows": 4,
         "noShowPct": 15.4,
         "leadToShowPct": 0,
-        "qualified": 8,
-        "quotesSent": 1,
+        "qualified": 9,
+        "quotesSent": 2,
         "quoteValue": 0,
-        "contactToQuotePct": 3,
+        "contactToQuotePct": 5.6,
         "underContract": 0,
         "quoteToContractPct": 0,
         "closedDeals": 0,
@@ -1408,27 +1404,27 @@
         "aiLeads": 0,
         "aiCallbacks": null,
         "bySource": {
-          "Contact Form": 49
+          "Contact Form": 52
         },
         "funnel": [
           [
             "Leads",
-            49,
+            52,
             "newLeads"
           ],
           [
             "Contacted",
-            33,
+            36,
             "contacted"
           ],
           [
             "Qualified",
-            8,
+            9,
             "qualified"
           ],
           [
             "Quotes",
-            1,
+            2,
             "quotes"
           ],
           [
