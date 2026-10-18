@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-18T18:34:46.324Z",
+  "generatedAt": "2026-10-18T20:59:43.396Z",
   "location": "Premier Builders",
   "targets": {
     "speedToLeadMin": 5,
@@ -25,7 +25,7 @@
     "today": {
       "label": "Today",
       "from": 1792296000000,
-      "to": 1792348486324,
+      "to": 1792357183396,
       "current": {
         "totalLeads": 1,
         "speedToLeadAvgMin": null,
@@ -95,7 +95,7 @@
         ]
       },
       "previous": {
-        "totalLeads": 1,
+        "totalLeads": 2,
         "speedToLeadAvgMin": 0,
         "calledWithin5Pct": 100,
         "contacted": 0,
@@ -127,12 +127,12 @@
         "aiLeads": 0,
         "aiCallbacks": null,
         "bySource": {
-          "PPC Launch": 1
+          "PPC Launch": 2
         },
         "funnel": [
           [
             "Leads",
-            1,
+            2,
             "newLeads"
           ],
           [
@@ -307,7 +307,7 @@
     "thisWeek": {
       "label": "This week",
       "from": 1791777600000,
-      "to": 1792348486324,
+      "to": 1792357183396,
       "current": {
         "totalLeads": 10,
         "speedToLeadAvgMin": 17,
@@ -590,8 +590,8 @@
     },
     "last7": {
       "label": "Last 7 days",
-      "from": 1791743686324,
-      "to": 1792348486324,
+      "from": 1791752383396,
+      "to": 1792357183396,
       "current": {
         "totalLeads": 11,
         "speedToLeadAvgMin": 147,
@@ -732,8 +732,8 @@
     },
     "last30": {
       "label": "Last 30 days",
-      "from": 1789756486324,
-      "to": 1792348486324,
+      "from": 1789765183396,
+      "to": 1792357183396,
       "current": {
         "totalLeads": 40,
         "speedToLeadAvgMin": 87,
@@ -756,9 +756,9 @@
         "closedDeals": 0,
         "revenue": 0,
         "quoteToClosePct": null,
-        "missedCallPct": 37.5,
+        "missedCallPct": 39.1,
         "missedCalls": 9,
-        "inboundCalls": 24,
+        "inboundCalls": 23,
         "aiCalls": 4,
         "aiTotalDurationSec": 310,
         "aiAvgDurationSec": 78,
@@ -826,9 +826,9 @@
         "closedDeals": 0,
         "revenue": 0,
         "quoteToClosePct": 0,
-        "missedCallPct": 55.6,
+        "missedCallPct": 50,
         "missedCalls": 5,
-        "inboundCalls": 9,
+        "inboundCalls": 10,
         "aiCalls": 0,
         "aiTotalDurationSec": 0,
         "aiAvgDurationSec": null,
@@ -875,8 +875,8 @@
     },
     "last90": {
       "label": "Last 90 days",
-      "from": 1784572486324,
-      "to": 1792348486324,
+      "from": 1784581183396,
+      "to": 1792357183396,
       "current": {
         "totalLeads": 139,
         "speedToLeadAvgMin": 161,
@@ -1020,7 +1020,7 @@
     "thisMonth": {
       "label": "This month",
       "from": 1790827200000,
-      "to": 1792348486324,
+      "to": 1792357183396,
       "current": {
         "totalLeads": 24,
         "speedToLeadAvgMin": 80,
@@ -1112,9 +1112,9 @@
         "closedDeals": 0,
         "revenue": 0,
         "quoteToClosePct": null,
-        "missedCallPct": 55.6,
+        "missedCallPct": 50,
         "missedCalls": 5,
-        "inboundCalls": 9,
+        "inboundCalls": 10,
         "aiCalls": 0,
         "aiTotalDurationSec": 0,
         "aiAvgDurationSec": null,
@@ -1305,7 +1305,7 @@
     "thisQuarter": {
       "label": "This quarter",
       "from": 1790827200000,
-      "to": 1792348486324,
+      "to": 1792357183396,
       "current": {
         "totalLeads": 24,
         "speedToLeadAvgMin": 80,
