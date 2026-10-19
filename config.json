@@ -62,7 +62,20 @@
   "fields": {
     "speedToLead": "Speed to Lead (min)",
     "firstContacted": "First Contacted Date",
-    "contactMethod": "Contact Method"
+    "contactMethod": "Contact Method",
+    "quoteSentDate": [
+      "Quote Sent Date"
+    ],
+    "contractDate": [
+      "Contract Sent Date",
+      "Under Contract Date",
+      "Contract Date"
+    ],
+    "quoteAmount": [
+      "Quote Amount",
+      "Quote Value",
+      "Quote $"
+    ]
   },
   "speedToLead": {
     "useBusinessHours": true,
@@ -111,6 +124,7 @@
       "0"
     ],
     "tags": [
+      "qualified_lead",
       "qualified",
       "status:qualified",
       "lead:qualified"
@@ -127,5 +141,23 @@
     "apiVersion": "v3",
     "leadWindowHours": 24,
     "callbackFieldPattern": "call.?back"
+  },
+  "tags": {
+    "_note": "Tags Lisa adds to the contact. Matching ignores case.",
+    "quoteSent": [
+      "quotes sent",
+      "quote sent"
+    ],
+    "underContract": [
+      "under contract"
+    ],
+    "showed": [
+      "showed"
+    ],
+    "noShow": [
+      "no show",
+      "no-show",
+      "noshow"
+    ]
   }
 }

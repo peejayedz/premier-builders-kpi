@@ -398,31 +398,37 @@ const DRILLS = {
     cols: [col.name, col.created, { label: 'First response', key: '_firstResponse', type: 'dt' }, { label: 'Speed to lead', key: 'stlMin', type: 'stl', num: true }, { label: 'Method', key: 'contactMethod' }, col.assigned, col.phone],
     prep: r => ({ ...r, _firstResponse: r.firstCallAt || (r.stlMin === null || r.stlMin === undefined ? null : new Date(Date.parse(r.createdAt) + r.stlMin * 60000).toISOString()) }) },
   qualified: { title: 'Qualified leads', unit: 'leads', list: L => L.qualified,
-    def: 'New leads Lisa marked Qualified (Status overlay), plus any lead that reached Sent Quote or later (or Won). Leads she marked Not Qualified are excluded.',
-    cols: [col.name, col.email, col.phone, { label: 'Qualification', key: '_qual', type: 'badge' }, col.source, col.assigned, { label: 'Date qualified*', key: 'stageChangedAt', type: 'dt' }, col.stage],
-    prep: r => ({ ...r, _qual: r.qualifiedBy || '—' }),
-    foot: '* Date the card entered its current stage. GHL keeps no history of earlier stage dates.' },
+    def: 'Leads that came in during the selected dates and are tagged "qualified_lead" (or marked qualified in GHL), plus any that have been quoted, gone under contract or been won. Leads marked Not Qualified are excluded.',
+    cols: [col.name, col.email, col.phone, { label: 'Qualification', key: '_qual', type: 'badge' }, col.source, col.assigned, col.created, col.stage],
+    prep: r => ({ ...r, _qual: r.qualifiedBy || '—' }) },
   booked: { title: 'Booked calls', unit: 'appointments', list: L => L.booked,
     def: 'Any appointment with Lisa (her calendars or assigned to her) starting in the selected dates, excluding cancelled and invalid. One row per appointment.',
     cols: [col.name, col.email, col.phone, { label: 'Appointment', key: 'startTime', type: 'dt' }, { label: 'Type', key: 'calendar', filter: 'calendar' }, col.assigned, { label: 'Booked on', key: 'bookedAt', type: 'dt' }, { label: 'Status', key: 'status', type: 'badge', filter: 'status' }] },
   showed: { title: 'Showed calls', unit: 'appointments', list: L => L.showed,
-    def: 'Booked calls in the selected dates marked Showed in the calendar.',
-    cols: [col.name, col.email, col.phone, { label: 'Appointment', key: 'startTime', type: 'dt' }, col.assigned, { label: 'Outcome', key: 'status', type: 'badge' }] },
+    def: 'Booked calls in the selected dates that happened: the appointment is marked Showed, or the contact has the "showed" tag (applied to their most recent booked call).',
+    cols: [col.name, col.email, col.phone, { label: 'Appointment', key: 'startTime', type: 'dt' }, col.assigned, { label: 'How we know', key: 'outcomeBy', type: 'badge', filter: 'outcomeBy' }] },
   noShows: { title: 'No-shows', unit: 'appointments', list: L => L.noShows || [],
-    def: 'Booked calls in the selected dates whose time has passed and that were a no-show: the appointment is marked No-show, or the lead card is now in the No Show stage (counted on the lead\'s most recent booked call only). Future calls are not counted.',
+    def: 'Booked calls in the selected dates whose time has passed and that were a no-show: the appointment is marked No-show, the contact has the "no show" tag, or the card is in the No Show stage (tags and stage apply to the contact\'s most recent booked call; a "showed" tag wins). Future calls are not counted.',
     cols: [col.name, col.email, col.phone, { label: 'Appointment', key: 'startTime', type: 'dt' }, { label: 'How we know', key: 'noShowBy', type: 'badge', filter: 'noShowBy' }, { label: 'Pipeline stage now', key: 'leadStage', filter: 'leadStage' }, col.assigned, { label: 'Booked on', key: 'bookedAt', type: 'dt' }] },
   quotes: { title: 'Quotes sent', unit: 'quotes', list: L => L.quotes, total: true,
-    def: 'New leads in the selected dates that reached Quote Sent or later, whatever happened after.',
-    cols: [col.name, col.email, col.phone, { label: 'Quote date*', key: 'stageChangedAt', type: 'dt' }, { label: 'Quote amount', key: 'value', type: 'usd', num: true }, col.assigned, col.stage],
-    foot: '* Date the card entered its current stage.' },
+    def: 'Quotes sent in the selected dates (Quote Sent Date), whenever the lead came in. A quote counts when the contact has the "quotes sent" tag, a Quote Sent Date, or the card reached Sent Quote or later. With no date yet, the lead\'s created date is used.',
+    cols: [col.name, col.email, col.phone, { label: 'Quote sent', key: 'quoteOn', type: 'dt' }, { label: 'Date from', key: 'quoteDateFrom', filter: 'quoteDateFrom' }, { label: 'Quote amount', key: 'value', type: 'usd', num: true }, col.assigned, col.stage] },
   contracts: { title: 'Under contract', unit: 'deals', list: L => L.contracts, total: true,
-    def: 'New leads in the selected dates that reached Under Contract (sent or signed).',
-    cols: [col.name, col.email, col.phone, { label: 'Contract date*', key: 'stageChangedAt', type: 'dt' }, { label: 'Contract value', key: 'value', type: 'usd', num: true }, col.assigned, { label: 'Contract status', key: '_cstatus', type: 'badge', filter: '_cstatus' }],
-    prep: r => ({ ...r, _cstatus: r.won ? 'Signed (won)' : r.status === 'lost' ? 'Lost' : 'Sent / open' }),
-    foot: '* Date the card entered its current stage.' },
+    def: 'Contracts in the selected dates (contract date, or the date won), whenever the lead came in. A deal counts when the contact has the "under contract" tag, a contract date, the opportunity is Won, or the card is in Under Contract / Closed.',
+    cols: [col.name, col.email, col.phone, { label: 'Contract date', key: 'contractOn', type: 'dt' }, { label: 'Date from', key: 'contractDateFrom', filter: 'contractDateFrom' }, { label: 'Contract value', key: 'value', type: 'usd', num: true }, col.assigned, { label: 'Contract status', key: '_cstatus', type: 'badge', filter: '_cstatus' }],
+    prep: r => ({ ...r, _cstatus: r.won ? 'Signed (won)' : r.status === 'lost' ? 'Lost' : 'Open' }) },
   won: { title: 'Closed deals', unit: 'deals', list: L => L.won, total: true,
-    def: 'New leads in the selected dates now marked Won. The total is the revenue.',
-    cols: [col.name, col.email, col.phone, { label: 'Close date', key: 'statusChangedAt', type: 'dt' }, { label: 'Deal value', key: 'value', type: 'usd', num: true }, col.assigned, col.source] },
+    def: 'Opportunities marked Won in the selected dates (the date they were won), whenever the lead came in. The total is the revenue (opportunity value).',
+    cols: [col.name, col.email, col.phone, { label: 'Won on', key: 'wonOn', type: 'dt' }, { label: 'Deal value', key: 'value', type: 'usd', num: true }, col.assigned, col.source] },
+  fQuotes: { title: 'Funnel: leads that got a quote', unit: 'leads', list: L => L.fQuotes,
+    def: 'Leads that came in during the selected dates and have since been quoted (tag, Quote Sent Date or stage).',
+    cols: [col.name, col.email, col.phone, col.created, col.source, col.assigned, col.stage] },
+  fContracts: { title: 'Funnel: leads under contract', unit: 'leads', list: L => L.fContracts,
+    def: 'Leads that came in during the selected dates and have since gone under contract or been won.',
+    cols: [col.name, col.email, col.phone, col.created, col.source, col.assigned, col.stage] },
+  fWon: { title: 'Funnel: leads closed (won)', unit: 'leads', list: L => L.fWon,
+    def: 'Leads that came in during the selected dates and are now marked Won.',
+    cols: [col.name, col.email, col.phone, col.created, col.source, col.assigned, col.stage] },
   missed: { title: 'Missed inbound calls', unit: 'missed calls', list: L => L.missed || [],
     def: 'Inbound calls in the selected dates that nobody answered. One row per call, so the same person can appear twice.',
     cols: [col.name, col.phone, { label: 'Missed at', key: 'at', type: 'dt' }, col.assigned, { label: 'Called back?', key: '_back', type: 'badge', filter: '_back' }, { label: 'Callback at', key: 'callbackAt', type: 'dt' }, { label: 'Callback wait', key: 'callbackMin', type: 'stl', num: true }, { label: 'Lead stage', key: 'leadStage' }],
@@ -431,7 +437,7 @@ const DRILLS = {
 DRILLS.speed.numerator = L => L.speedMeasured.length; DRILLS.speed.numLabel = 'have had a first call';
 DRILLS.speedWithin5 = { ...DRILLS.speed, title: 'Called within 5 minutes', numerator: L => L.within5.length, numLabel: 'called within 5 min' };
 DRILLS.leadToBooked = { ...DRILLS.booked, title: 'Lead → booked call', denom: L => L.newLeads.length, denomLabel: 'new leads' };
-DRILLS.bookedToShow = { ...DRILLS.booked, title: 'Booked call → show', numerator: L => L.showed.length, numLabel: 'showed' };
+DRILLS.bookedToShow = { ...DRILLS.showed, title: 'Booked call → show', denom: L => (L.bookedPast || []).length, denomLabel: 'booked calls that have already happened' };
 DRILLS.noShowRate = { ...DRILLS.noShows, title: 'Booked call → no-show', denom: L => (L.bookedPast || []).length, denomLabel: 'booked calls that have already happened' };
 DRILLS.leadToShow = { ...DRILLS.showed, title: 'Lead → show', denom: L => L.newLeads.length, denomLabel: 'new leads' };
 DRILLS.contactToQuote = { ...DRILLS.quotes, title: 'Contact → quote', denom: L => L.contacted.length, denomLabel: 'contacted leads' };
@@ -723,7 +729,7 @@ function compareSummary() {
       <div><h4><span class="dot bad"></span>Needs attention</h4>${li(attention.map(attLine))}</div>
       <div><h4><span class="dot focus"></span>Recommended</h4>${li(recs.slice(0, 3).map(r => esc(r.txt)))}</div>
     </div>
-    <div class="caveat">Rates are recalculated from each period's own counts. Qualified, quotes, contracts and closed deals count leads created in each period by the stage they're in today (GHL keeps no stage history), so an older period has had more time to progress.${records ? '' : ' Locked: comparing the pre-computed totals; unlock names for custom dates and the daily chart.'}</div>`;
+    <div class="caveat">Rates are recalculated from each period's own counts. Quotes, contracts and closed deals are counted on the date they happened (Quote Sent Date, contract date, date won). Qualified leads, and quotes or contracts with no date yet, are grouped by when the lead came in.${records ? '' : ' Locked: comparing the pre-computed totals; unlock names for custom dates and the daily chart.'}</div>`;
 }
 
 const TREND_KPIS = [['totalLeads', 'New leads'], ['contacted', 'Contacted leads'], ['contactRatePct', 'Contact rate'], ['speedToLeadAvgMin', 'Speed to lead (avg)'],
