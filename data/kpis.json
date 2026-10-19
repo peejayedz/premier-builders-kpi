@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-19T06:02:07.171Z",
+  "generatedAt": "2026-10-19T09:21:42.827Z",
   "location": "Premier Builders",
   "targets": {
     "speedToLeadMin": 5,
@@ -25,7 +25,7 @@
     "today": {
       "label": "Today",
       "from": 1792382400000,
-      "to": 1792389727171,
+      "to": 1792401702827,
       "current": {
         "totalLeads": 0,
         "speedToLeadAvgMin": null,
@@ -78,17 +78,17 @@
           [
             "Quotes",
             0,
-            "quotes"
+            "fQuotes"
           ],
           [
             "Under contract",
             0,
-            "contracts"
+            "fContracts"
           ],
           [
             "Closed",
             0,
-            "won"
+            "fWon"
           ]
         ]
       },
@@ -144,17 +144,17 @@
           [
             "Quotes",
             0,
-            "quotes"
+            "fQuotes"
           ],
           [
             "Under contract",
             0,
-            "contracts"
+            "fContracts"
           ],
           [
             "Closed",
             0,
-            "won"
+            "fWon"
           ]
         ]
       }
@@ -217,24 +217,24 @@
           [
             "Quotes",
             0,
-            "quotes"
+            "fQuotes"
           ],
           [
             "Under contract",
             0,
-            "contracts"
+            "fContracts"
           ],
           [
             "Closed",
             0,
-            "won"
+            "fWon"
           ]
         ]
       },
       "previous": {
         "totalLeads": 2,
-        "speedToLeadAvgMin": 0,
-        "calledWithin5Pct": 100,
+        "speedToLeadAvgMin": null,
+        "calledWithin5Pct": null,
         "contacted": 0,
         "contactRatePct": 0,
         "bookedCalls": 0,
@@ -285,17 +285,17 @@
           [
             "Quotes",
             0,
-            "quotes"
+            "fQuotes"
           ],
           [
             "Under contract",
             0,
-            "contracts"
+            "fContracts"
           ],
           [
             "Closed",
             0,
-            "won"
+            "fWon"
           ]
         ]
       }
@@ -303,7 +303,7 @@
     "thisWeek": {
       "label": "This week",
       "from": 1792382400000,
-      "to": 1792389727171,
+      "to": 1792401702827,
       "current": {
         "totalLeads": 0,
         "speedToLeadAvgMin": null,
@@ -356,17 +356,17 @@
           [
             "Quotes",
             0,
-            "quotes"
+            "fQuotes"
           ],
           [
             "Under contract",
             0,
-            "contracts"
+            "fContracts"
           ],
           [
             "Closed",
             0,
-            "won"
+            "fWon"
           ]
         ]
       },
@@ -422,17 +422,17 @@
           [
             "Quotes",
             0,
-            "quotes"
+            "fQuotes"
           ],
           [
             "Under contract",
             0,
-            "contracts"
+            "fContracts"
           ],
           [
             "Closed",
             0,
-            "won"
+            "fWon"
           ]
         ]
       }
@@ -443,10 +443,10 @@
       "to": 1792382400000,
       "current": {
         "totalLeads": 10,
-        "speedToLeadAvgMin": 17,
-        "calledWithin5Pct": 66.7,
-        "contacted": 4,
-        "contactRatePct": 40,
+        "speedToLeadAvgMin": null,
+        "calledWithin5Pct": null,
+        "contacted": 3,
+        "contactRatePct": 30,
         "bookedCalls": 2,
         "showed": 0,
         "leadToBookedPct": 20,
@@ -463,9 +463,9 @@
         "closedDeals": 0,
         "revenue": 0,
         "quoteToClosePct": null,
-        "missedCallPct": 0,
+        "missedCallPct": null,
         "missedCalls": 0,
-        "inboundCalls": 3,
+        "inboundCalls": 0,
         "aiCalls": 1,
         "aiTotalDurationSec": 47,
         "aiAvgDurationSec": 47,
@@ -484,7 +484,7 @@
           ],
           [
             "Contacted",
-            4,
+            3,
             "contacted"
           ],
           [
@@ -495,26 +495,26 @@
           [
             "Quotes",
             0,
-            "quotes"
+            "fQuotes"
           ],
           [
             "Under contract",
             0,
-            "contracts"
+            "fContracts"
           ],
           [
             "Closed",
             0,
-            "won"
+            "fWon"
           ]
         ]
       },
       "previous": {
         "totalLeads": 10,
-        "speedToLeadAvgMin": 153,
-        "calledWithin5Pct": 60,
-        "contacted": 6,
-        "contactRatePct": 60,
+        "speedToLeadAvgMin": null,
+        "calledWithin5Pct": null,
+        "contacted": 5,
+        "contactRatePct": 50,
         "bookedCalls": 0,
         "showed": 0,
         "leadToBookedPct": 0,
@@ -531,9 +531,9 @@
         "closedDeals": 0,
         "revenue": 0,
         "quoteToClosePct": null,
-        "missedCallPct": 0,
+        "missedCallPct": null,
         "missedCalls": 0,
-        "inboundCalls": 4,
+        "inboundCalls": 0,
         "aiCalls": 2,
         "aiTotalDurationSec": 132,
         "aiAvgDurationSec": 66,
@@ -553,7 +553,7 @@
           ],
           [
             "Contacted",
-            6,
+            5,
             "contacted"
           ],
           [
@@ -564,31 +564,31 @@
           [
             "Quotes",
             0,
-            "quotes"
+            "fQuotes"
           ],
           [
             "Under contract",
             0,
-            "contracts"
+            "fContracts"
           ],
           [
             "Closed",
             0,
-            "won"
+            "fWon"
           ]
         ]
       }
     },
     "last7": {
       "label": "Last 7 days",
-      "from": 1791784927171,
-      "to": 1792389727171,
+      "from": 1791796902827,
+      "to": 1792401702827,
       "current": {
         "totalLeads": 10,
-        "speedToLeadAvgMin": 17,
-        "calledWithin5Pct": 66.7,
-        "contacted": 4,
-        "contactRatePct": 40,
+        "speedToLeadAvgMin": null,
+        "calledWithin5Pct": null,
+        "contacted": 3,
+        "contactRatePct": 30,
         "bookedCalls": 2,
         "showed": 0,
         "leadToBookedPct": 20,
@@ -605,9 +605,9 @@
         "closedDeals": 0,
         "revenue": 0,
         "quoteToClosePct": null,
-        "missedCallPct": 0,
+        "missedCallPct": null,
         "missedCalls": 0,
-        "inboundCalls": 3,
+        "inboundCalls": 0,
         "aiCalls": 1,
         "aiTotalDurationSec": 47,
         "aiAvgDurationSec": 47,
@@ -626,7 +626,7 @@
           ],
           [
             "Contacted",
-            4,
+            3,
             "contacted"
           ],
           [
@@ -637,26 +637,26 @@
           [
             "Quotes",
             0,
-            "quotes"
+            "fQuotes"
           ],
           [
             "Under contract",
             0,
-            "contracts"
+            "fContracts"
           ],
           [
             "Closed",
             0,
-            "won"
+            "fWon"
           ]
         ]
       },
       "previous": {
         "totalLeads": 10,
-        "speedToLeadAvgMin": 153,
-        "calledWithin5Pct": 60,
-        "contacted": 6,
-        "contactRatePct": 60,
+        "speedToLeadAvgMin": null,
+        "calledWithin5Pct": null,
+        "contacted": 5,
+        "contactRatePct": 50,
         "bookedCalls": 0,
         "showed": 0,
         "leadToBookedPct": 0,
@@ -673,9 +673,9 @@
         "closedDeals": 0,
         "revenue": 0,
         "quoteToClosePct": null,
-        "missedCallPct": 0,
+        "missedCallPct": null,
         "missedCalls": 0,
-        "inboundCalls": 4,
+        "inboundCalls": 0,
         "aiCalls": 2,
         "aiTotalDurationSec": 132,
         "aiAvgDurationSec": 66,
@@ -695,7 +695,7 @@
           ],
           [
             "Contacted",
-            6,
+            5,
             "contacted"
           ],
           [
@@ -706,31 +706,31 @@
           [
             "Quotes",
             0,
-            "quotes"
+            "fQuotes"
           ],
           [
             "Under contract",
             0,
-            "contracts"
+            "fContracts"
           ],
           [
             "Closed",
             0,
-            "won"
+            "fWon"
           ]
         ]
       }
     },
     "last30": {
       "label": "Last 30 days",
-      "from": 1789797727171,
-      "to": 1792389727171,
+      "from": 1789809702827,
+      "to": 1792401702827,
       "current": {
         "totalLeads": 40,
-        "speedToLeadAvgMin": 87,
-        "calledWithin5Pct": 63.9,
-        "contacted": 21,
-        "contactRatePct": 52.5,
+        "speedToLeadAvgMin": 100,
+        "calledWithin5Pct": 61.5,
+        "contacted": 18,
+        "contactRatePct": 45,
         "bookedCalls": 7,
         "showed": 0,
         "leadToBookedPct": 17.5,
@@ -747,9 +747,9 @@
         "closedDeals": 0,
         "revenue": 0,
         "quoteToClosePct": null,
-        "missedCallPct": 39.1,
-        "missedCalls": 9,
-        "inboundCalls": 23,
+        "missedCallPct": 58.3,
+        "missedCalls": 7,
+        "inboundCalls": 12,
         "aiCalls": 4,
         "aiTotalDurationSec": 310,
         "aiAvgDurationSec": 78,
@@ -770,7 +770,7 @@
           ],
           [
             "Contacted",
-            21,
+            18,
             "contacted"
           ],
           [
@@ -781,17 +781,17 @@
           [
             "Quotes",
             0,
-            "quotes"
+            "fQuotes"
           ],
           [
             "Under contract",
             0,
-            "contracts"
+            "fContracts"
           ],
           [
             "Closed",
             0,
-            "won"
+            "fWon"
           ]
         ]
       },
@@ -809,14 +809,14 @@
         "noShowPct": 6.7,
         "leadToShowPct": 0,
         "qualified": 6,
-        "quotesSent": 4,
+        "quotesSent": 5,
         "quoteValue": 0,
-        "contactToQuotePct": 25,
-        "underContract": 0,
-        "quoteToContractPct": 0,
-        "closedDeals": 0,
+        "contactToQuotePct": 31.3,
+        "underContract": 1,
+        "quoteToContractPct": 20,
+        "closedDeals": 1,
         "revenue": 0,
-        "quoteToClosePct": 0,
+        "quoteToClosePct": 20,
         "missedCallPct": 50,
         "missedCalls": 5,
         "inboundCalls": 10,
@@ -849,31 +849,31 @@
           [
             "Quotes",
             4,
-            "quotes"
+            "fQuotes"
           ],
           [
             "Under contract",
             0,
-            "contracts"
+            "fContracts"
           ],
           [
             "Closed",
             0,
-            "won"
+            "fWon"
           ]
         ]
       }
     },
     "last90": {
       "label": "Last 90 days",
-      "from": 1784613727171,
-      "to": 1792389727171,
+      "from": 1784625702827,
+      "to": 1792401702827,
       "current": {
         "totalLeads": 137,
-        "speedToLeadAvgMin": 161,
-        "calledWithin5Pct": 60,
-        "contacted": 90,
-        "contactRatePct": 65.7,
+        "speedToLeadAvgMin": 272,
+        "calledWithin5Pct": 52.9,
+        "contacted": 87,
+        "contactRatePct": 63.5,
         "bookedCalls": 69,
         "showed": 0,
         "leadToBookedPct": 50.4,
@@ -884,15 +884,15 @@
         "qualified": 18,
         "quotesSent": 9,
         "quoteValue": 0,
-        "contactToQuotePct": 10,
-        "underContract": 0,
-        "quoteToContractPct": 0,
+        "contactToQuotePct": 10.3,
+        "underContract": 1,
+        "quoteToContractPct": 11.1,
         "closedDeals": 1,
         "revenue": 0,
         "quoteToClosePct": 11.1,
-        "missedCallPct": 47.2,
-        "missedCalls": 17,
-        "inboundCalls": 36,
+        "missedCallPct": 60,
+        "missedCalls": 15,
+        "inboundCalls": 25,
         "aiCalls": 4,
         "aiTotalDurationSec": 310,
         "aiAvgDurationSec": 78,
@@ -914,7 +914,7 @@
           ],
           [
             "Contacted",
-            90,
+            87,
             "contacted"
           ],
           [
@@ -925,23 +925,23 @@
           [
             "Quotes",
             9,
-            "quotes"
+            "fQuotes"
           ],
           [
             "Under contract",
-            0,
-            "contracts"
+            1,
+            "fContracts"
           ],
           [
             "Closed",
             1,
-            "won"
+            "fWon"
           ]
         ]
       },
       "previous": {
         "totalLeads": 152,
-        "speedToLeadAvgMin": 867,
+        "speedToLeadAvgMin": 931,
         "calledWithin5Pct": 0,
         "contacted": 107,
         "contactRatePct": 70.4,
@@ -961,9 +961,9 @@
         "closedDeals": 0,
         "revenue": 0,
         "quoteToClosePct": 0,
-        "missedCallPct": 57.1,
-        "missedCalls": 4,
-        "inboundCalls": 7,
+        "missedCallPct": 100,
+        "missedCalls": 3,
+        "inboundCalls": 3,
         "aiCalls": 3,
         "aiTotalDurationSec": 96,
         "aiAvgDurationSec": 32,
@@ -993,17 +993,17 @@
           [
             "Quotes",
             7,
-            "quotes"
+            "fQuotes"
           ],
           [
             "Under contract",
             0,
-            "contracts"
+            "fContracts"
           ],
           [
             "Closed",
             0,
-            "won"
+            "fWon"
           ]
         ]
       }
@@ -1011,13 +1011,13 @@
     "thisMonth": {
       "label": "This month",
       "from": 1790827200000,
-      "to": 1792389727171,
+      "to": 1792401702827,
       "current": {
         "totalLeads": 24,
-        "speedToLeadAvgMin": 80,
-        "calledWithin5Pct": 65.2,
-        "contacted": 11,
-        "contactRatePct": 45.8,
+        "speedToLeadAvgMin": null,
+        "calledWithin5Pct": null,
+        "contacted": 8,
+        "contactRatePct": 33.3,
         "bookedCalls": 2,
         "showed": 0,
         "leadToBookedPct": 8.3,
@@ -1034,9 +1034,9 @@
         "closedDeals": 0,
         "revenue": 0,
         "quoteToClosePct": null,
-        "missedCallPct": 18.2,
-        "missedCalls": 2,
-        "inboundCalls": 11,
+        "missedCallPct": null,
+        "missedCalls": 0,
+        "inboundCalls": 0,
         "aiCalls": 3,
         "aiTotalDurationSec": 179,
         "aiAvgDurationSec": 60,
@@ -1056,7 +1056,7 @@
           ],
           [
             "Contacted",
-            11,
+            8,
             "contacted"
           ],
           [
@@ -1067,17 +1067,17 @@
           [
             "Quotes",
             0,
-            "quotes"
+            "fQuotes"
           ],
           [
             "Under contract",
             0,
-            "contracts"
+            "fContracts"
           ],
           [
             "Closed",
             0,
-            "won"
+            "fWon"
           ]
         ]
       },
@@ -1135,17 +1135,17 @@
           [
             "Quotes",
             0,
-            "quotes"
+            "fQuotes"
           ],
           [
             "Under contract",
             0,
-            "contracts"
+            "fContracts"
           ],
           [
             "Closed",
             0,
-            "won"
+            "fWon"
           ]
         ]
       }
@@ -1210,17 +1210,17 @@
           [
             "Quotes",
             0,
-            "quotes"
+            "fQuotes"
           ],
           [
             "Under contract",
             0,
-            "contracts"
+            "fContracts"
           ],
           [
             "Closed",
             0,
-            "won"
+            "fWon"
           ]
         ]
       },
@@ -1241,8 +1241,8 @@
         "quotesSent": 7,
         "quoteValue": 0,
         "contactToQuotePct": 16.3,
-        "underContract": 0,
-        "quoteToContractPct": 0,
+        "underContract": 1,
+        "quoteToContractPct": 14.3,
         "closedDeals": 1,
         "revenue": 0,
         "quoteToClosePct": 14.3,
@@ -1278,17 +1278,17 @@
           [
             "Quotes",
             7,
-            "quotes"
+            "fQuotes"
           ],
           [
             "Under contract",
-            0,
-            "contracts"
+            1,
+            "fContracts"
           ],
           [
             "Closed",
             1,
-            "won"
+            "fWon"
           ]
         ]
       }
@@ -1296,13 +1296,13 @@
     "thisQuarter": {
       "label": "This quarter",
       "from": 1790827200000,
-      "to": 1792389727171,
+      "to": 1792401702827,
       "current": {
         "totalLeads": 24,
-        "speedToLeadAvgMin": 80,
-        "calledWithin5Pct": 65.2,
-        "contacted": 11,
-        "contactRatePct": 45.8,
+        "speedToLeadAvgMin": null,
+        "calledWithin5Pct": null,
+        "contacted": 8,
+        "contactRatePct": 33.3,
         "bookedCalls": 2,
         "showed": 0,
         "leadToBookedPct": 8.3,
@@ -1319,9 +1319,9 @@
         "closedDeals": 0,
         "revenue": 0,
         "quoteToClosePct": null,
-        "missedCallPct": 18.2,
-        "missedCalls": 2,
-        "inboundCalls": 11,
+        "missedCallPct": null,
+        "missedCalls": 0,
+        "inboundCalls": 0,
         "aiCalls": 3,
         "aiTotalDurationSec": 179,
         "aiAvgDurationSec": 60,
@@ -1341,7 +1341,7 @@
           ],
           [
             "Contacted",
-            11,
+            8,
             "contacted"
           ],
           [
@@ -1352,17 +1352,17 @@
           [
             "Quotes",
             0,
-            "quotes"
+            "fQuotes"
           ],
           [
             "Under contract",
             0,
-            "contracts"
+            "fContracts"
           ],
           [
             "Closed",
             0,
-            "won"
+            "fWon"
           ]
         ]
       },
@@ -1420,17 +1420,17 @@
           [
             "Quotes",
             2,
-            "quotes"
+            "fQuotes"
           ],
           [
             "Under contract",
             0,
-            "contracts"
+            "fContracts"
           ],
           [
             "Closed",
             0,
-            "won"
+            "fWon"
           ]
         ]
       }
@@ -1456,8 +1456,8 @@
         "quotesSent": 11,
         "quoteValue": 0,
         "contactToQuotePct": 9.4,
-        "underContract": 0,
-        "quoteToContractPct": 0,
+        "underContract": 1,
+        "quoteToContractPct": 9.1,
         "closedDeals": 1,
         "revenue": 0,
         "quoteToClosePct": 9.1,
@@ -1495,24 +1495,24 @@
           [
             "Quotes",
             11,
-            "quotes"
+            "fQuotes"
           ],
           [
             "Under contract",
-            0,
-            "contracts"
+            1,
+            "fContracts"
           ],
           [
             "Closed",
             1,
-            "won"
+            "fWon"
           ]
         ]
       },
       "previous": {
         "totalLeads": 99,
-        "speedToLeadAvgMin": 772,
-        "calledWithin5Pct": 0,
+        "speedToLeadAvgMin": null,
+        "calledWithin5Pct": null,
         "contacted": 70,
         "contactRatePct": 70.7,
         "bookedCalls": 57,
@@ -1531,9 +1531,9 @@
         "closedDeals": 0,
         "revenue": 0,
         "quoteToClosePct": 0,
-        "missedCallPct": 40,
-        "missedCalls": 2,
-        "inboundCalls": 5,
+        "missedCallPct": null,
+        "missedCalls": 0,
+        "inboundCalls": 0,
         "aiCalls": 3,
         "aiTotalDurationSec": 96,
         "aiAvgDurationSec": 32,
@@ -1563,17 +1563,17 @@
           [
             "Quotes",
             5,
-            "quotes"
+            "fQuotes"
           ],
           [
             "Under contract",
             0,
-            "contracts"
+            "fContracts"
           ],
           [
             "Closed",
             0,
-            "won"
+            "fWon"
           ]
         ]
       }
