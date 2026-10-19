@@ -70,7 +70,9 @@ const recentOpps = opps.filter(o => (Date.parse(o.createdAt) || 0) >= since);
 const fieldIds = (await optional('customFields', async () => {
   const { customFields = [] } = await ghl(`/locations/${LOC}/customFields?model=contact`);
   const find = name => customFields.find(f => norm(f.name) === norm(name))?.id || null;
+  const findAny = names => [].concat(names || []).map(find).find(Boolean) || null;
   return {
+    quoteSentDate: findAny(cfg.fields.quoteSentDate), contractDate: findAny(cfg.fields.contractDate), quoteAmount: findAny(cfg.fields.quoteAmount),
     stl: find(cfg.fields.speedToLead), firstContacted: find(cfg.fields.firstContacted), method: find(cfg.fields.contactMethod),
     qual: (QUAL.contactFields || []).map(find).filter(Boolean),
   };
@@ -81,6 +83,20 @@ const oppQualIds = (await optional('opportunity customFields', async () => {
   return customFields.filter(f => names.includes(norm(f.name))).map(f => f.id);
 })) || [];
 const fieldVal = f => f?.fieldValueString ?? f?.fieldValue ?? f?.value ?? null;
+// Date-picker / "MM/DD/YYYY" values are calendar dates: pin them to midday Eastern so they land on the right local day.
+const dateOnly = v => {
+  if (v === null || v === undefined || v === '') return null;
+  let y, m, d;
+  if (typeof v === 'number' || /^\d{10,}$/.test(String(v))) { const t = new Date(Number(v)); y = t.getUTCFullYear(); m = t.getUTCMonth() + 1; d = t.getUTCDate(); }
+  else {
+    const s = String(v).trim(); let k;
+    if ((k = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) [, y, m, d] = k.map(Number);
+    else if ((k = s.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})/))) [, m, d, y] = k.map(Number);     // US month/day/year
+    else { const t = Date.parse(s); if (Number.isNaN(t)) return null; const z = new Date(t); y = z.getFullYear(); m = z.getMonth() + 1; d = z.getDate(); }   // text like "Oct 17 2026" parses as a local date
+  }
+  return new Date(Date.UTC(y, m - 1, d, 17)).toISOString();
+};
+const money = v => { const n = Number(String(v ?? '').replace(/[^0-9.\-]/g, '')); return Number.isFinite(n) && String(v ?? '').trim() !== '' ? n : null; };
 
 const contacts = {};
 async function loadContacts(ids) {
@@ -96,6 +112,7 @@ async function loadContacts(ids) {
         email: c.email || null, phone: c.phone || null, tags: c.tags || [], source: c.source || null,
         stl: cf(fieldIds.stl), firstContacted: cf(fieldIds.firstContacted), method: cf(fieldIds.method),
         qualValues: (fieldIds.qual || []).map(cf).filter(v => v !== null && v !== ''),
+        quoteSentDate: cf(fieldIds.quoteSentDate), contractDate: cf(fieldIds.contractDate), quoteAmount: cf(fieldIds.quoteAmount),
       };
     }));
     await sleep(250);
@@ -116,6 +133,7 @@ const leads = recentOpps.map(o => {
     stageChangedAt: iso(o.lastStageChangeAt || o.updatedAt), statusChangedAt: iso(o.lastStatusChangeAt || o.updatedAt),
     tags: c.tags || o.contact?.tags || [],
     qualValues: [...(c.qualValues || []), ...(o.customFields || []).filter(f => oppQualIds.includes(f.id)).map(fieldVal)].filter(v => v !== null && v !== '').map(String),
+    quoteSentAt: dateOnly(c.quoteSentDate), contractAt: dateOnly(c.contractDate), quoteAmount: money(c.quoteAmount),
     stlMin: Number.isNaN(stl) ? null : stl, firstContactedAt: c.firstContacted ? iso(c.firstContacted) : null, contactMethod: c.method || null,
   };
 });

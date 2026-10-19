@@ -57,15 +57,25 @@ export function classify(lead, cfg) {
   const vals = (lead.qualValues || []).map(norm);
   const markedNo = (Q.notTags || []).map(norm).some(t => tags.includes(t)) || vals.some(v => (Q.noValues || []).map(norm).includes(v));
   const markedYes = !markedNo && ((Q.tags || []).map(norm).some(t => tags.includes(t)) || vals.some(v => (Q.yesValues || []).map(norm).includes(v)));
-  const qualifiedBy = markedYes ? 'Marked by Lisa' : (!markedNo && (st('qualified') || won)) ? (won ? 'Won' : 'Quote stage or later') : null;
+  // Quotes / contracts: Lisa's tags or the date fields her tag workflows stamp, plus the pipeline stages as a backup.
+  const T = cfg.tags || {};
+  const hasTag = list => (list || []).map(norm).some(t => tags.includes(t));
+  const contractSignal = st('contract') || won || hasTag(T.underContract) || !!lead.contractAt;
+  const quoteSignal = st('quote') || contractSignal || hasTag(T.quoteSent) || !!lead.quoteSentAt;
+  const wonAt = lead.status === 'won' ? lead.statusChangedAt : won ? lead.stageChangedAt : null;
+  const qualifiedBy = markedYes ? 'Tagged qualified' : (!markedNo && (st('qualified') || quoteSignal)) ? (won ? 'Won' : 'Quote sent or later') : null;
   return {
     contacted,
     qualified: !!qualifiedBy,
     qualifiedBy,
     notQualified: markedNo,
-    quote: st('quote') || won,
-    contract: st('contract'),
+    quote: quoteSignal,
+    contract: contractSignal,
     won,
+    wonAt,
+    // Event dates. Without a date field the lead's created date is used (GHL doesn't record when a tag was added).
+    quoteDate: lead.quoteSentAt || lead.contractAt || (won ? wonAt : null),   // a contract means the quote went out by then
+    contractDate: lead.contractAt || (won ? wonAt : null),
   };
 }
 
@@ -85,14 +95,26 @@ export function buildLists(records, cfg, from, to) {
   for (const k of records.calls || []) (callsByContact[k.contactId] ||= []).push(k);
   for (const list of Object.values(callsByContact)) list.sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
 
-  const leads = records.leads
+  const all = records.leads.map(l => ({ ...l, ...classify(l, cfg) }));
+  const leads = all
     .filter(l => inRange(l.createdAt, from, to))
-    .map(l => { const c = classify(l, cfg); return { ...l, ...c, contactStatus: contactStatus(l, c, callsByContact) }; })
+    .map(l => ({ ...l, contactStatus: contactStatus(l, l, callsByContact) }))
     .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
+  // Quotes, contracts and closed deals are counted when they happened (quote date, contract date, date won),
+  // whenever the lead came in. Leads with no date fall back to their created date.
+  const happened = (d, l) => inRange(d || l.createdAt, from, to);
+  const byDateDesc = k => (a, b) => Date.parse(b[k]) - Date.parse(a[k]);
+  const quotes = all.filter(l => l.quote && happened(l.quoteDate, l))
+    .map(l => ({ ...l, value: l.quoteAmount ?? l.value, quoteOn: l.quoteDate || l.createdAt, quoteDateFrom: l.quoteSentAt ? 'Quote Sent Date' : l.quoteDate ? 'Contract / won date' : 'Lead created (no quote date yet)' }))
+    .sort(byDateDesc('quoteOn'));
+  const contracts = all.filter(l => l.contract && happened(l.contractDate, l))
+    .map(l => ({ ...l, contractOn: l.contractDate || l.createdAt, contractDateFrom: l.contractAt ? 'Contract date field' : l.won ? 'Date won' : 'Lead created (no contract date yet)' }))
+    .sort(byDateDesc('contractOn'));
+  const won = all.filter(l => l.won && happened(l.wonAt, l)).map(l => ({ ...l, wonOn: l.wonAt || l.createdAt })).sort(byDateDesc('wonOn'));
 
   const consult = (records.appointments || []).filter(a => a.consult && inRange(a.startTime, from, to));
   const booked = consult.filter(a => !['cancelled', 'invalid'].includes(norm(a.status)));
-  const showed = booked.filter(a => norm(a.status) === 'showed');
+  const T = cfg.tags || {};
   // No-shows: GHL appointment status "No-show", or (because appointments are rarely marked) a past booked call
   // whose lead card now sits in the No Show stage. Only the contact's most recent past booked call is counted
   // from the stage, so one no-show is never counted twice. Future calls can't be no-shows yet.
@@ -106,9 +128,23 @@ export function buildLists(records, cfg, from, to) {
     if (!lastPast[a.contactId] || Date.parse(a.startTime) > Date.parse(lastPast[a.contactId].startTime)) lastPast[a.contactId] = a;
   }
   const markedNoShow = a => /no.?show/.test(norm(a.status).replace(/[_\s-]/g, ''));
+  const markedShowed = a => norm(a.status) === 'showed';
+  const tagged = (cid, list) => { const tg = (latestLead[cid]?.tags || []).map(norm); return (list || []).map(norm).some(t => tg.includes(t)); };
+  // Lisa's "showed" / "no show" tags apply to the contact's most recent booked call that has already happened.
+  const isLast = a => lastPast[a.contactId]?.id === a.id;
+  const outcome = a => {
+    if (markedShowed(a)) return ['showed', 'Appointment marked Showed'];
+    if (markedNoShow(a)) return ['noshow', 'Appointment marked No-show'];
+    if (!isLast(a)) return [null, null];
+    if (tagged(a.contactId, T.showed)) return ['showed', 'Tagged showed'];
+    if (tagged(a.contactId, T.noShow)) return ['noshow', 'Tagged no show'];
+    if (noShowStages.includes(norm(latestLead[a.contactId]?.stage))) return ['noshow', 'Card in No Show stage'];
+    return [null, null];
+  };
   const bookedPast = booked.filter(a => Date.parse(a.startTime) <= nowMs);
-  const noShows = bookedPast.filter(a => markedNoShow(a) || (lastPast[a.contactId]?.id === a.id && noShowStages.includes(norm(latestLead[a.contactId]?.stage))))
-    .map(a => ({ ...a, noShowBy: markedNoShow(a) ? 'Appointment marked No-show' : 'Card in No Show stage', leadStage: latestLead[a.contactId]?.stage || '—' }));
+  const withOutcome = bookedPast.map(a => { const [o, by] = outcome(a); return { ...a, outcome: o, outcomeBy: by, noShowBy: by, leadStage: latestLead[a.contactId]?.stage || '—' }; });
+  const showed = withOutcome.filter(a => a.outcome === 'showed');
+  const noShows = withOutcome.filter(a => a.outcome === 'noshow');
 
   let missed = null, inboundCalls = null;
   if (records.calls) {
@@ -132,9 +168,13 @@ export function buildLists(records, cfg, from, to) {
     speedMeasured: withStl,
     within5: withStl.filter(l => l.stlMin <= 5),
     qualified: leads.filter(l => l.qualified),
-    quotes: leads.filter(l => l.quote),
-    contracts: leads.filter(l => l.contract),
-    won: leads.filter(l => l.won),
+    quotes,
+    contracts,
+    won,
+    // Funnel = the leads that came in during the dates, followed through (a cohort), so each step is a subset.
+    fQuotes: leads.filter(l => l.quote),
+    fContracts: leads.filter(l => l.contract),
+    fWon: leads.filter(l => l.won),
     booked,
     bookedPast,
     noShows,
@@ -189,7 +229,7 @@ export function summarize(L) {
     bookedCalls: L.booked.length,
     showed: L.showed.length,
     leadToBookedPct: pct(L.booked.length, L.newLeads.length),
-    bookedToShowPct: pct(L.showed.length, L.booked.length),
+    bookedToShowPct: pct(L.showed.length, (L.bookedPast || L.booked).length),
     noShows: L.noShows ? L.noShows.length : null,
     noShowPct: L.noShows ? pct(L.noShows.length, L.bookedPast.length) : null,
     leadToShowPct: pct(L.showed.length, L.newLeads.length),
@@ -209,8 +249,8 @@ export function summarize(L) {
     bySource,
     funnel: [
       ['Leads', L.newLeads.length, 'newLeads'], ['Contacted', L.contacted.length, 'contacted'],
-      ['Qualified', L.qualified.length, 'qualified'], ['Quotes', L.quotes.length, 'quotes'],
-      ['Under contract', L.contracts.length, 'contracts'], ['Closed', L.won.length, 'won'],
+      ['Qualified', L.qualified.length, 'qualified'], ['Quotes', L.fQuotes.length, 'fQuotes'],
+      ['Under contract', L.fContracts.length, 'fContracts'], ['Closed', L.fWon.length, 'fWon'],
     ],
   };
 }
