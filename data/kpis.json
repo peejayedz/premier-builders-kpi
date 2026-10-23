@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-22T23:31:43.082Z",
+  "generatedAt": "2026-10-23T01:50:24.641Z",
   "location": "Premier Builders",
   "targets": {
     "speedToLeadMin": 5,
@@ -25,7 +25,7 @@
     "today": {
       "label": "Today",
       "from": 1792641600000,
-      "to": 1792711903082,
+      "to": 1792720224641,
       "current": {
         "totalLeads": 2,
         "speedToLeadAvgMin": 55,
@@ -307,7 +307,7 @@
     "thisWeek": {
       "label": "This week",
       "from": 1792382400000,
-      "to": 1792711903082,
+      "to": 1792720224641,
       "current": {
         "totalLeads": 6,
         "speedToLeadAvgMin": 24,
@@ -589,8 +589,8 @@
     },
     "last7": {
       "label": "Last 7 days",
-      "from": 1792107103082,
-      "to": 1792711903082,
+      "from": 1792115424641,
+      "to": 1792720224641,
       "current": {
         "totalLeads": 10,
         "speedToLeadAvgMin": 78,
@@ -660,14 +660,14 @@
         ]
       },
       "previous": {
-        "totalLeads": 13,
-        "speedToLeadAvgMin": 120,
-        "calledWithin5Pct": 69.2,
+        "totalLeads": 12,
+        "speedToLeadAvgMin": 130,
+        "calledWithin5Pct": 66.7,
         "contacted": 8,
-        "contactRatePct": 61.5,
+        "contactRatePct": 66.7,
         "bookedCalls": 2,
         "showed": 0,
-        "leadToBookedPct": 15.4,
+        "leadToBookedPct": 16.7,
         "bookedToShowPct": 0,
         "noShows": 1,
         "noShowPct": 50,
@@ -692,13 +692,13 @@
         "aiLeads": 2,
         "aiCallbacks": null,
         "bySource": {
-          "PPC Launch": 12,
+          "PPC Launch": 11,
           "Unknown": 1
         },
         "funnel": [
           [
             "Leads",
-            13,
+            12,
             "newLeads"
           ],
           [
@@ -731,8 +731,8 @@
     },
     "last30": {
       "label": "Last 30 days",
-      "from": 1790119903082,
-      "to": 1792711903082,
+      "from": 1790128224641,
+      "to": 1792720224641,
       "current": {
         "totalLeads": 45,
         "speedToLeadAvgMin": 85,
@@ -874,8 +874,8 @@
     },
     "last90": {
       "label": "Last 90 days",
-      "from": 1784935903082,
-      "to": 1792711903082,
+      "from": 1784944224641,
+      "to": 1792720224641,
       "current": {
         "totalLeads": 131,
         "speedToLeadAvgMin": 120,
@@ -1019,7 +1019,7 @@
     "thisMonth": {
       "label": "This month",
       "from": 1790827200000,
-      "to": 1792711903082,
+      "to": 1792720224641,
       "current": {
         "totalLeads": 30,
         "speedToLeadAvgMin": 86,
@@ -1304,7 +1304,7 @@
     "thisQuarter": {
       "label": "This quarter",
       "from": 1790827200000,
-      "to": 1792711903082,
+      "to": 1792720224641,
       "current": {
         "totalLeads": 30,
         "speedToLeadAvgMin": 86,
@@ -1375,22 +1375,22 @@
         ]
       },
       "previous": {
-        "totalLeads": 61,
+        "totalLeads": 62,
         "speedToLeadAvgMin": 698,
         "calledWithin5Pct": 25,
-        "contacted": 43,
-        "contactRatePct": 70.5,
+        "contacted": 44,
+        "contactRatePct": 71,
         "bookedCalls": 27,
         "showed": 0,
-        "leadToBookedPct": 44.3,
+        "leadToBookedPct": 43.5,
         "bookedToShowPct": 0,
         "noShows": 5,
         "noShowPct": 18.5,
         "leadToShowPct": 0,
-        "qualified": 10,
+        "qualified": 11,
         "quotesSent": 2,
         "quoteValue": 0,
-        "contactToQuotePct": 4.7,
+        "contactToQuotePct": 4.5,
         "underContract": 0,
         "quoteToContractPct": 0,
         "closedDeals": 0,
@@ -1407,22 +1407,22 @@
         "aiLeads": 0,
         "aiCallbacks": null,
         "bySource": {
-          "Contact Form": 61
+          "Contact Form": 62
         },
         "funnel": [
           [
             "Leads",
-            61,
+            62,
             "newLeads"
           ],
           [
             "Contacted",
-            43,
+            44,
             "contacted"
           ],
           [
             "Qualified",
-            10,
+            11,
             "qualified"
           ],
           [
