@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-27T04:49:29.114Z",
+  "generatedAt": "2026-10-27T10:22:48.373Z",
   "location": "Premier Builders",
   "targets": {
     "speedToLeadMin": 5,
@@ -25,7 +25,7 @@
     "today": {
       "label": "Today",
       "from": 1793073600000,
-      "to": 1793076569114,
+      "to": 1793096568373,
       "current": {
         "totalLeads": 0,
         "speedToLeadAvgMin": null,
@@ -304,7 +304,7 @@
     "thisWeek": {
       "label": "This week",
       "from": 1792987200000,
-      "to": 1793076569114,
+      "to": 1793096568373,
       "current": {
         "totalLeads": 4,
         "speedToLeadAvgMin": 58,
@@ -584,8 +584,8 @@
     },
     "last7": {
       "label": "Last 7 days",
-      "from": 1792471769114,
-      "to": 1793076569114,
+      "from": 1792491768373,
+      "to": 1793096568373,
       "current": {
         "totalLeads": 14,
         "speedToLeadAvgMin": 26,
@@ -726,8 +726,8 @@
     },
     "last30": {
       "label": "Last 30 days",
-      "from": 1790484569114,
-      "to": 1793076569114,
+      "from": 1790504568373,
+      "to": 1793096568373,
       "current": {
         "totalLeads": 43,
         "speedToLeadAvgMin": 91,
@@ -871,8 +871,8 @@
     },
     "last90": {
       "label": "Last 90 days",
-      "from": 1785300569114,
-      "to": 1793076569114,
+      "from": 1785320568373,
+      "to": 1793096568373,
       "current": {
         "totalLeads": 131,
         "speedToLeadAvgMin": 108,
@@ -1016,7 +1016,7 @@
     "thisMonth": {
       "label": "This month",
       "from": 1790827200000,
-      "to": 1793076569114,
+      "to": 1793096568373,
       "current": {
         "totalLeads": 38,
         "speedToLeadAvgMin": 76,
@@ -1304,7 +1304,7 @@
     "thisQuarter": {
       "label": "This quarter",
       "from": 1790827200000,
-      "to": 1793076569114,
+      "to": 1793096568373,
       "current": {
         "totalLeads": 38,
         "speedToLeadAvgMin": 76,
