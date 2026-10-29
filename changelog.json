@@ -1,0 +1,80 @@
+{
+  "_note": "Newest first. Add an entry here whenever the dashboard or sync code changes. Automatic data syncs are not listed.",
+  "versions": [
+    {
+      "version": "1.6.0",
+      "date": "2026-10-29",
+      "title": "Version number and change log",
+      "changes": [
+        "The header shows the dashboard version. Click it to see this change log."
+      ]
+    },
+    {
+      "version": "1.5.0",
+      "date": "2026-10-19",
+      "title": "Tags and dates from GHL",
+      "changes": [
+        "Quotes sent, Under contract and Closed are counted on the date each one happened, using the Quote Sent Date and Contract Sent Date fields and the tags.",
+        "New tags are recognized: qualified_lead, quotes sent, under contract, showed and no show.",
+        "Show and no-show use the appointment status first, then the showed / no show tags.",
+        "Quote $ uses the Quote Amount field when it's filled in, otherwise the opportunity value.",
+        "Funnel percentages now follow one group of leads from start to finish."
+      ]
+    },
+    {
+      "version": "1.4.0",
+      "date": "2026-10-13",
+      "title": "No-show tile and metric explanations",
+      "changes": [
+        "Added Booked call → no-show and Booked call → show tiles.",
+        "Added plain-language explanations of how each metric is calculated."
+      ]
+    },
+    {
+      "version": "1.3.0",
+      "date": "2026-10-13",
+      "title": "Period comparison",
+      "changes": [
+        "New Compare button for comparing two periods, such as this week vs last week or any two custom dates.",
+        "Trend chart that shows both periods.",
+        "Added This week, Last week, This quarter and Last quarter."
+      ]
+    },
+    {
+      "version": "1.2.1",
+      "date": "2026-10-13",
+      "title": "Speed-to-lead hours",
+      "changes": [
+        "Speed to lead now counts business hours only: Mon–Fri, 9am–6pm Eastern."
+      ]
+    },
+    {
+      "version": "1.2.0",
+      "date": "2026-10-08",
+      "title": "Voice AI",
+      "changes": [
+        "Added a Voice AI section covering AI calls, call length, bookings and transfers."
+      ]
+    },
+    {
+      "version": "1.1.0",
+      "date": "2026-10-08",
+      "title": "Lisa's bookings and qualification",
+      "changes": [
+        "Booked calls count appointments on Lisa's calendars.",
+        "Qualified uses Lisa's qualification fields.",
+        "Speed to lead counts business hours only.",
+        "Each section has its own color."
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-10-08",
+      "title": "First release",
+      "changes": [
+        "Sales KPI scorecard built from GoHighLevel data, which syncs automatically.",
+        "Click any number to see the list of leads behind it. Lead details are encrypted and only open with the team passphrase."
+      ]
+    }
+  ]
+}
