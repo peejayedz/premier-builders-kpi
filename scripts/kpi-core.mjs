@@ -7,6 +7,10 @@ const norm = s => String(s ?? '').trim().toLowerCase();
 const inRange = (iso, from, to) => { const t = Date.parse(iso); return t >= from && t < to; };
 const pct = (a, b) => (b > 0 ? Math.round((a / b) * 1000) / 10 : null);
 const sum = rows => rows.reduce((t, r) => t + (Number(r.value) || 0), 0);
+// Median of a list of numbers (middle value; average of the two middle values for an even count).
+const median = xs => { if (!xs.length) return null; const a = [...xs].sort((x, y) => x - y), m = a.length >> 1; return Math.round(a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2); };
+// A lead counts as "slow" when its first call took longer than this many business-hours minutes (config speedToLead.slowMin).
+export const slowMinOf = cfg => cfg?.speedToLead?.slowMin ?? 30;
 
 export const PERIOD_KEYS = ['today', 'yesterday', 'thisWeek', 'lastWeek', 'last7', 'last30', 'last90', 'thisMonth', 'lastMonth', 'thisQuarter', 'lastQuarter'];
 
@@ -186,6 +190,8 @@ export function buildLists(records, cfg, from, to) {
     speed: [...leads].sort((a, b) => (b.stlMin ?? 1e12) - (a.stlMin ?? 1e12)),
     speedMeasured: withStl,
     within5: withStl.filter(l => l.stlMin <= 5),
+    // Leads whose first call took longer than the slow threshold (default 30 business-hours minutes), slowest first.
+    slowLeads: withStl.filter(l => l.stlMin > slowMinOf(cfg)).sort((a, b) => b.stlMin - a.stlMin),
     qualified: leads.filter(l => l.qualified),
     quotes,
     contracts,
@@ -264,6 +270,8 @@ export function summarize(L) {
   return {
     totalLeads: L.newLeads.length,
     speedToLeadAvgMin: avg,
+    speedToLeadMedianMin: median(L.speedMeasured.map(l => l.stlMin)),
+    slowLeads: L.slowLeads ? L.slowLeads.length : null,
     calledWithin5Pct: L.speedMeasured.length ? pct(L.within5.length, L.speedMeasured.length) : null,
     contacted: L.contacted.length,
     contactRatePct: pct(L.contacted.length, L.newLeads.length),
