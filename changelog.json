@@ -2,6 +2,16 @@
   "_note": "Newest first. Add an entry here whenever the dashboard or sync code changes. Automatic data syncs are not listed.",
   "versions": [
     {
+      "version": "1.10.0",
+      "date": "2026-11-03",
+      "title": "Cell calls count with one tag",
+      "changes": [
+        "When Lisa calls a lead from her cell, she adds the \"called from cell\" tag. A GHL workflow stamps the time in the Cell Call Time field, and speed to lead uses it when it came before the first GHL call.",
+        "Speed-to-lead lists show these as \"Measured from: Cell call (tag)\".",
+        "Typing minutes in the Speed to Lead (min) field still works and takes priority."
+      ]
+    },
+    {
       "version": "1.9.0",
       "date": "2026-11-03",
       "title": "Speed to lead counts business-hours leads only",

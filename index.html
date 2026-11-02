@@ -504,7 +504,7 @@ const SLOW_MIN = () => cfg?.speedToLead?.slowMin ?? 30;
 DRILLS.speedMedian = { ...DRILLS.speed, title: 'Speed to lead (median)', list: L => [...L.speedMeasured].sort((a, b) => b.stlMin - a.stlMin), numerator: null,
   def: 'The middle wait among leads that have had a first call: half waited less, half waited longer. One very slow lead can’t pull it up the way it pulls up the average. Slowest first.' };
 DRILLS.speedSlow = { ...DRILLS.speed, title: 'Slow first calls', list: L => L.slowLeads || [], numerator: null, denom: L => L.speedMeasured.length, denomLabel: 'leads that have had a first call',
-  get def() { return `Leads whose first call took more than ${SLOW_MIN()} business-hours minutes, slowest first. Check “Measured from”: if it says GHL call, Lisa may have called from her cell first; enter her minutes in the Speed to Lead (min) field to correct it.`; } };
+  get def() { return `Leads whose first call took more than ${SLOW_MIN()} business-hours minutes, slowest first. Check “Measured from”: if it says GHL call, Lisa may have called from her cell first. When she calls from her cell, she adds the “called from cell” tag right away and the time is picked up automatically (shown as “Cell call (tag)”).`; } };
 DRILLS.leadToBooked = { ...DRILLS.booked, title: 'Lead → booked call', denom: L => L.newLeads.length, denomLabel: 'new leads' };
 DRILLS.bookedToShow = { ...DRILLS.showed, title: 'Booked call → show', denom: L => (L.bookedPast || []).length, denomLabel: 'booked calls that have already happened' };
 DRILLS.noShowRate = { ...DRILLS.noShows, title: 'Booked call → no-show', denom: L => (L.bookedPast || []).length, denomLabel: 'booked calls that have already happened' };

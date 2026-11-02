@@ -61,6 +61,9 @@
       "Quote Amount",
       "Quote Value",
       "Quote $"
+    ],
+    "cellCallTime": [
+      "Cell Call Time"
     ]
   },
   "speedToLead": {
@@ -144,6 +147,9 @@
       "no show",
       "no-show",
       "noshow"
+    ],
+    "cellCall": [
+      "called from cell"
     ]
   }
 }
