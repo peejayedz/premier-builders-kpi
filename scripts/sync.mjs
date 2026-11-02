@@ -24,6 +24,26 @@ const since = now - cfg.lookbackDays * DAY;
 const norm = s => String(s ?? '').trim().toLowerCase();
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const iso = v => (v ? new Date(typeof v === 'number' || /^\d+$/.test(String(v)) ? Number(v) : v).toISOString() : null);
+// "Cell Call Time" text field, stamped by a GHL workflow when Lisa adds the "called from cell" tag, e.g. "2026-11-3 9:07"
+// (year-month-day hour:minute, 24h, in the account's time zone). Also accepts "11/3/2026 9:07 AM" and ISO strings.
+// Returns an ISO timestamp, or null if it can't be read.
+function localDateTime(v) {
+  if (v === null || v === undefined || String(v).trim() === '') return null;
+  const s = String(v).trim();
+  if (/[zZ]$|[+-]\d\d:?\d\d$/.test(s)) { const t = Date.parse(s); return Number.isNaN(t) ? null : new Date(t).toISOString(); }
+  let k, y, mo, d, h = 0, mi = 0;
+  if ((k = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})[ T]+(\d{1,2}):(\d{1,2})(?::\d{1,2})?\s*([ap]m)?/i))) [, y, mo, d, h, mi] = k.map(Number);
+  else if ((k = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})[ ,T]+(\d{1,2}):(\d{1,2})(?::\d{1,2})?\s*([ap]m)?/i))) [, mo, d, y, h, mi] = k.map(Number);
+  else return null;
+  const ap = (k[6] || '').toLowerCase();
+  if (ap === 'pm' && h < 12) h += 12;
+  if (ap === 'am' && h === 12) h = 0;
+  if (!(mo >= 1 && mo <= 12 && d >= 1 && d <= 31 && h <= 23 && mi <= 59)) return null;
+  const wall = Date.UTC(y, mo - 1, d, h, mi);
+  let t = wall - tzOffsetMin(cfg.timezone || 'UTC', wall) * 60000;
+  t = wall - tzOffsetMin(cfg.timezone || 'UTC', t) * 60000;   // second pass: daylight-saving safe
+  return new Date(t).toISOString();
+}
 
 async function ghl(path, { version = '2021-07-28' } = {}) {
   for (let attempt = 0; attempt < 4; attempt++) {
@@ -73,7 +93,7 @@ const fieldIds = (await optional('customFields', async () => {
   const findAny = names => [].concat(names || []).map(find).find(Boolean) || null;
   return {
     quoteSentDate: findAny(cfg.fields.quoteSentDate), contractDate: findAny(cfg.fields.contractDate), quoteAmount: findAny(cfg.fields.quoteAmount),
-    stl: find(cfg.fields.speedToLead), firstContacted: find(cfg.fields.firstContacted), method: find(cfg.fields.contactMethod),
+    stl: find(cfg.fields.speedToLead), cellCall: findAny(cfg.fields.cellCallTime), firstContacted: find(cfg.fields.firstContacted), method: find(cfg.fields.contactMethod),
     qual: (QUAL.contactFields || []).map(find).filter(Boolean),
   };
 })) || {};
@@ -111,7 +131,7 @@ async function loadContacts(ids) {
         id,
         name: c.contactName || [c.firstName, c.lastName].filter(Boolean).join(' ') || c.companyName || c.phone || 'Unnamed',
         email: c.email || null, phone: c.phone || null, tags: c.tags || [], source: c.source || null,
-        stl: cf(fieldIds.stl), firstContacted: cf(fieldIds.firstContacted), method: cf(fieldIds.method),
+        stl: cf(fieldIds.stl), cellCall: cf(fieldIds.cellCall), firstContacted: cf(fieldIds.firstContacted), method: cf(fieldIds.method),
         qualValues: (fieldIds.qual || []).map(cf).filter(v => v !== null && v !== ''),
         quoteSentDate: cf(fieldIds.quoteSentDate), contractDate: cf(fieldIds.contractDate), quoteAmount: cf(fieldIds.quoteAmount),
       };
@@ -135,7 +155,7 @@ const leads = recentOpps.map(o => {
     tags: c.tags || o.contact?.tags || [],
     qualValues: [...(c.qualValues || []), ...(o.customFields || []).filter(f => oppQualIds.includes(f.id)).map(fieldVal)].filter(v => v !== null && v !== '').map(String),
     quoteSentAt: dateOnly(c.quoteSentDate), contractAt: dateOnly(c.contractDate), quoteAmount: money(c.quoteAmount),
-    stlMin: Number.isNaN(stl) ? null : stl, stlFrom: stl === null || Number.isNaN(stl) ? null : 'Entered in GHL', firstContactedAt: c.firstContacted ? iso(c.firstContacted) : null, contactMethod: c.method || null,
+    cellCallAt: localDateTime(c.cellCall), stlMin: Number.isNaN(stl) ? null : stl, stlFrom: stl === null || Number.isNaN(stl) ? null : 'Entered in GHL', firstContactedAt: c.firstContacted ? iso(c.firstContacted) : null, contactMethod: c.method || null,
   };
 });
 
@@ -245,7 +265,7 @@ const byContact = (rows, key = 'contactId') => { const m = {}; for (const r of r
 const callsBy = byContact(calls), repliesBy = byContact(replies);
 const apptsBy = byContact((appointments || []).map(a => ({ ...a, at: a.bookedAt })));
 const minCallSec = STL.connectedCallSeconds ?? 60;
-let stlComputed = 0, contactComputed = 0;
+let stlComputed = 0, contactComputed = 0, cellUsed = 0, cellIgnored = 0, cellNoTime = 0;
 for (const l of leads) {
   const t0 = Date.parse(l.createdAt);
   const after = list => (list || []).filter(x => Date.parse(x.at) >= t0 - 60000);
@@ -261,13 +281,20 @@ for (const l of leads) {
   // or Lisa tags them "contacted" / "showed" (handled in kpi-core).
   events.sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
   const first = events[0];
+  // A cell call Lisa tagged ("called from cell" → Cell Call Time) counts when it came before the first GHL call.
+  const cellAt = l.cellCallAt ? Date.parse(l.cellCallAt) : null;
+  const cellOk = cellAt !== null && cellAt >= t0 - 60000 && cellAt - t0 <= (STL.maxDays ?? 7) * DAY;
+  if (l.cellCallAt && !cellOk) cellIgnored++;
+  if (!l.cellCallAt && (l.tags || []).map(norm).some(t => (cfg.tags?.cellCall || []).map(norm).includes(t))) cellNoTime++;
   if (l.stlMin === null) {
-    if (firstOut) { l.stlMin = businessMinutes(t0, Date.parse(firstOut.at)); l.firstCallAt = firstOut.at; l.stlFrom = 'GHL call'; stlComputed++; }
+    if (cellOk && (!firstOut || cellAt < Date.parse(firstOut.at))) { l.stlMin = businessMinutes(t0, Math.max(cellAt, t0)); l.firstCallAt = new Date(Math.max(cellAt, t0)).toISOString(); l.stlFrom = 'Cell call (tag)'; stlComputed++; cellUsed++; }
+    else if (firstOut) { l.stlMin = businessMinutes(t0, Date.parse(firstOut.at)); l.firstCallAt = firstOut.at; l.stlFrom = 'GHL call'; stlComputed++; }
     else if (first && first.method === 'Inbound call') { l.stlMin = 0; l.firstCallAt = first.at; l.stlFrom = 'They called in'; stlComputed++; }   // they called us and we answered
   }
   if (!l.firstContactedAt && first) { l.firstContactedAt = first.at; l.contactMethod = first.method; contactComputed++; }
 }
 console.log(`Derived speed-to-lead for ${stlComputed} leads and first contact for ${contactComputed} leads (of ${leads.length}).`);
+console.log(`Cell calls (tag): ${cellUsed} used as first call, ${cellNoTime} tagged with no Cell Call Time (check the GHL workflow), ${cellIgnored} ignored (time before the lead came in or over ${STL.maxDays ?? 7} days later).`);
 console.log('Message export diagnostics:', JSON.stringify(diag));
 
 // ---------- Voice AI call logs ----------
