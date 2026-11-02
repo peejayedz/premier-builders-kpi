@@ -20,21 +20,7 @@
     "scott"
   ],
   "stages": {
-    "contacted": [
-      "Contacted",
-      "In Conversation",
-      "Engaged",
-      "Warm Leads",
-      "Booked Call",
-      "No Show",
-      "Scheduled With Scott",
-      "Scheduled w/ Scott",
-      "Scheduled with Scott",
-      "Sent Quote",
-      "Quote Sent",
-      "Under Contract",
-      "Closed"
-    ],
+    "contacted": ["Contacted", "In Conversation", "Engaged", "Warm Leads", "Scheduled With Scott", "Scheduled w/ Scott", "Scheduled with Scott", "Sent Quote", "Quote Sent", "Under Contract", "Closed"],
     "qualified": [
       "Sent Quote",
       "Quote Sent",

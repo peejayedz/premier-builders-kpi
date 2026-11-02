@@ -2,6 +2,18 @@
   "_note": "Newest first. Add an entry here whenever the dashboard or sync code changes. Automatic data syncs are not listed.",
   "versions": [
     {
+      "version": "1.7.0",
+      "date": "2026-11-02",
+      "title": "Contact rate fix, after-hours leads and card summaries",
+      "changes": [
+        "Contact rate only counts leads we actually reached: a connected call, a text or email reply, or Lisa's \"contacted\" / \"showed\" tag. Booking a call alone no longer counts.",
+        "New After-hours leads section: leads that come in outside Mon–Fri 9am–6pm Eastern, with their contact rate next to the business-hours contact rate, their speed to lead from the next opening, and how many got quoted. They still count in every other number.",
+        "Hover over any card for a quick summary: what it means, how it's counted, the goal and the numbers behind it.",
+        "Speed-to-lead lists show where each time came from: a GHL call, the lead calling in, or minutes Lisa entered in the \"Speed to Lead (min)\" field (for calls made from her cell).",
+        "\"What's new\" button with a dot when there's an update you haven't seen."
+      ]
+    },
+    {
       "version": "1.6.0",
       "date": "2026-10-29",
       "title": "Version number and change log",

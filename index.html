@@ -106,6 +106,14 @@
   .mhead .def { color: var(--ink-2); font-size: 13px; margin-top: 4px; max-width: 760px; }
   .close { background: none; border: 0; font-size: 22px; line-height: 1; cursor: pointer; color: var(--ink-2); padding: 2px 6px; border-radius: 6px; }
   .close:hover { background: var(--hover); }
+  /* hover summary on cards */
+  .kpi-tip { position: absolute; z-index: 45; max-width: 320px; background: var(--raised); color: var(--ink); border: 1px solid var(--border); border-radius: 10px; box-shadow: var(--shadow); padding: 10px 12px; font-size: 12.5px; line-height: 1.45; pointer-events: none; }
+  .kpi-tip p { margin: 0 0 6px; } .kpi-tip p:last-child { margin-bottom: 0; }
+  .kpi-tip .tt { font-weight: 600; font-size: 13px; }
+  .kpi-tip .th { color: var(--ink-2); }
+  .kpi-tip .tg, .kpi-tip .tn { color: var(--ink-2); font-size: 12px; }
+  .kpi-tip .tf { color: var(--ink-3); font-size: 11.5px; border-top: 1px solid var(--border); padding-top: 6px; }
+  .ver .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--sec-1); }
   /* version + change log */
   .ver { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; background: none; border: 1px solid var(--border); border-radius: 999px; padding: 2px 10px; font-size: 12px; color: var(--ink-2); cursor: pointer; }
   .ver:hover { background: var(--hover); color: var(--ink); }
@@ -141,16 +149,16 @@
   .pwfield input[type=password] { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 9px 10px; }
   .muted { color: var(--ink-3); }
   /* section accents: thin colored bar beside each heading, neutral hairline after it */
-  :root { --sec-1: #2066bd; --sec-2: #6352c9; --sec-3: #b84a1b; --sec-4: #1b7a33; --sec-5: #0f7378; --sec-6: #8f5f00; --sec-7: #b0306a; }
-  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --sec-1: #4a94ec; --sec-2: #9a8ff0; --sec-3: #ef7a45; --sec-4: #3cba62; --sec-5: #2bb5ba; --sec-6: #e5ad2e; --sec-7: #f0709f; } }
-  :root[data-theme="dark"] { --sec-1: #4a94ec; --sec-2: #9a8ff0; --sec-3: #ef7a45; --sec-4: #3cba62; --sec-5: #2bb5ba; --sec-6: #e5ad2e; --sec-7: #f0709f; }
+  :root { --sec-1: #2066bd; --sec-2: #6352c9; --sec-3: #b84a1b; --sec-4: #1b7a33; --sec-5: #0f7378; --sec-6: #8f5f00; --sec-7: #b0306a; --sec-8: #5a6b10; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --sec-1: #4a94ec; --sec-2: #9a8ff0; --sec-3: #ef7a45; --sec-4: #3cba62; --sec-5: #2bb5ba; --sec-6: #e5ad2e; --sec-7: #f0709f; --sec-8: #a8bf3c; } }
+  :root[data-theme="dark"] { --sec-1: #4a94ec; --sec-2: #9a8ff0; --sec-3: #ef7a45; --sec-4: #3cba62; --sec-5: #2bb5ba; --sec-6: #e5ad2e; --sec-7: #f0709f; --sec-8: #a8bf3c; }
   .row { margin-top: 28px; }
   .row h2 { display: flex; align-items: center; gap: 10px; color: var(--ink); font-size: 12px; margin-bottom: 10px; }
   .row h2::before { content: ""; width: 4px; height: 16px; border-radius: 2px; background: var(--sec, var(--ink-3)); flex: none; }
   .row h2::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, color-mix(in srgb, var(--sec, var(--border)) 45%, transparent), var(--border) 30%, transparent); }
   .row h2 .num { color: var(--sec); font-variant-numeric: tabular-nums; }
   .sec-1 { --sec: var(--sec-1); } .sec-2 { --sec: var(--sec-2); } .sec-3 { --sec: var(--sec-3); }
-  .sec-4 { --sec: var(--sec-4); } .sec-5 { --sec: var(--sec-5); } .sec-6 { --sec: var(--sec-6); } .sec-7 { --sec: var(--sec-7); }
+  .sec-4 { --sec: var(--sec-4); } .sec-5 { --sec: var(--sec-5); } .sec-6 { --sec: var(--sec-6); } .sec-7 { --sec: var(--sec-7); } .sec-8 { --sec: var(--sec-8); }
   /* executive summary */
   .exec { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-top: 12px; }
   .exec h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-2); margin: 0 0 10px; font-weight: 600; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
@@ -249,7 +257,7 @@
       <h1>Premier Builders · Sales KPI Scorecard</h1>
       <div class="sub" id="updated">Loading…</div>
       <div class="cmp-line" id="cmpLine" hidden></div>
-      <button class="ver" id="verBtn" hidden title="See what's changed"></button>
+      <button class="ver" id="verBtn" hidden title="See the latest dashboard updates"></button>
     </div>
     <div class="controls">
       <button class="btn" id="rangeBtn" aria-haspopup="dialog" aria-expanded="false">
@@ -354,15 +362,18 @@ async function loadChangelog() {
   try { changelog = (await getJSON('changelog.json')).versions || []; } catch { changelog = null; }
   const v = changelog?.[0];
   if (!v) { $('verBtn').hidden = true; return; }
-  $('verBtn').innerHTML = `<b>v${esc(v.version)}</b> · deployed ${esc(fmtDay(v.date))} · Change log`;
+  const seen = store.get('kpi-news-seen') === v.version;
+  $('verBtn').innerHTML = `<b>v${esc(v.version)}</b> · deployed ${esc(fmtDay(v.date))} · What’s new${seen ? '' : '<span class="dot" aria-label="new update"></span>'}`;
   $('verBtn').hidden = false;
 }
+function loadChangelogBadge() { const d = $('verBtn').querySelector('.dot'); if (d) d.remove(); }
 function openChangelog() {
   if (!changelog?.length) return;
+  store.set('kpi-news-seen', changelog[0].version); loadChangelogBadge();
   $('modal').className = 'modal small clog-modal';
   $('modal').style.width = 'min(640px, 100%)';
   $('modal').innerHTML = `
-    <div class="mhead"><div><h3 id="mTitle">Change log</h3>
+    <div class="mhead"><div><h3 id="mTitle">What’s new</h3>
       <div class="def">Every dashboard update, newest first. Data syncs from GoHighLevel separately and aren't listed here.</div></div>
       <button class="close" data-close aria-label="Close">×</button></div>
     <div class="clog">${changelog.map((v, i) => `
@@ -429,14 +440,14 @@ const DRILLS = {
     def: 'Every opportunity created in the selected dates, in both pipelines.',
     cols: [col.name, col.email, col.phone, col.source, col.created, col.assigned, col.stage, { label: 'Contact status', key: 'contactStatus', type: 'badge', filter: 'contactStatus' }, { ...col.status, label: 'Deal status' }] },
   contacted: { title: 'Contacted leads', unit: 'leads', list: L => L.contacted,
-    def: 'New leads in the selected dates with a two-way contact: a reply, a connected call, or a booking (or they already reached a later stage).',
+    def: 'New leads in the selected dates we actually reached: a connected call (1 min or more), a text or email reply, Lisa’s "contacted" or "showed" tag, or a later stage such as Engaged or Sent Quote. Booking a call alone doesn’t count.',
     cols: [col.name, col.email, col.phone, { label: 'Contacted at', key: 'firstContactedAt', type: 'dt' }, { label: 'Method', key: 'contactMethod' }, col.assigned, { label: 'Response', key: 'contactStatus', type: 'badge', filter: 'contactStatus' }] },
   contactRate: { title: 'Contact rate', unit: 'leads', list: L => L.newLeads, numerator: L => L.contacted.length, numLabel: 'contacted',
     def: 'All new leads, with how far contact got. Filter by Contact status to see who still needs a call.',
     cols: [col.name, col.email, col.phone, col.created, { label: 'Contact status', key: 'contactStatus', type: 'badge', filter: 'contactStatus' }, { label: 'Method', key: 'contactMethod' }, col.assigned] },
   speed: { title: 'Speed to lead', unit: 'leads', list: L => L.speed,
     def: 'Business-hours minutes (Mon–Fri 9am–6pm Eastern) from lead created to the first outbound call. Slowest first; leads nobody has called yet are at the top.',
-    cols: [col.name, col.created, { label: 'First response', key: '_firstResponse', type: 'dt' }, { label: 'Speed to lead', key: 'stlMin', type: 'stl', num: true }, { label: 'Method', key: 'contactMethod' }, col.assigned, col.phone],
+    cols: [col.name, col.created, { label: 'First response', key: '_firstResponse', type: 'dt' }, { label: 'Speed to lead', key: 'stlMin', type: 'stl', num: true }, { label: 'Measured from', key: 'stlFrom', filter: 'stlFrom' }, { label: 'Contact method', key: 'contactMethod' }, col.assigned, col.phone],
     prep: r => ({ ...r, _firstResponse: r.firstCallAt || (r.stlMin === null || r.stlMin === undefined ? null : new Date(Date.parse(r.createdAt) + r.stlMin * 60000).toISOString()) }) },
   qualified: { title: 'Qualified leads', unit: 'leads', list: L => L.qualified,
     def: 'Leads that came in during the selected dates and are tagged "qualified_lead" (or marked qualified in GHL), plus any that have been quoted, gone under contract or been won. Leads marked Not Qualified are excluded.',
@@ -475,6 +486,18 @@ const DRILLS = {
     cols: [col.name, col.phone, { label: 'Missed at', key: 'at', type: 'dt' }, col.assigned, { label: 'Called back?', key: '_back', type: 'badge', filter: '_back' }, { label: 'Callback at', key: 'callbackAt', type: 'dt' }, { label: 'Callback wait', key: 'callbackMin', type: 'stl', num: true }, { label: 'Lead stage', key: 'leadStage' }],
     prep: r => ({ ...r, _back: r.calledBack ? 'Yes' : 'Not yet' }) },
 };
+const ahCols = [col.name, col.email, col.phone, col.created, { label: 'Contact status', key: 'contactStatus', type: 'badge', filter: 'contactStatus' }, { label: 'Speed to lead', key: 'stlMin', type: 'stl', num: true }, col.source, col.assigned, col.stage];
+DRILLS.ahLeads = { title: 'After-hours leads', unit: 'leads', list: L => L.ahLeads || [], cols: ahCols,
+  def: 'New leads created outside business hours (Mon–Fri 9am–6pm Eastern). They are still counted in every other number.' };
+DRILLS.ahShare = { ...DRILLS.ahLeads, title: 'Share of leads after hours', denom: L => L.newLeads.length, denomLabel: 'new leads' };
+DRILLS.ahContactRate = { ...DRILLS.ahLeads, title: 'Contact rate (after hours)', numerator: L => (L.ahContacted || []).length, numLabel: 'contacted',
+  def: 'After-hours leads, with how far contact got. Contacted = a connected call, a reply, or the contacted / showed tag.' };
+DRILLS.bhContactRate = { ...DRILLS.ahLeads, title: 'Contact rate (business hours)', list: L => L.bhLeads || [], numerator: L => (L.bhContacted || []).length, numLabel: 'contacted',
+  def: 'Leads created during business hours (Mon–Fri 9am–6pm Eastern), with how far contact got.' };
+DRILLS.ahSpeed = { ...DRILLS.ahLeads, title: 'Speed to lead (after hours)', list: L => L.ahSpeed || [], numerator: L => (L.ahSpeedMeasured || []).length, numLabel: 'have had a first call',
+  def: 'Business-hours minutes from the next opening (9am on the next business day) to the first outbound call. Slowest first.' };
+DRILLS.ahWithin5 = { ...DRILLS.ahSpeed, title: 'After hours: called within 5 min of opening', numerator: L => (L.ahWithin5 || []).length, numLabel: 'called within 5 min' };
+DRILLS.ahQuoted = { ...DRILLS.ahLeads, title: 'After-hours leads quoted', list: L => (L.ahLeads || []).filter(l => l.quote), def: 'After-hours leads from these dates that have since been quoted (tag, Quote Sent Date or stage).' };
 DRILLS.speed.numerator = L => L.speedMeasured.length; DRILLS.speed.numLabel = 'have had a first call';
 DRILLS.speedWithin5 = { ...DRILLS.speed, title: 'Called within 5 minutes', numerator: L => L.within5.length, numLabel: 'called within 5 min' };
 DRILLS.leadToBooked = { ...DRILLS.booked, title: 'Lead → booked call', denom: L => L.newLeads.length, denomLabel: 'new leads' };
@@ -544,8 +567,8 @@ function deltaTxt(c, p, f) {
   return `<span>${d > 0 ? '▲' : '▼'} ${v} vs prior</span>`;
 }
 // ---------- period comparison helpers ----------
-const LOWER_BETTER = new Set(['speedToLeadAvgMin', 'missedCallPct', 'noShowPct']);
-const NEUTRAL = new Set(['aiAvgDurationSec', 'aiTotalDurationSec']);   // longer or shorter isn't better or worse
+const LOWER_BETTER = new Set(['speedToLeadAvgMin', 'missedCallPct', 'noShowPct', 'ahSpeedAvgMin']);
+const NEUTRAL = new Set(['aiAvgDurationSec', 'aiTotalDurationSec', 'ahSharePct']);   // longer or shorter isn't better or worse
 const PCT_KEYS = k => /Pct$/.test(k);
 const fmtSpan = (from, to) => {
   const end = to - 1, o = { timeZone: TZ(), month: 'short', day: 'numeric' };
@@ -560,7 +583,7 @@ const B_NAMES = {
 function bName() { if (!crange) return ''; if (crange.mode === 'custom') return 'Period B'; return B_NAMES[crange.mode]?.[sel.key] || 'Previous period'; }
 function aName() { return cmp.on && sel.key === 'custom' ? 'Period A' : range.label; }
 function bShort() { return bName().replace(/, same (point|time)$/, ''); }
-const FMT_OF = { speedToLeadAvgMin: 'min', quoteValue: 'usd', revenue: 'usd', aiAvgDurationSec: 'dur', aiTotalDurationSec: 'dur' };
+const FMT_OF = { speedToLeadAvgMin: 'min', ahSpeedAvgMin: 'min', quoteValue: 'usd', revenue: 'usd', aiAvgDurationSec: 'dur', aiTotalDurationSec: 'dur' };
 const fmtOf = k => FMT_OF[k] || (PCT_KEYS(k) ? 'pct' : 'n');
 // One comparison rule, reused by the tiles, the summary and the chart.
 function change(k, c, p) {
@@ -582,10 +605,10 @@ function cmpBox(k, v, f) {
 
 function tile(k, label, f, goalKey, lowerBetter, drill, note) {
   const v = cur[k];
-  if (note && (v === null || v === undefined)) return `<div class="tile"><div class="label">${esc(label)}</div><div class="value muted">—</div><div class="foot"><span class="chip none">Not tracked yet</span></div><div class="hint2">${esc(note)}</div></div>`;
+  if (note && (v === null || v === undefined)) return `<div class="tile" data-k="${k}" data-d="${drill || ''}" data-l="${esc(label)}"><div class="label">${esc(label)}</div><div class="value muted">—</div><div class="foot"><span class="chip none">Not tracked yet</span></div><div class="hint2">${esc(note)}</div></div>`;
   const can = !!drill && (records || pub.detailsAvailable || window.__VOICE_PREVIEW__);
   const tag = can ? 'button' : 'div';
-  return `<${tag} class="tile${cmp.on ? ' cmp' : ''}" ${can ? `data-drill="${drill}" aria-label="${esc(label)}: view the list"` : ''}>
+  return `<${tag} class="tile${cmp.on ? ' cmp' : ''}" data-k="${k}" data-d="${drill || ''}" data-l="${esc(label)}" data-g="${goalKey || ''}" data-f="${f}" data-lb="${lowerBetter ? 1 : ''}" ${can ? `data-drill="${drill}" aria-label="${esc(label)}: view the list"` : ''}>
     <div class="label">${esc(label)}</div>
     <div class="value ${v === null || v === undefined ? 'muted' : ''}">${fmt[f](v)}</div>
     ${cmp.on ? cmpBox(k, v, f) : ''}
@@ -629,6 +652,7 @@ function render() {
     ${tile('bookedToShowPct', 'Booked call → show', 'pct', 'bookedToShowPct', false, 'bookedToShow')}
     ${tile('contacted', 'Contacted leads', 'n', null, false, 'contacted')}
   </div></section>`;
+  html += afterHoursSection();
   html += voiceSection();
   $('app').innerHTML = html;
   execSummary();
@@ -641,6 +665,108 @@ function render() {
   renderPresets();
 }
 
+
+// ---------- After hours ----------
+function afterHoursSection() {
+  if (cur.ahLeads === null || cur.ahLeads === undefined) return '';
+  const intro = cur.ahLeads
+    ? `${cur.ahLeads.toLocaleString()} of ${cur.totalLeads.toLocaleString()} new leads came in after hours (outside Mon–Fri 9am–6pm Eastern). They're still counted in every number above; this row shows how they do on their own.`
+    : 'No new leads came in after hours in these dates.';
+  return `<section class="row sec-7"><h2><span><span class="num">7</span> · After-hours leads</span></h2>
+    <div class="sub" style="margin:-4px 0 10px">${esc(intro)}</div>
+    <div class="tiles">
+      ${tile('ahLeads', 'After-hours leads', 'n', null, false, 'ahLeads')}
+      ${tile('ahSharePct', 'Share of all new leads', 'pct', null, false, 'ahShare')}
+      ${tile('ahContactRatePct', 'Contact rate (after hours)', 'pct', 'contactRatePct', false, 'ahContactRate')}
+      ${tile('bhContactRatePct', 'Contact rate (business hours)', 'pct', 'contactRatePct', false, 'bhContactRate')}
+      ${tile('ahSpeedAvgMin', 'Speed to lead (after hours)', 'min', 'speedToLeadMin', true, 'ahSpeed')}
+      ${tile('ahWithin5Pct', 'Called within 5 min of opening', 'pct', 'calledWithin5Pct', false, 'ahWithin5')}
+      ${tile('ahQuoted', 'After-hours leads quoted', 'n', null, false, 'ahQuoted')}
+    </div></section>`;
+}
+
+// ---------- hover summary on cards ----------
+const TIP_WHAT = {
+  totalLeads: 'How many new leads came in.',
+  speedToLeadAvgMin: 'How long, on average, a new lead waits for Lisa’s first call. Only business hours count, so a lead from 10pm called at 9:05am waited 5 minutes.',
+  calledWithin5Pct: 'Of the leads that got a first call, the share called within 5 business-hours minutes.',
+  contactRatePct: 'The share of new leads we actually reached: a connected call, a reply, or Lisa tagged them contacted / showed. Booking a call alone doesn’t count.',
+  leadToBookedPct: 'Booked calls compared with new leads.',
+  noShowPct: 'Of the booked calls whose time has passed, the share that were no-shows. Lower is better.',
+  leadToShowPct: 'Calls that actually happened compared with new leads.',
+  qualified: 'New leads tagged qualified_lead, plus any that have been quoted or later.',
+  quotesSent: 'Quotes that went out in these dates, whenever the lead came in.',
+  quoteValue: 'The total dollar amount of the quotes sent (Quote Amount field, otherwise the opportunity value).',
+  contactToQuotePct: 'Quotes sent compared with leads we reached.',
+  quoteToContractPct: 'Contracts compared with quotes sent.',
+  underContract: 'Deals that went under contract in these dates.',
+  closedDeals: 'Deals marked Won in these dates.',
+  revenue: 'The value of the deals won.',
+  quoteToClosePct: 'Deals won compared with quotes sent.',
+  missedCallPct: 'Inbound calls nobody answered. Lower is better.',
+  bookedCalls: 'Calls booked on Lisa’s calendars that start in these dates.',
+  bookedToShowPct: 'Of the booked calls whose time has passed, the share that happened.',
+  contacted: 'New leads we actually reached.',
+  ahLeads: 'New leads that came in outside Mon–Fri 9am–6pm Eastern.',
+  ahSharePct: 'After-hours leads as a share of all new leads.',
+  ahContactRatePct: 'The contact rate for after-hours leads only. Compare it with the business-hours card next to it.',
+  bhContactRatePct: 'The contact rate for leads that came in during business hours.',
+  ahSpeedAvgMin: 'Speed to lead for after-hours leads, counted from the next opening (9am on the next business day).',
+  ahWithin5Pct: 'After-hours leads called within 5 minutes of the next opening.',
+  ahQuoted: 'After-hours leads from these dates that have since been quoted.',
+  aiCalls: 'Live calls the Voice AI agent picked up.',
+  aiAvgDurationSec: 'The average length of a Voice AI call.',
+  aiTotalDurationSec: 'Total time the Voice AI spent on calls.',
+  aiBooked: 'Voice AI calls that booked an appointment.',
+  aiLeads: 'Voice AI callers who became a new lead within 24 hours.',
+  aiTransferred: 'Voice AI calls transferred to the team.',
+  aiCallbacks: 'Voice AI callers who asked for a callback.',
+};
+function tipHtml(el) {
+  const k = el.dataset.k, d = DRILLS[el.dataset.d] || null, f = el.dataset.f || fmtOf(k);
+  const what = TIP_WHAT[k] || '';
+  const HOW = { contactRatePct: DRILLS.contacted.def, contacted: DRILLS.contacted.def, leadToBookedPct: DRILLS.booked.def, bookedCalls: DRILLS.booked.def };
+  const how = HOW[k] || d?.def || '';
+  const v = cur?.[k];
+  const goal = el.dataset.g && pub.targets?.[el.dataset.g] != null ? `Goal: ${el.dataset.lb ? 'at most' : 'at least'} ${fmt[f](pub.targets[el.dataset.g])}${v === null || v === undefined ? '' : ` · now ${fmt[f](v)}`}` : '';
+  let counts = '';
+  if (d && lists) {
+    try {
+      const rows = d.list(lists) || [];
+      const num = d.numerator ? d.numerator(lists) : null;
+      const den = d.denom ? d.denom(lists) : null;
+      counts = num !== null && num !== undefined ? `Right now: ${num.toLocaleString()} ${d.numLabel || ''} of ${rows.length.toLocaleString()} ${d.unit || ''}`
+        : den !== null && den !== undefined ? `Right now: ${rows.length.toLocaleString()} ${d.unit || ''} of ${den.toLocaleString()} ${d.denomLabel || ''}`
+        : `Right now: ${rows.length.toLocaleString()} ${d.unit || ''}`;
+    } catch { counts = ''; }
+  }
+  const foot = el.dataset.d ? (records ? 'Click the card for the list' : 'Click the card and unlock to see the list') : '';
+  return `<p class="tt">${esc(el.dataset.l || '')}</p>${what ? `<p>${esc(what)}</p>` : ''}${how && how !== what ? `<p class="th"><b>How it’s counted:</b> ${esc(how)}</p>` : ''}${goal ? `<p class="tg">${esc(goal)}</p>` : ''}${counts ? `<p class="tn">${esc(counts.replace(/\s+/g, ' ').trim())}</p>` : ''}${foot ? `<p class="tf">${esc(foot)}</p>` : ''}`;
+}
+function setupCardTips() {
+  const tipEl = document.createElement('div');
+  tipEl.className = 'kpi-tip'; tipEl.setAttribute('role', 'tooltip'); tipEl.hidden = true;
+  document.body.appendChild(tipEl);
+  let curEl = null, timer = null;
+  const hide = () => { clearTimeout(timer); curEl = null; tipEl.hidden = true; };
+  const show = el => {
+    tipEl.innerHTML = tipHtml(el); tipEl.hidden = false;
+    const r = el.getBoundingClientRect(), w = tipEl.offsetWidth, h = tipEl.offsetHeight, pad = 10;
+    let top = r.bottom + 8; if (top + h > innerHeight - pad && r.top - h - 8 > pad) top = r.top - h - 8;
+    const left = Math.max(pad, Math.min(r.left, innerWidth - w - pad));
+    tipEl.style.top = `${Math.round(top + scrollY)}px`; tipEl.style.left = `${Math.round(left + scrollX)}px`;
+  };
+  document.addEventListener('mouseover', e => {
+    const el = e.target.closest?.('.tile[data-k]');
+    if (el === curEl) return;
+    hide(); if (!el) return;
+    curEl = el; timer = setTimeout(() => { if (curEl === el) show(el); }, 250);
+  });
+  document.addEventListener('focusin', e => { const el = e.target.closest?.('.tile[data-k]'); if (el) { curEl = el; show(el); } });
+  document.addEventListener('focusout', hide);
+  addEventListener('scroll', hide, { passive: true });
+  document.addEventListener('click', hide, true);
+}
 
 // ---------- Voice AI ----------
 function rangePhrase() {
@@ -668,7 +794,7 @@ function voiceSection() {
   if (cur.aiCalls === null || cur.aiCalls === undefined) return '';
   const can = !!(records || pub.detailsAvailable || window.__VOICE_PREVIEW__);
   const NOT_LOGGED = 'GHL only logs calls the Voice AI picked up, so unanswered calls to its numbers aren\'t in the Voice AI data.';
-  return `<section class="row sec-7">${'<h2><span><span class="num">7</span> · Voice AI performance</span></h2>'}
+  return `<section class="row sec-8">${'<h2><span><span class="num">8</span> · Voice AI performance</span></h2>'}
     <div class="tiles">
       ${tile('aiCalls', 'AI calls received', 'n', null, false, 'aiCalls')}
       ${tile('aiAnswerRatePct', 'AI answer rate', 'pct', null, false, null, NOT_LOGGED)}
@@ -1193,6 +1319,7 @@ document.addEventListener('mousemove', e => {
 
 // ---------- start ----------
 (async () => {
+  setupCardTips();
   loadChangelog();
   try {
     await loadPublic();
