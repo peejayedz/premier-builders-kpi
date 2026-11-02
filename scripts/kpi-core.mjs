@@ -50,7 +50,10 @@ export function classify(lead, cfg) {
   const stage = norm(lead.stage);
   const st = k => cfg.stages[k].map(norm).includes(stage);
   const won = lead.status === 'won' || (st('closed') && lead.status !== 'lost');
-  const contacted = (lead.tags || []).map(norm).includes(norm(cfg.contactedTag)) || !!lead.firstContactedAt || st('contacted') || won;
+  // Contacted = we actually reached them: Lisa's "contacted" or "showed" tag, a first-contact date (answered call,
+  // reply, or the First Contacted Date field), a stage that implies a conversation, or won. Booking alone doesn't count.
+  const tg0 = (lead.tags || []).map(norm);
+  const contacted = tg0.includes(norm(cfg.contactedTag)) || ((cfg.tags || {}).showed || []).map(norm).some(t => tg0.includes(t)) || !!lead.firstContactedAt || st('contacted') || won;
   // Lisa's call (Status overlay, synced into GHL by Jered's hook) wins; a quote or later stage also implies qualified.
   const Q = cfg.qualification || {};
   const tags = (lead.tags || []).map(norm);
@@ -87,6 +90,18 @@ export function contactStatus(lead, c, callsByContact) {
   if (calls.some(k => k.direction === 'inbound' && !k.answered)) return 'Missed call';
   if (calls.some(k => k.direction === 'outbound')) return 'Attempted, no response';
   return 'Not attempted yet';
+}
+
+// After hours = outside the speed-to-lead business hours (default Mon–Fri 9am–6pm) in the account's time zone.
+const dtfCache = {};
+export function isAfterHours(iso, cfg) {
+  const B = cfg.speedToLead?.businessHours || { days: [1, 2, 3, 4, 5], start: 9, end: 18 };
+  const tz = cfg.timezone || 'UTC';
+  const f = dtfCache[tz] ||= new Intl.DateTimeFormat('en-US', { timeZone: tz, weekday: 'short', hour: 'numeric', minute: 'numeric', hour12: false });
+  const p = Object.fromEntries(f.formatToParts(new Date(iso)).map(x => [x.type, x.value]));
+  const dow = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 }[p.weekday];
+  const h = (Number(p.hour) % 24) + Number(p.minute) / 60;
+  return !B.days.includes(dow) || h < B.start || h >= B.end;
 }
 
 // Builds every drill-down list for one period. Tiles are derived from these.
@@ -160,6 +175,10 @@ export function buildLists(records, cfg, from, to) {
   }
 
   const withStl = leads.filter(l => l.stlMin !== null && l.stlMin !== undefined);
+  // After-hours leads: still counted everywhere above; this is an extra view of the same leads.
+  const ahLeads = leads.filter(l => isAfterHours(l.createdAt, cfg)).map(l => ({ ...l, afterHours: true }));
+  const bhLeads = leads.filter(l => !isAfterHours(l.createdAt, cfg));
+  const ahStl = ahLeads.filter(l => l.stlMin !== null && l.stlMin !== undefined);
   return {
     newLeads: leads,
     contacted: leads.filter(l => l.contacted),
@@ -179,6 +198,14 @@ export function buildLists(records, cfg, from, to) {
     bookedPast,
     noShows,
     showed,
+    ahLeads,
+    ahContacted: ahLeads.filter(l => l.contacted),
+    ahSpeed: [...ahLeads].sort((a, b) => (b.stlMin ?? 1e12) - (a.stlMin ?? 1e12)),
+    ahSpeedMeasured: ahStl,
+    ahWithin5: ahStl.filter(l => l.stlMin <= 5),
+    ahQuoted: ahLeads.filter(l => l.quote),
+    bhLeads,
+    bhContacted: bhLeads.filter(l => l.contacted),
     inboundCalls,
     missed,
     ...(buildVoiceLists(records.voiceCalls, from, to) || {}),
@@ -215,6 +242,20 @@ export function summarizeVoice(V) {
   };
 }
 
+function summarizeAfterHours(L) {
+  if (!L.ahLeads) return {};
+  const m = L.ahSpeedMeasured;
+  return {
+    ahLeads: L.ahLeads.length,
+    ahSharePct: pct(L.ahLeads.length, L.newLeads.length),
+    ahContactRatePct: pct(L.ahContacted.length, L.ahLeads.length),
+    bhContactRatePct: pct(L.bhContacted.length, L.bhLeads.length),
+    ahSpeedAvgMin: m.length ? Math.round(m.reduce((t, l) => t + l.stlMin, 0) / m.length) : null,
+    ahWithin5Pct: m.length ? pct(L.ahWithin5.length, m.length) : null,
+    ahQuoted: L.ahQuoted.length,
+  };
+}
+
 // The only place numbers are produced. Every number = a length or sum of a list.
 export function summarize(L) {
   const avg = L.speedMeasured.length ? Math.round(L.speedMeasured.reduce((t, l) => t + l.stlMin, 0) / L.speedMeasured.length) : null;
@@ -245,6 +286,7 @@ export function summarize(L) {
     missedCallPct: L.inboundCalls ? pct(L.missed.length, L.inboundCalls.length) : null,
     missedCalls: L.missed ? L.missed.length : null,
     inboundCalls: L.inboundCalls ? L.inboundCalls.length : null,
+    ...summarizeAfterHours(L),
     ...summarizeVoice(L.aiCalls ? L : null),
     bySource,
     funnel: [

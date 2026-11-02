@@ -77,6 +77,7 @@ const fieldIds = (await optional('customFields', async () => {
     qual: (QUAL.contactFields || []).map(find).filter(Boolean),
   };
 })) || {};
+console.log('Contact fields found:', JSON.stringify(Object.fromEntries(Object.entries(fieldIds).map(([k, v]) => [k, Array.isArray(v) ? v.length : !!v]))));
 const oppQualIds = (await optional('opportunity customFields', async () => {
   const { customFields = [] } = await ghl(`/locations/${LOC}/customFields?model=opportunity`);
   const names = (QUAL.opportunityFields || []).map(norm);
@@ -134,7 +135,7 @@ const leads = recentOpps.map(o => {
     tags: c.tags || o.contact?.tags || [],
     qualValues: [...(c.qualValues || []), ...(o.customFields || []).filter(f => oppQualIds.includes(f.id)).map(fieldVal)].filter(v => v !== null && v !== '').map(String),
     quoteSentAt: dateOnly(c.quoteSentDate), contractAt: dateOnly(c.contractDate), quoteAmount: money(c.quoteAmount),
-    stlMin: Number.isNaN(stl) ? null : stl, firstContactedAt: c.firstContacted ? iso(c.firstContacted) : null, contactMethod: c.method || null,
+    stlMin: Number.isNaN(stl) ? null : stl, stlFrom: stl === null || Number.isNaN(stl) ? null : 'Entered in GHL', firstContactedAt: c.firstContacted ? iso(c.firstContacted) : null, contactMethod: c.method || null,
   };
 });
 
@@ -256,12 +257,13 @@ for (const l of leads) {
     if (connected) events.push({ at: k.at, method: k.direction === 'inbound' ? 'Inbound call' : 'Answered call' });
   }
   for (const r of after(repliesBy[l.contactId])) events.push({ at: r.at, method: r.method });
-  for (const a of after(apptsBy[l.contactId])) events.push({ at: a.at, method: 'Booked appointment' });
+  // A booking alone is not a contact: the lead counts as contacted once a call connects, they reply,
+  // or Lisa tags them "contacted" / "showed" (handled in kpi-core).
   events.sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
   const first = events[0];
   if (l.stlMin === null) {
-    if (firstOut) { l.stlMin = businessMinutes(t0, Date.parse(firstOut.at)); l.firstCallAt = firstOut.at; stlComputed++; }
-    else if (first && first.method === 'Inbound call') { l.stlMin = 0; l.firstCallAt = first.at; stlComputed++; }   // they called us and we answered
+    if (firstOut) { l.stlMin = businessMinutes(t0, Date.parse(firstOut.at)); l.firstCallAt = firstOut.at; l.stlFrom = 'GHL call'; stlComputed++; }
+    else if (first && first.method === 'Inbound call') { l.stlMin = 0; l.firstCallAt = first.at; l.stlFrom = 'They called in'; stlComputed++; }   // they called us and we answered
   }
   if (!l.firstContactedAt && first) { l.firstContactedAt = first.at; l.contactMethod = first.method; contactComputed++; }
 }
