@@ -2,6 +2,16 @@
   "_note": "Newest first. Add an entry here whenever the dashboard or sync code changes. Automatic data syncs are not listed.",
   "versions": [
     {
+      "version": "1.8.0",
+      "date": "2026-11-02",
+      "title": "Speed to lead: median and slow first calls",
+      "changes": [
+        "New Speed to lead (median) card: the typical wait for a first call. One very slow lead can't pull it up the way it pulls up the average, so compare the two.",
+        "New Slow first calls (30+ min) card: how many leads waited more than 30 business-hours minutes for their first call. Click it for the list, slowest first, to see which leads drove the average up.",
+        "Both are in the comparison view and the trend chart, and in data/kpis.json for the KPI reports."
+      ]
+    },
+    {
       "version": "1.7.0",
       "date": "2026-11-02",
       "title": "Contact rate fix, after-hours leads and card summaries",

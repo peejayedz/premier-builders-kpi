@@ -500,6 +500,11 @@ DRILLS.ahWithin5 = { ...DRILLS.ahSpeed, title: 'After hours: called within 5 min
 DRILLS.ahQuoted = { ...DRILLS.ahLeads, title: 'After-hours leads quoted', list: L => (L.ahLeads || []).filter(l => l.quote), def: 'After-hours leads from these dates that have since been quoted (tag, Quote Sent Date or stage).' };
 DRILLS.speed.numerator = L => L.speedMeasured.length; DRILLS.speed.numLabel = 'have had a first call';
 DRILLS.speedWithin5 = { ...DRILLS.speed, title: 'Called within 5 minutes', numerator: L => L.within5.length, numLabel: 'called within 5 min' };
+const SLOW_MIN = () => cfg?.speedToLead?.slowMin ?? 30;
+DRILLS.speedMedian = { ...DRILLS.speed, title: 'Speed to lead (median)', list: L => [...L.speedMeasured].sort((a, b) => b.stlMin - a.stlMin), numerator: null,
+  def: 'The middle wait among leads that have had a first call: half waited less, half waited longer. One very slow lead can’t pull it up the way it pulls up the average. Slowest first.' };
+DRILLS.speedSlow = { ...DRILLS.speed, title: 'Slow first calls', list: L => L.slowLeads || [], numerator: null, denom: L => L.speedMeasured.length, denomLabel: 'leads that have had a first call',
+  get def() { return `Leads whose first call took more than ${SLOW_MIN()} business-hours minutes, slowest first. Check “Measured from”: if it says GHL call, Lisa may have called from her cell first; enter her minutes in the Speed to Lead (min) field to correct it.`; } };
 DRILLS.leadToBooked = { ...DRILLS.booked, title: 'Lead → booked call', denom: L => L.newLeads.length, denomLabel: 'new leads' };
 DRILLS.bookedToShow = { ...DRILLS.showed, title: 'Booked call → show', denom: L => (L.bookedPast || []).length, denomLabel: 'booked calls that have already happened' };
 DRILLS.noShowRate = { ...DRILLS.noShows, title: 'Booked call → no-show', denom: L => (L.bookedPast || []).length, denomLabel: 'booked calls that have already happened' };
@@ -529,7 +534,9 @@ const ROWS = [
   ['1 · Leads in', [
     ['totalLeads', 'New leads', 'n', null, false, 'newLeads'],
     ['speedToLeadAvgMin', 'Speed to lead (avg)', 'min', 'speedToLeadMin', true, 'speed'],
+    ['speedToLeadMedianMin', 'Speed to lead (median)', 'min', 'speedToLeadMin', true, 'speedMedian'],
     ['calledWithin5Pct', 'Called within 5 min', 'pct', 'calledWithin5Pct', false, 'speedWithin5'],
+    ['slowLeads', 'Slow first calls (30+ min)', 'n', null, true, 'speedSlow'],
     ['contactRatePct', 'Contact rate', 'pct', 'contactRatePct', false, 'contactRate'],
   ]],
   ['2 · Appointments', [
@@ -567,7 +574,7 @@ function deltaTxt(c, p, f) {
   return `<span>${d > 0 ? '▲' : '▼'} ${v} vs prior</span>`;
 }
 // ---------- period comparison helpers ----------
-const LOWER_BETTER = new Set(['speedToLeadAvgMin', 'missedCallPct', 'noShowPct', 'ahSpeedAvgMin']);
+const LOWER_BETTER = new Set(['speedToLeadAvgMin', 'speedToLeadMedianMin', 'slowLeads', 'missedCallPct', 'noShowPct', 'ahSpeedAvgMin']);
 const NEUTRAL = new Set(['aiAvgDurationSec', 'aiTotalDurationSec', 'ahSharePct']);   // longer or shorter isn't better or worse
 const PCT_KEYS = k => /Pct$/.test(k);
 const fmtSpan = (from, to) => {
@@ -583,7 +590,7 @@ const B_NAMES = {
 function bName() { if (!crange) return ''; if (crange.mode === 'custom') return 'Period B'; return B_NAMES[crange.mode]?.[sel.key] || 'Previous period'; }
 function aName() { return cmp.on && sel.key === 'custom' ? 'Period A' : range.label; }
 function bShort() { return bName().replace(/, same (point|time)$/, ''); }
-const FMT_OF = { speedToLeadAvgMin: 'min', ahSpeedAvgMin: 'min', quoteValue: 'usd', revenue: 'usd', aiAvgDurationSec: 'dur', aiTotalDurationSec: 'dur' };
+const FMT_OF = { speedToLeadAvgMin: 'min', speedToLeadMedianMin: 'min', ahSpeedAvgMin: 'min', quoteValue: 'usd', revenue: 'usd', aiAvgDurationSec: 'dur', aiTotalDurationSec: 'dur' };
 const fmtOf = k => FMT_OF[k] || (PCT_KEYS(k) ? 'pct' : 'n');
 // One comparison rule, reused by the tiles, the summary and the chart.
 function change(k, c, p) {
@@ -689,7 +696,9 @@ function afterHoursSection() {
 const TIP_WHAT = {
   totalLeads: 'How many new leads came in.',
   speedToLeadAvgMin: 'How long, on average, a new lead waits for Lisa’s first call. Only business hours count, so a lead from 10pm called at 9:05am waited 5 minutes.',
+  speedToLeadMedianMin: 'The typical wait for Lisa’s first call: half of leads waited less, half waited longer. Compare it with the average: when the average is much higher, a few slow leads are pulling it up.',
   calledWithin5Pct: 'Of the leads that got a first call, the share called within 5 business-hours minutes.',
+  slowLeads: 'Leads whose first call took more than 30 business-hours minutes. These are the leads that drive the average up, so check them first.',
   contactRatePct: 'The share of new leads we actually reached: a connected call, a reply, or Lisa tagged them contacted / showed. Booking a call alone doesn’t count.',
   leadToBookedPct: 'Booked calls compared with new leads.',
   noShowPct: 'Of the booked calls whose time has passed, the share that were no-shows. Lower is better.',
@@ -899,7 +908,7 @@ function compareSummary() {
     <div class="caveat">Rates are recalculated from each period's own counts. Quotes, contracts and closed deals are counted on the date they happened (Quote Sent Date, contract date, date won). Qualified leads, and quotes or contracts with no date yet, are grouped by when the lead came in.${records ? '' : ' Locked: comparing the pre-computed totals; unlock names for custom dates and the daily chart.'}</div>`;
 }
 
-const TREND_KPIS = [['totalLeads', 'New leads'], ['contacted', 'Contacted leads'], ['contactRatePct', 'Contact rate'], ['speedToLeadAvgMin', 'Speed to lead (avg)'],
+const TREND_KPIS = [['totalLeads', 'New leads'], ['contacted', 'Contacted leads'], ['contactRatePct', 'Contact rate'], ['speedToLeadAvgMin', 'Speed to lead (avg)'], ['speedToLeadMedianMin', 'Speed to lead (median)'],
   ['calledWithin5Pct', 'Called within 5 min'], ['bookedCalls', 'Booked calls'], ['leadToBookedPct', 'Lead → booked call'], ['noShowPct', 'Booked call → no-show'], ['qualified', 'Qualified leads'],
   ['quotesSent', 'Quotes sent'], ['quoteValue', 'Total $ of quotes'], ['missedCallPct', 'Missed call rate'], ['aiCalls', 'Voice AI calls']];
 let trendKey = store.get('kpi-trend') || 'totalLeads';

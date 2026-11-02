@@ -73,6 +73,7 @@ Create the token in the Premier Builders sub-account: Settings → Private Integ
 - **Quote $:** a contact field named "Quote Amount" (or "Quote Value") if it exists; otherwise the opportunity's Lead value. Revenue = Lead value of won deals.
 - **Booked call → no-show:** past booked calls (Lisa) that were a no-show ÷ booked calls that have already happened. GHL appointments are rarely marked, so a call also counts as a no-show when the lead's card is in the **No Show** stage (only the lead's most recent booked call). Goal ≤ 40% (the flip side of the 60% show goal). Marking appointments No-show/Showed in the calendar makes this exact.
 - **Missed calls:** one row per missed inbound call (events, not people). It shows whether and when it was called back.
+- **Speed to lead (avg, median, slow first calls):** business-hours minutes from lead created to the first outbound call in GHL. The median is the middle wait, so one very slow lead doesn't skew it the way it skews the average. Slow first calls = leads that waited more than `speedToLead.slowMin` minutes (default 30); its list shows them slowest first.
 - **Speed to lead / contact method / first contacted date:** show "Not called yet" or "—" until the GHL workflows that fill those fields are live.
 
 ## Configuration (`config.json`)
