@@ -2,6 +2,16 @@
   "_note": "Newest first. Add an entry here whenever the dashboard or sync code changes. Automatic data syncs are not listed.",
   "versions": [
     {
+      "version": "1.9.0",
+      "date": "2026-11-03",
+      "title": "Speed to lead counts business-hours leads only",
+      "changes": [
+        "Speed to lead (avg and median), Called within 5 min and Slow first calls now only count leads that came in during business hours (Mon–Fri 9am–6pm Eastern), as Mario asked.",
+        "After-hours leads often showed 0 min because they were called before the next opening, which made the main numbers look better than they were. Their speed is still shown in the After-hours section.",
+        "Every other number (leads, contact rate, quotes, etc.) still includes after-hours leads."
+      ]
+    },
+    {
       "version": "1.8.0",
       "date": "2026-11-02",
       "title": "Speed to lead: median and slow first calls",

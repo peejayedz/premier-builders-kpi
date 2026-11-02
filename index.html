@@ -446,7 +446,7 @@ const DRILLS = {
     def: 'All new leads, with how far contact got. Filter by Contact status to see who still needs a call.',
     cols: [col.name, col.email, col.phone, col.created, { label: 'Contact status', key: 'contactStatus', type: 'badge', filter: 'contactStatus' }, { label: 'Method', key: 'contactMethod' }, col.assigned] },
   speed: { title: 'Speed to lead', unit: 'leads', list: L => L.speed,
-    def: 'Business-hours minutes (Mon–Fri 9am–6pm Eastern) from lead created to the first outbound call. Slowest first; leads nobody has called yet are at the top.',
+    def: 'Leads that came in during business hours (Mon–Fri 9am–6pm Eastern): business-hours minutes from lead created to the first outbound call. After-hours leads are in the After-hours section. Slowest first; leads nobody has called yet are at the top.',
     cols: [col.name, col.created, { label: 'First response', key: '_firstResponse', type: 'dt' }, { label: 'Speed to lead', key: 'stlMin', type: 'stl', num: true }, { label: 'Measured from', key: 'stlFrom', filter: 'stlFrom' }, { label: 'Contact method', key: 'contactMethod' }, col.assigned, col.phone],
     prep: r => ({ ...r, _firstResponse: r.firstCallAt || (r.stlMin === null || r.stlMin === undefined ? null : new Date(Date.parse(r.createdAt) + r.stlMin * 60000).toISOString()) }) },
   qualified: { title: 'Qualified leads', unit: 'leads', list: L => L.qualified,
@@ -695,10 +695,10 @@ function afterHoursSection() {
 // ---------- hover summary on cards ----------
 const TIP_WHAT = {
   totalLeads: 'How many new leads came in.',
-  speedToLeadAvgMin: 'How long, on average, a new lead waits for Lisa’s first call. Only business hours count, so a lead from 10pm called at 9:05am waited 5 minutes.',
-  speedToLeadMedianMin: 'The typical wait for Lisa’s first call: half of leads waited less, half waited longer. Compare it with the average: when the average is much higher, a few slow leads are pulling it up.',
-  calledWithin5Pct: 'Of the leads that got a first call, the share called within 5 business-hours minutes.',
-  slowLeads: 'Leads whose first call took more than 30 business-hours minutes. These are the leads that drive the average up, so check them first.',
+  speedToLeadAvgMin: 'How long, on average, a lead that came in during business hours waits for Lisa’s first call. After-hours leads are measured separately in the After-hours section.',
+  speedToLeadMedianMin: 'The typical wait for Lisa’s first call (business-hours leads): half waited less, half waited longer. Compare it with the average: when the average is much higher, a few slow leads are pulling it up.',
+  calledWithin5Pct: 'Of the business-hours leads that got a first call, the share called within 5 minutes.',
+  slowLeads: 'Business-hours leads whose first call took more than 30 minutes. These are the leads that drive the average up, so check them first.',
   contactRatePct: 'The share of new leads we actually reached: a connected call, a reply, or Lisa tagged them contacted / showed. Booking a call alone doesn’t count.',
   leadToBookedPct: 'Booked calls compared with new leads.',
   noShowPct: 'Of the booked calls whose time has passed, the share that were no-shows. Lower is better.',
