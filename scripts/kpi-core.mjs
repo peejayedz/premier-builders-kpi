@@ -178,16 +178,18 @@ export function buildLists(records, cfg, from, to) {
     }).sort((a, b) => Date.parse(b.at) - Date.parse(a.at));
   }
 
-  const withStl = leads.filter(l => l.stlMin !== null && l.stlMin !== undefined);
   // After-hours leads: still counted everywhere above; this is an extra view of the same leads.
   const ahLeads = leads.filter(l => isAfterHours(l.createdAt, cfg)).map(l => ({ ...l, afterHours: true }));
   const bhLeads = leads.filter(l => !isAfterHours(l.createdAt, cfg));
+  // Speed to lead (avg, median, within 5 min, slow) uses business-hours leads only. After-hours leads often
+  // show 0 min (called before the next opening), which flattered the main numbers; they have their own row.
+  const withStl = bhLeads.filter(l => l.stlMin !== null && l.stlMin !== undefined);
   const ahStl = ahLeads.filter(l => l.stlMin !== null && l.stlMin !== undefined);
   return {
     newLeads: leads,
     contacted: leads.filter(l => l.contacted),
     // Slowest first; leads nobody has called yet go to the very top.
-    speed: [...leads].sort((a, b) => (b.stlMin ?? 1e12) - (a.stlMin ?? 1e12)),
+    speed: [...bhLeads].sort((a, b) => (b.stlMin ?? 1e12) - (a.stlMin ?? 1e12)),
     speedMeasured: withStl,
     within5: withStl.filter(l => l.stlMin <= 5),
     // Leads whose first call took longer than the slow threshold (default 30 business-hours minutes), slowest first.
