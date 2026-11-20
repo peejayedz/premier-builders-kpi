@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-20T16:01:36.968Z",
+  "generatedAt": "2026-11-20T22:36:24.205Z",
   "location": "Premier Builders",
   "targets": {
     "speedToLeadMin": 5,
@@ -25,22 +25,22 @@
     "today": {
       "label": "Today",
       "from": 1795150800000,
-      "to": 1795190496968,
+      "to": 1795214184205,
       "current": {
-        "totalLeads": 0,
+        "totalLeads": 2,
         "speedToLeadAvgMin": null,
         "speedToLeadMedianMin": null,
         "slowLeads": 0,
         "calledWithin5Pct": null,
         "contacted": 0,
-        "contactRatePct": null,
+        "contactRatePct": 0,
         "bookedCalls": 1,
         "showed": 0,
-        "leadToBookedPct": null,
+        "leadToBookedPct": 50,
         "bookedToShowPct": 0,
         "noShows": 1,
         "noShowPct": 100,
-        "leadToShowPct": null,
+        "leadToShowPct": 0,
         "qualified": 0,
         "quotesSent": 0,
         "quoteValue": 0,
@@ -54,9 +54,9 @@
         "missedCalls": 0,
         "inboundCalls": 0,
         "ahLeads": 0,
-        "ahSharePct": null,
+        "ahSharePct": 0,
         "ahContactRatePct": null,
-        "bhContactRatePct": null,
+        "bhContactRatePct": 0,
         "ahSpeedAvgMin": null,
         "ahWithin5Pct": null,
         "ahQuoted": 0,
@@ -67,11 +67,13 @@
         "aiTransferred": 0,
         "aiLeads": 0,
         "aiCallbacks": null,
-        "bySource": {},
+        "bySource": {
+          "PPC Launch": 2
+        },
         "funnel": [
           [
             "Leads",
-            0,
+            2,
             "newLeads"
           ],
           [
@@ -102,16 +104,16 @@
         ]
       },
       "previous": {
-        "totalLeads": 1,
-        "speedToLeadAvgMin": null,
-        "speedToLeadMedianMin": null,
+        "totalLeads": 2,
+        "speedToLeadAvgMin": 2,
+        "speedToLeadMedianMin": 2,
         "slowLeads": 0,
-        "calledWithin5Pct": null,
+        "calledWithin5Pct": 100,
         "contacted": 0,
         "contactRatePct": 0,
         "bookedCalls": 1,
         "showed": 0,
-        "leadToBookedPct": 100,
+        "leadToBookedPct": 50,
         "bookedToShowPct": 0,
         "noShows": 1,
         "noShowPct": 100,
@@ -129,9 +131,9 @@
         "missedCalls": 0,
         "inboundCalls": 0,
         "ahLeads": 1,
-        "ahSharePct": 100,
+        "ahSharePct": 50,
         "ahContactRatePct": 0,
-        "bhContactRatePct": null,
+        "bhContactRatePct": 0,
         "ahSpeedAvgMin": null,
         "ahWithin5Pct": null,
         "ahQuoted": 0,
@@ -143,12 +145,12 @@
         "aiLeads": 0,
         "aiCallbacks": null,
         "bySource": {
-          "PPC Launch": 1
+          "PPC Launch": 2
         },
         "funnel": [
           [
             "Leads",
-            1,
+            2,
             "newLeads"
           ],
           [
@@ -341,18 +343,18 @@
     "thisWeek": {
       "label": "This week",
       "from": 1794805200000,
-      "to": 1795190496968,
+      "to": 1795214184205,
       "current": {
-        "totalLeads": 6,
+        "totalLeads": 8,
         "speedToLeadAvgMin": 3,
         "speedToLeadMedianMin": 2,
         "slowLeads": 0,
         "calledWithin5Pct": 100,
         "contacted": 1,
-        "contactRatePct": 16.7,
+        "contactRatePct": 12.5,
         "bookedCalls": 4,
         "showed": 0,
-        "leadToBookedPct": 66.7,
+        "leadToBookedPct": 50,
         "bookedToShowPct": 0,
         "noShows": 4,
         "noShowPct": 100,
@@ -370,9 +372,9 @@
         "missedCalls": 0,
         "inboundCalls": 3,
         "ahLeads": 1,
-        "ahSharePct": 16.7,
+        "ahSharePct": 12.5,
         "ahContactRatePct": 0,
-        "bhContactRatePct": 20,
+        "bhContactRatePct": 14.3,
         "ahSpeedAvgMin": null,
         "ahWithin5Pct": null,
         "ahQuoted": 0,
@@ -384,12 +386,12 @@
         "aiLeads": 0,
         "aiCallbacks": null,
         "bySource": {
-          "PPC Launch": 6
+          "PPC Launch": 8
         },
         "funnel": [
           [
             "Leads",
-            6,
+            8,
             "newLeads"
           ],
           [
@@ -420,24 +422,24 @@
         ]
       },
       "previous": {
-        "totalLeads": 11,
+        "totalLeads": 13,
         "speedToLeadAvgMin": 3,
         "speedToLeadMedianMin": 3,
         "slowLeads": 0,
-        "calledWithin5Pct": 83.3,
-        "contacted": 7,
-        "contactRatePct": 63.6,
+        "calledWithin5Pct": 87.5,
+        "contacted": 8,
+        "contactRatePct": 61.5,
         "bookedCalls": 1,
         "showed": 1,
-        "leadToBookedPct": 9.1,
+        "leadToBookedPct": 7.7,
         "bookedToShowPct": 100,
         "noShows": 0,
         "noShowPct": 0,
-        "leadToShowPct": 9.1,
+        "leadToShowPct": 7.7,
         "qualified": 4,
         "quotesSent": 4,
         "quoteValue": 0,
-        "contactToQuotePct": 57.1,
+        "contactToQuotePct": 50,
         "underContract": 0,
         "quoteToContractPct": 0,
         "closedDeals": 0,
@@ -447,9 +449,9 @@
         "missedCalls": 2,
         "inboundCalls": 4,
         "ahLeads": 5,
-        "ahSharePct": 45.5,
+        "ahSharePct": 38.5,
         "ahContactRatePct": 60,
-        "bhContactRatePct": 66.7,
+        "bhContactRatePct": 62.5,
         "ahSpeedAvgMin": 0,
         "ahWithin5Pct": 100,
         "ahQuoted": 2,
@@ -461,17 +463,17 @@
         "aiLeads": 0,
         "aiCallbacks": null,
         "bySource": {
-          "PPC Launch": 11
+          "PPC Launch": 13
         },
         "funnel": [
           [
             "Leads",
-            11,
+            13,
             "newLeads"
           ],
           [
             "Contacted",
-            7,
+            8,
             "contacted"
           ],
           [
@@ -658,16 +660,16 @@
     },
     "last7": {
       "label": "Last 7 days",
-      "from": 1794585696968,
-      "to": 1795190496968,
+      "from": 1794609384205,
+      "to": 1795214184205,
       "current": {
         "totalLeads": 14,
         "speedToLeadAvgMin": 3,
-        "speedToLeadMedianMin": 3,
+        "speedToLeadMedianMin": 2,
         "slowLeads": 0,
         "calledWithin5Pct": 100,
-        "contacted": 3,
-        "contactRatePct": 21.4,
+        "contacted": 2,
+        "contactRatePct": 14.3,
         "bookedCalls": 4,
         "showed": 0,
         "leadToBookedPct": 28.6,
@@ -678,7 +680,7 @@
         "qualified": 1,
         "quotesSent": 1,
         "quoteValue": 0,
-        "contactToQuotePct": 33.3,
+        "contactToQuotePct": 50,
         "underContract": 1,
         "quoteToContractPct": 100,
         "closedDeals": 0,
@@ -690,7 +692,7 @@
         "ahLeads": 7,
         "ahSharePct": 50,
         "ahContactRatePct": 14.3,
-        "bhContactRatePct": 28.6,
+        "bhContactRatePct": 14.3,
         "ahSpeedAvgMin": 0,
         "ahWithin5Pct": 100,
         "ahQuoted": 0,
@@ -712,7 +714,7 @@
           ],
           [
             "Contacted",
-            3,
+            2,
             "contacted"
           ],
           [
@@ -738,20 +740,20 @@
         ]
       },
       "previous": {
-        "totalLeads": 13,
+        "totalLeads": 14,
         "speedToLeadAvgMin": 3,
-        "speedToLeadMedianMin": 2,
+        "speedToLeadMedianMin": 3,
         "slowLeads": 0,
-        "calledWithin5Pct": 85.7,
+        "calledWithin5Pct": 87.5,
         "contacted": 8,
-        "contactRatePct": 61.5,
+        "contactRatePct": 57.1,
         "bookedCalls": 1,
         "showed": 1,
-        "leadToBookedPct": 7.7,
+        "leadToBookedPct": 7.1,
         "bookedToShowPct": 100,
         "noShows": 0,
         "noShowPct": 0,
-        "leadToShowPct": 7.7,
+        "leadToShowPct": 7.1,
         "qualified": 4,
         "quotesSent": 4,
         "quoteValue": 0,
@@ -761,13 +763,13 @@
         "closedDeals": 0,
         "revenue": 0,
         "quoteToClosePct": 0,
-        "missedCallPct": 60,
-        "missedCalls": 3,
-        "inboundCalls": 5,
+        "missedCallPct": 50,
+        "missedCalls": 2,
+        "inboundCalls": 4,
         "ahLeads": 6,
-        "ahSharePct": 46.2,
+        "ahSharePct": 42.9,
         "ahContactRatePct": 50,
-        "bhContactRatePct": 71.4,
+        "bhContactRatePct": 62.5,
         "ahSpeedAvgMin": 0,
         "ahWithin5Pct": 100,
         "ahQuoted": 2,
@@ -779,12 +781,12 @@
         "aiLeads": 0,
         "aiCallbacks": null,
         "bySource": {
-          "PPC Launch": 13
+          "PPC Launch": 14
         },
         "funnel": [
           [
             "Leads",
-            13,
+            14,
             "newLeads"
           ],
           [
@@ -817,14 +819,14 @@
     },
     "last30": {
       "label": "Last 30 days",
-      "from": 1792598496968,
-      "to": 1795190496968,
+      "from": 1792622184205,
+      "to": 1795214184205,
       "current": {
         "totalLeads": 46,
-        "speedToLeadAvgMin": 57,
-        "speedToLeadMedianMin": 4,
+        "speedToLeadAvgMin": 62,
+        "speedToLeadMedianMin": 3,
         "slowLeads": 3,
-        "calledWithin5Pct": 75,
+        "calledWithin5Pct": 77.3,
         "contacted": 21,
         "contactRatePct": 45.7,
         "bookedCalls": 7,
@@ -843,9 +845,9 @@
         "closedDeals": 0,
         "revenue": 0,
         "quoteToClosePct": 0,
-        "missedCallPct": 21.1,
+        "missedCallPct": 22.2,
         "missedCalls": 4,
-        "inboundCalls": 19,
+        "inboundCalls": 18,
         "ahLeads": 22,
         "ahSharePct": 47.8,
         "ahContactRatePct": 36.4,
@@ -853,9 +855,9 @@
         "ahSpeedAvgMin": 6,
         "ahWithin5Pct": 89.5,
         "ahQuoted": 2,
-        "aiCalls": 5,
-        "aiTotalDurationSec": 265,
-        "aiAvgDurationSec": 53,
+        "aiCalls": 4,
+        "aiTotalDurationSec": 259,
+        "aiAvgDurationSec": 65,
         "aiBooked": 0,
         "aiTransferred": 1,
         "aiLeads": 0,
@@ -898,16 +900,16 @@
         ]
       },
       "previous": {
-        "totalLeads": 41,
-        "speedToLeadAvgMin": 50,
+        "totalLeads": 43,
+        "speedToLeadAvgMin": 44,
         "speedToLeadMedianMin": 7,
         "slowLeads": 4,
-        "calledWithin5Pct": 36.4,
+        "calledWithin5Pct": 38.5,
         "contacted": 24,
-        "contactRatePct": 58.5,
+        "contactRatePct": 55.8,
         "bookedCalls": 6,
         "showed": 0,
-        "leadToBookedPct": 14.6,
+        "leadToBookedPct": 14,
         "bookedToShowPct": 0,
         "noShows": 1,
         "noShowPct": 16.7,
@@ -925,28 +927,28 @@
         "missedCalls": 10,
         "inboundCalls": 27,
         "ahLeads": 30,
-        "ahSharePct": 73.2,
+        "ahSharePct": 69.8,
         "ahContactRatePct": 56.7,
-        "bhContactRatePct": 63.6,
+        "bhContactRatePct": 53.8,
         "ahSpeedAvgMin": 108,
         "ahWithin5Pct": 76.9,
         "ahQuoted": 7,
-        "aiCalls": 4,
-        "aiTotalDurationSec": 310,
-        "aiAvgDurationSec": 78,
+        "aiCalls": 5,
+        "aiTotalDurationSec": 316,
+        "aiAvgDurationSec": 63,
         "aiBooked": 2,
         "aiTransferred": 0,
         "aiLeads": 2,
         "aiCallbacks": null,
         "bySource": {
-          "PPC Launch": 39,
+          "PPC Launch": 41,
           "Unknown": 1,
           "Book a Call with Lisa": 1
         },
         "funnel": [
           [
             "Leads",
-            41,
+            43,
             "newLeads"
           ],
           [
@@ -979,19 +981,19 @@
     },
     "last90": {
       "label": "Last 90 days",
-      "from": 1787414496968,
-      "to": 1795190496968,
+      "from": 1787438184205,
+      "to": 1795214184205,
       "current": {
-        "totalLeads": 108,
+        "totalLeads": 110,
         "speedToLeadAvgMin": 55,
         "speedToLeadMedianMin": 5,
         "slowLeads": 7,
         "calledWithin5Pct": 62.9,
         "contacted": 54,
-        "contactRatePct": 50,
+        "contactRatePct": 49.1,
         "bookedCalls": 28,
         "showed": 1,
-        "leadToBookedPct": 25.9,
+        "leadToBookedPct": 25.5,
         "bookedToShowPct": 3.6,
         "noShows": 8,
         "noShowPct": 28.6,
@@ -1009,9 +1011,9 @@
         "missedCalls": 20,
         "inboundCalls": 57,
         "ahLeads": 67,
-        "ahSharePct": 62,
+        "ahSharePct": 60.9,
         "ahContactRatePct": 49.3,
-        "bhContactRatePct": 51.2,
+        "bhContactRatePct": 48.8,
         "ahSpeedAvgMin": 97,
         "ahWithin5Pct": 78.7,
         "ahQuoted": 11,
@@ -1023,7 +1025,7 @@
         "aiLeads": 2,
         "aiCallbacks": null,
         "bySource": {
-          "PPC Launch": 84,
+          "PPC Launch": 86,
           "Contact Form": 22,
           "Unknown": 1,
           "Book a Call with Lisa": 1
@@ -1031,7 +1033,7 @@
         "funnel": [
           [
             "Leads",
-            108,
+            110,
             "newLeads"
           ],
           [
@@ -1142,22 +1144,22 @@
     "thisMonth": {
       "label": "This month",
       "from": 1793505600000,
-      "to": 1795190496968,
+      "to": 1795214184205,
       "current": {
-        "totalLeads": 33,
+        "totalLeads": 35,
         "speedToLeadAvgMin": 3,
         "speedToLeadMedianMin": 2,
         "slowLeads": 0,
         "calledWithin5Pct": 93.3,
         "contacted": 15,
-        "contactRatePct": 45.5,
+        "contactRatePct": 42.9,
         "bookedCalls": 5,
         "showed": 1,
-        "leadToBookedPct": 15.2,
+        "leadToBookedPct": 14.3,
         "bookedToShowPct": 20,
         "noShows": 4,
         "noShowPct": 80,
-        "leadToShowPct": 3,
+        "leadToShowPct": 2.9,
         "qualified": 5,
         "quotesSent": 5,
         "quoteValue": 0,
@@ -1171,9 +1173,9 @@
         "missedCalls": 4,
         "inboundCalls": 11,
         "ahLeads": 18,
-        "ahSharePct": 54.5,
+        "ahSharePct": 51.4,
         "ahContactRatePct": 44.4,
-        "bhContactRatePct": 46.7,
+        "bhContactRatePct": 41.2,
         "ahSpeedAvgMin": 1,
         "ahWithin5Pct": 93.8,
         "ahQuoted": 2,
@@ -1185,12 +1187,12 @@
         "aiLeads": 0,
         "aiCallbacks": null,
         "bySource": {
-          "PPC Launch": 33
+          "PPC Launch": 35
         },
         "funnel": [
           [
             "Leads",
-            33,
+            35,
             "newLeads"
           ],
           [
@@ -1221,36 +1223,36 @@
         ]
       },
       "previous": {
-        "totalLeads": 25,
-        "speedToLeadAvgMin": 28,
-        "speedToLeadMedianMin": 13,
+        "totalLeads": 26,
+        "speedToLeadAvgMin": 24,
+        "speedToLeadMedianMin": 6,
         "slowLeads": 2,
-        "calledWithin5Pct": 33.3,
-        "contacted": 14,
-        "contactRatePct": 56,
+        "calledWithin5Pct": 42.9,
+        "contacted": 15,
+        "contactRatePct": 57.7,
         "bookedCalls": 2,
         "showed": 0,
-        "leadToBookedPct": 8,
+        "leadToBookedPct": 7.7,
         "bookedToShowPct": 0,
         "noShows": 1,
         "noShowPct": 50,
         "leadToShowPct": 0,
-        "qualified": 3,
-        "quotesSent": 0,
+        "qualified": 4,
+        "quotesSent": 2,
         "quoteValue": 0,
-        "contactToQuotePct": 0,
+        "contactToQuotePct": 13.3,
         "underContract": 0,
-        "quoteToContractPct": null,
+        "quoteToContractPct": 0,
         "closedDeals": 0,
         "revenue": 0,
-        "quoteToClosePct": null,
-        "missedCallPct": 16.7,
-        "missedCalls": 2,
-        "inboundCalls": 12,
+        "quoteToClosePct": 0,
+        "missedCallPct": 25,
+        "missedCalls": 4,
+        "inboundCalls": 16,
         "ahLeads": 19,
-        "ahSharePct": 76,
+        "ahSharePct": 73.1,
         "ahContactRatePct": 52.6,
-        "bhContactRatePct": 66.7,
+        "bhContactRatePct": 71.4,
         "ahSpeedAvgMin": 122,
         "ahWithin5Pct": 72.2,
         "ahQuoted": 3,
@@ -1262,28 +1264,28 @@
         "aiLeads": 2,
         "aiCallbacks": null,
         "bySource": {
-          "PPC Launch": 24,
+          "PPC Launch": 25,
           "Unknown": 1
         },
         "funnel": [
           [
             "Leads",
-            25,
+            26,
             "newLeads"
           ],
           [
             "Contacted",
-            14,
+            15,
             "contacted"
           ],
           [
             "Qualified",
-            3,
+            4,
             "qualified"
           ],
           [
             "Quotes",
-            3,
+            4,
             "fQuotes"
           ],
           [
@@ -1465,18 +1467,18 @@
     "thisQuarter": {
       "label": "This quarter",
       "from": 1790827200000,
-      "to": 1795190496968,
+      "to": 1795214184205,
       "current": {
-        "totalLeads": 72,
+        "totalLeads": 74,
         "speedToLeadAvgMin": 50,
         "speedToLeadMedianMin": 4,
         "slowLeads": 5,
         "calledWithin5Pct": 67.7,
         "contacted": 36,
-        "contactRatePct": 50,
+        "contactRatePct": 48.6,
         "bookedCalls": 9,
         "showed": 1,
-        "leadToBookedPct": 12.5,
+        "leadToBookedPct": 12.2,
         "bookedToShowPct": 11.1,
         "noShows": 7,
         "noShowPct": 77.8,
@@ -1494,9 +1496,9 @@
         "missedCalls": 8,
         "inboundCalls": 35,
         "ahLeads": 41,
-        "ahSharePct": 56.9,
+        "ahSharePct": 55.4,
         "ahContactRatePct": 43.9,
-        "bhContactRatePct": 58.1,
+        "bhContactRatePct": 54.5,
         "ahSpeedAvgMin": 63,
         "ahWithin5Pct": 81.1,
         "ahQuoted": 5,
@@ -1508,14 +1510,14 @@
         "aiLeads": 2,
         "aiCallbacks": null,
         "bySource": {
-          "PPC Launch": 70,
+          "PPC Launch": 72,
           "Contact Form": 1,
           "Unknown": 1
         },
         "funnel": [
           [
             "Leads",
-            72,
+            74,
             "newLeads"
           ],
           [
@@ -1546,24 +1548,24 @@
         ]
       },
       "previous": {
-        "totalLeads": 128,
+        "totalLeads": 129,
         "speedToLeadAvgMin": 11,
         "speedToLeadMedianMin": 11,
         "slowLeads": 0,
         "calledWithin5Pct": 0,
-        "contacted": 67,
-        "contactRatePct": 52.3,
+        "contacted": 68,
+        "contactRatePct": 52.7,
         "bookedCalls": 73,
         "showed": 0,
-        "leadToBookedPct": 57,
+        "leadToBookedPct": 56.6,
         "bookedToShowPct": 0,
         "noShows": 14,
         "noShowPct": 19.2,
         "leadToShowPct": 0,
-        "qualified": 19,
-        "quotesSent": 6,
+        "qualified": 20,
+        "quotesSent": 7,
         "quoteValue": 0,
-        "contactToQuotePct": 9,
+        "contactToQuotePct": 10.3,
         "underContract": 0,
         "quoteToContractPct": 0,
         "closedDeals": 0,
@@ -1573,9 +1575,9 @@
         "missedCalls": 6,
         "inboundCalls": 6,
         "ahLeads": 80,
-        "ahSharePct": 62.5,
+        "ahSharePct": 62,
         "ahContactRatePct": 51.3,
-        "bhContactRatePct": 54.2,
+        "bhContactRatePct": 55.1,
         "ahSpeedAvgMin": 1110,
         "ahWithin5Pct": 25,
         "ahQuoted": 7,
@@ -1587,27 +1589,27 @@
         "aiLeads": 0,
         "aiCallbacks": null,
         "bySource": {
-          "Contact Form": 128
+          "Contact Form": 129
         },
         "funnel": [
           [
             "Leads",
-            128,
+            129,
             "newLeads"
           ],
           [
             "Contacted",
-            67,
+            68,
             "contacted"
           ],
           [
             "Qualified",
-            19,
+            20,
             "qualified"
           ],
           [
             "Quotes",
-            7,
+            8,
             "fQuotes"
           ],
           [
