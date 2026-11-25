@@ -6,6 +6,7 @@
 // Env: GHL_TOKEN (read-only Private Integration Token), GHL_LOCATION_ID,
 //      DASHBOARD_PASSPHRASE (team passphrase that unlocks the drill-downs)
 //      DISPATCH_TOKEN (optional; fine-grained PAT, Actions: write on this repo only, for the Refresh button)
+//      SPEND_CSV_URL (optional; the ad spend sheet's CSV export link: Month | Source | Spend ($))
 
 import { readFile, writeFile, mkdir, rm } from 'node:fs/promises';
 import { computeAll, encryptJSON, tzOffsetMin, windowMinutes, speedWindow } from './kpi-core.mjs';
@@ -98,11 +99,15 @@ const fieldIds = (await optional('customFields', async () => {
   };
 })) || {};
 console.log('Contact fields found:', JSON.stringify(Object.fromEntries(Object.entries(fieldIds).map(([k, v]) => [k, Array.isArray(v) ? v.length : !!v]))));
+let oppProfitId = null;   // opportunity money field "Deal Profit" (v1.13.0)
 const oppQualIds = (await optional('opportunity customFields', async () => {
   const { customFields = [] } = await ghl(`/locations/${LOC}/customFields?model=opportunity`);
   const names = (QUAL.opportunityFields || []).map(norm);
+  const profitNames = [].concat(cfg.fields.dealProfit || ['Deal Profit']).map(norm);
+  oppProfitId = customFields.find(f => profitNames.includes(norm(f.name)))?.id || null;
   return customFields.filter(f => names.includes(norm(f.name))).map(f => f.id);
 })) || [];
+console.log('Opportunity Deal Profit field found:', !!oppProfitId);
 const fieldVal = f => f?.fieldValueString ?? f?.fieldValue ?? f?.value ?? null;
 // Date-picker / "MM/DD/YYYY" values are calendar dates: pin them to midday Eastern so they land on the right local day.
 const dateOnly = v => {
@@ -155,6 +160,7 @@ const leads = recentOpps.map(o => {
     tags: c.tags || o.contact?.tags || [],
     qualValues: [...(c.qualValues || []), ...(o.customFields || []).filter(f => oppQualIds.includes(f.id)).map(fieldVal)].filter(v => v !== null && v !== '').map(String),
     quoteSentAt: dateOnly(c.quoteSentDate), contractAt: dateOnly(c.contractDate), quoteAmount: money(c.quoteAmount),
+    profit: oppProfitId ? money(fieldVal((o.customFields || []).find(f => f.id === oppProfitId))) : null,
     cellCallAt: localDateTime(c.cellCall), stlMin: Number.isNaN(stl) ? null : stl, stlFrom: stl === null || Number.isNaN(stl) ? null : 'Entered in GHL', firstContactedAt: c.firstContacted ? iso(c.firstContacted) : null, contactMethod: c.method || null,
   };
 });
@@ -329,14 +335,69 @@ if (voiceCalls) {
   });
 }
 
+// ---------- Ad spend sheet (Month | Source | Spend ($)), same format as MKM ----------
+// PPC rows are written daily by the Google Ads script; other sources are typed in by hand.
+// A blank Spend cell means "not entered yet" (skipped), not $0. Rows for the same month + source add up.
+function csvRows(text) {
+  const rows = []; let row = [], cell = '', q = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (q) { if (ch === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; } else cell += ch; }
+    else if (ch === '"') q = true;
+    else if (ch === ',') { row.push(cell); cell = ''; }
+    else if (ch === '\n' || ch === '\r') { if (ch === '\r' && text[i + 1] === '\n') i++; row.push(cell); rows.push(row); row = []; cell = ''; }
+    else cell += ch;
+  }
+  if (cell !== '' || row.length) { row.push(cell); rows.push(row); }
+  return rows.filter(r => r.some(c => c.trim() !== ''));
+}
+const MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+function monthKey(v) {
+  const t = String(v || '').trim();
+  let m = t.match(/^(\d{4})-(\d{1,2})/); if (m) return `${m[1]}-${m[2].padStart(2, '0')}`;
+  m = t.match(/^(\d{1,2})\/(?:\d{1,2}\/)?(\d{4})$/); if (m) return `${m[2]}-${m[1].padStart(2, '0')}`;
+  m = t.toLowerCase().match(/^([a-z]{3})[a-z]*\.?\s+(\d{4})$/); if (m && MONTHS.includes(m[1])) return `${m[2]}-${String(MONTHS.indexOf(m[1]) + 1).padStart(2, '0')}`;
+  return null;
+}
+// Sheet source → the dashboard's lead source name (case-insensitive; "PPC" / "Google Ads" mean PPC Launch).
+const spendSource = v => {
+  const t = norm(v);
+  if (!t) return null;
+  if (/ppc|google ?ads|adwords/.test(t)) return 'PPC Launch';
+  const known = [...new Set(leads.map(l => l.source).filter(Boolean))];
+  return known.find(k => norm(k) === t) || String(v).trim();
+};
+const spendUrl = (process.env.SPEND_CSV_URL || cfg.spendSheetUrl || '').trim()
+  .replace(/\/spreadsheets\/d\/([^/]+)\/edit(?:[^#]*)?(?:#gid=(\d+))?.*$/, (_, id, gid) => `/spreadsheets/d/${id}/export?format=csv${gid ? `&gid=${gid}` : ''}`);
+const spend = spendUrl ? await optional('ad spend sheet', async () => {
+  const res = await fetch(spendUrl, { redirect: 'follow' });
+  if (!res.ok) throw new Error(`sheet returned ${res.status}; share it as "Anyone with the link: Viewer"`);
+  const rows = csvRows(await res.text());
+  const head = (rows.shift() || []).map(h => norm(h));
+  const iM = head.findIndex(h => /month/.test(h)), iS = head.findIndex(h => /source/.test(h)), iA = head.findIndex(h => /amount|spend|budget/.test(h));
+  if (iM < 0 || iS < 0 || iA < 0) throw new Error(`expected columns Month | Source | Spend ($), got "${head.join(' | ')}"`);
+  const out = [];
+  for (const r of rows) {
+    const raw = String(r[iA] ?? '').replace(/[$,\s]/g, '');
+    if (raw === '') continue;                                      // not entered yet
+    const month = monthKey(r[iM]), source = spendSource(r[iS]), amount = Number(raw);
+    if (month && source && Number.isFinite(amount)) out.push({ month, source, amount });
+    else console.warn(`ad spend sheet: skipped row "${r.join(', ')}"`);
+  }
+  return out;
+}) : null;
+if (spendUrl) console.log(`Ad spend sheet: ${spend ? spend.length + ' rows' : 'not read'}`);
+
 // ---------- Compute + write ----------
 const records = {
   generatedAt: new Date(now).toISOString(), locationId: LOC, ghlBase: cfg.ghlAppBase, users, leads, appointments, calls,
   voiceCalls: voiceRecords,
+  spend,                       // ad spend rows: amounts stay in the encrypted file only
   // Lets unlocked viewers press "Refresh data": a fine-grained token that can ONLY start this repo's workflow.
   refresh: process.env.DISPATCH_TOKEN ? { repo: process.env.GITHUB_REPOSITORY, workflow: 'sync-kpis.yml', token: process.env.DISPATCH_TOKEN } : null,
 };
-const periods = computeAll(records, cfg, now);
+// Public numbers are computed WITHOUT spend, so no dollar amounts reach kpis.json; cost cards fill in after unlocking.
+const periods = computeAll({ ...records, spend: null }, cfg, now);
 // Public file: strip anything per-contact (bySource has only source names + counts).
 const out = {
   generatedAt: records.generatedAt, location: cfg.locationName, targets: cfg.targets,
@@ -347,6 +408,9 @@ const out = {
     voiceAi: voiceRecords ? 'Live calls handled by the Voice AI agent, from GHL Voice AI call logs' : null,
   },
   detailsAvailable: !!PASS,
+  hasSpendSheet: !!spendUrl,
+  // Which months/sources have spend entered (no amounts), so the locked view can say what's missing.
+  spendMonths: spend ? [...new Set(spend.map(r => `${r.month}|${r.source}`))].sort() : [],
   periods,
 };
 

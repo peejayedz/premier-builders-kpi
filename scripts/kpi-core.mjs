@@ -7,6 +7,30 @@ const norm = s => String(s ?? '').trim().toLowerCase();
 const inRange = (iso, from, to) => { const t = Date.parse(iso); return t >= from && t < to; };
 const pct = (a, b) => (b > 0 ? Math.round((a / b) * 1000) / 10 : null);
 const sum = rows => rows.reduce((t, r) => t + (Number(r.value) || 0), 0);
+const per = (spend, n) => (spend === null || spend === undefined || !n ? null : Math.round(spend / n));
+
+// Ad spend that falls inside [from, to). Each sheet row is one month's spend (several rows add up). A past
+// month is spread evenly over its days; the current month is month-to-date, so it's spread over the days so far
+// (up to generatedAt). Returns null when there are no spend rows at all (sheet missing or locked view).
+export function spendInRange(rows, from, to, generatedAtMs, timeZone, source = null) {
+  if (!rows || !rows.length) return null;
+  // Local midnight on the 1st (two passes so a DST change on the 1st, like Nov 1, 2026, lands on the right hour).
+  const midnight = (y, m) => {
+    const t = Date.UTC(y, m - 1, 1), tz = timeZone || 'UTC';
+    const guess = t - tzOffsetMin(tz, t) * 60000;
+    return t - tzOffsetMin(tz, guess) * 60000;
+  };
+  let total = 0;
+  for (const r of rows) {
+    if (source && r.source !== source) continue;
+    const [y, m] = String(r.month).split('-').map(Number);
+    const start = midnight(y, m), monthEnd = m === 12 ? midnight(y + 1, 1) : midnight(y, m + 1);
+    const end = generatedAtMs > start && generatedAtMs < monthEnd ? generatedAtMs : monthEnd;
+    const overlap = Math.max(0, Math.min(end, to) - Math.max(start, from));
+    if (end > start) total += (Number(r.amount) || 0) * (overlap / (end - start));
+  }
+  return Math.round(total * 100) / 100;
+}
 // Median of a list of numbers (middle value; average of the two middle values for an even count).
 const median = xs => { if (!xs.length) return null; const a = [...xs].sort((x, y) => x - y), m = a.length >> 1; return Math.round(a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2); };
 // A lead counts as "slow" when its first call took longer than this many business-hours minutes (config speedToLead.slowMin).
@@ -253,6 +277,11 @@ export function buildLists(records, cfg, from, to) {
     noShows,
     showed,
     unmarked,
+    // Ad spend (decrypted records only; null when locked or no sheet).
+    spend: spendInRange(records.spend, from, to, nowMs, cfg.timezone),
+    ppcSpend: spendInRange(records.spend, from, to, nowMs, cfg.timezone, 'PPC Launch'),
+    ppcLeads: leads.filter(l => l.source === 'PPC Launch'),
+    spendRows: (records.spend || []).slice().sort((x, y) => (y.month + y.source).localeCompare(x.month + x.source)),
     upcoming,
     ahLeads,
     ahContacted: ahLeads.filter(l => l.contacted),
@@ -342,6 +371,24 @@ export function summarize(L) {
     quoteToContractPct: pct(L.contracts.length, L.quotes.length),
     closedDeals: L.won.length,
     revenue: sum(L.won),
+    adSpend: L.spend ?? null,
+    costPerLead: per(L.spend, L.newLeads.length),
+    costPerPpcLead: per(L.ppcSpend, L.ppcLeads ? L.ppcLeads.length : 0),
+    costPerBooked: per(L.spend, L.booked.length),
+    costPerQuote: per(L.spend, L.quotes.length),
+    costPerContract: per(L.spend, L.contracts.length),
+    costPerClosed: per(L.spend, L.won.length),
+    roas: L.spend ? Math.round((sum(L.won) / L.spend) * 100) / 100 : null,
+    // Profit from won deals (opportunity field "Deal Profit"). Per deal = only deals with a profit entered.
+    ...(() => {
+      const withProfit = L.won.filter(l => l.profit !== null && l.profit !== undefined);
+      const profit = withProfit.length ? withProfit.reduce((t, l) => t + Number(l.profit), 0) : null;
+      return {
+        profit,
+        profitPerDeal: withProfit.length ? Math.round(profit / withProfit.length) : null,
+        profitRoi: L.spend && profit !== null ? Math.round((profit / L.spend) * 100) / 100 : null,
+      };
+    })(),
     quoteToClosePct: pct(L.won.length, L.quotes.length),
     missedCallPct: L.inboundCalls ? pct(L.missed.length, L.inboundCalls.length) : null,
     missedCalls: L.missed ? L.missed.length : null,
@@ -361,6 +408,7 @@ export function summarize(L) {
         leadToShowPct: [n(L.showed), n(L.newLeads)],
         unmarkedCalls: [n(L.unmarked), n(L.bookedPast)],
         quoteValue: [L.quotes.filter(q => Number(q.value) > 0).length, n(L.quotes)],
+        profit: [L.won.filter(l => l.profit !== null && l.profit !== undefined).length, n(L.won)],
         contactToQuotePct: [n(L.quotes), n(L.contacted)],
         quoteToContractPct: [n(L.contracts), n(L.quotes)],
         quoteToClosePct: [n(L.won), n(L.quotes)],
