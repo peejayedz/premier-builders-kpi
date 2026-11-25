@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-25T22:25:00.279Z",
+  "generatedAt": "2026-11-25T22:29:06.601Z",
   "location": "Premier Builders",
   "targets": {
     "speedToLeadMin": 5,
@@ -30,7 +30,7 @@
     "today": {
       "label": "Today",
       "from": 1795582800000,
-      "to": 1795645500279,
+      "to": 1795645746601,
       "current": {
         "totalLeads": 1,
         "speedToLeadAvgMin": null,
@@ -747,7 +747,7 @@
     "thisWeek": {
       "label": "This week",
       "from": 1795410000000,
-      "to": 1795645500279,
+      "to": 1795645746601,
       "current": {
         "totalLeads": 5,
         "speedToLeadAvgMin": 3,
@@ -1466,8 +1466,8 @@
     },
     "last7": {
       "label": "Last 7 days",
-      "from": 1795040700279,
-      "to": 1795645500279,
+      "from": 1795040946601,
+      "to": 1795645746601,
       "current": {
         "totalLeads": 20,
         "speedToLeadAvgMin": 3,
@@ -1826,8 +1826,8 @@
     },
     "last30": {
       "label": "Last 30 days",
-      "from": 1793053500279,
-      "to": 1795645500279,
+      "from": 1793053746601,
+      "to": 1795645746601,
       "current": {
         "totalLeads": 53,
         "speedToLeadAvgMin": 3,
@@ -2188,8 +2188,8 @@
     },
     "last90": {
       "label": "Last 90 days",
-      "from": 1787869500279,
-      "to": 1795645500279,
+      "from": 1787869746601,
+      "to": 1795645746601,
       "current": {
         "totalLeads": 119,
         "speedToLeadAvgMin": 41,
@@ -2551,7 +2551,7 @@
     "thisMonth": {
       "label": "This month",
       "from": 1793505600000,
-      "to": 1795645500279,
+      "to": 1795645746601,
       "current": {
         "totalLeads": 50,
         "speedToLeadAvgMin": 3,
@@ -3275,7 +3275,7 @@
     "thisQuarter": {
       "label": "This quarter",
       "from": 1790827200000,
-      "to": 1795645500279,
+      "to": 1795645746601,
       "current": {
         "totalLeads": 89,
         "speedToLeadAvgMin": 34,
@@ -3818,12 +3818,12 @@
       },
       "previous": {
         "totalLeads": 99,
-        "speedToLeadAvgMin": 44,
-        "speedToLeadMedianMin": 44,
-        "slowLeads": 1,
-        "calledWithin5Pct": 0,
-        "contacted": 28,
-        "contactRatePct": 28.3,
+        "speedToLeadAvgMin": null,
+        "speedToLeadMedianMin": null,
+        "slowLeads": 0,
+        "calledWithin5Pct": null,
+        "contacted": 27,
+        "contactRatePct": 27.3,
         "bookedCalls": 57,
         "showed": 0,
         "leadToBookedPct": 57.6,
@@ -3836,7 +3836,7 @@
         "qualified": 10,
         "quotesSent": 5,
         "quoteValue": 0,
-        "contactToQuotePct": 17.9,
+        "contactToQuotePct": 18.5,
         "underContract": 0,
         "quoteToContractPct": 0,
         "closedDeals": 0,
@@ -3853,13 +3853,13 @@
         "profitPerDeal": null,
         "profitRoi": null,
         "quoteToClosePct": 0,
-        "missedCallPct": 40,
-        "missedCalls": 2,
-        "inboundCalls": 5,
+        "missedCallPct": null,
+        "missedCalls": 0,
+        "inboundCalls": 0,
         "ahLeads": 62,
         "ahSharePct": 62.6,
         "ahContactRatePct": 27.4,
-        "bhContactRatePct": 29.7,
+        "bhContactRatePct": 27,
         "ahSpeedAvgMin": null,
         "ahWithin5Pct": null,
         "ahQuoted": 4,
@@ -3876,10 +3876,10 @@
         "counts": {
           "calledWithin5Pct": [
             0,
-            1
+            0
           ],
           "contactRatePct": [
-            28,
+            27,
             99
           ],
           "leadToBookedPct": [
@@ -3912,7 +3912,7 @@
           ],
           "contactToQuotePct": [
             5,
-            28
+            27
           ],
           "quoteToContractPct": [
             0,
@@ -3923,20 +3923,20 @@
             5
           ],
           "speedToLeadAvgMin": [
-            1,
-            19
+            0,
+            18
           ],
           "speedToLeadMedianMin": [
-            1,
-            19
+            0,
+            18
           ],
           "slowLeads": [
-            1,
-            1
+            0,
+            0
           ],
           "missedCallPct": [
-            2,
-            5
+            0,
+            0
           ],
           "ahSharePct": [
             62,
@@ -3947,7 +3947,7 @@
             62
           ],
           "bhContactRatePct": [
-            11,
+            10,
             37
           ],
           "ahWithin5Pct": [
@@ -3959,7 +3959,7 @@
             25
           ]
         },
-        "bookedFirst": 55,
+        "bookedFirst": 56,
         "funnel": [
           [
             "Leads",
@@ -3968,7 +3968,7 @@
           ],
           [
             "Contacted",
-            28,
+            27,
             "contacted"
           ],
           [
