@@ -91,8 +91,10 @@ export function contactStatus(lead, c, callsByContact) {
   const method = norm(lead.contactMethod);
   if (c.contacted) return method.includes('reply') ? 'Lead replied' : 'Successfully contacted';
   const calls = callsByContact[lead.contactId] || [];
-  if (calls.some(k => k.direction === 'inbound' && !k.answered)) return 'Missed call';
+  // Labelled by what we did: once Lisa has called, a later missed call from them is just a callback.
+  // "Missed call" only while they've called us and we haven't called them yet.
   if (calls.some(k => k.direction === 'outbound')) return 'Attempted, no response';
+  if (calls.some(k => k.direction === 'inbound' && !k.answered)) return 'Missed call';
   return 'Not attempted yet';
 }
 
@@ -106,6 +108,29 @@ export function isAfterHours(iso, cfg) {
   const dow = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 }[p.weekday];
   const h = (Number(p.hour) % 24) + Number(p.minute) / 60;
   return !B.days.includes(dow) || h < B.start || h >= B.end;
+}
+
+// Minutes between two times that fall inside a weekly window ({ days: [0-6], start, end } hours) in the time zone.
+export function windowMinutes(fromMs, toMs, win, timeZone) {
+  if (!win || !(toMs > fromMs)) return Math.max(0, Math.round((toMs - fromMs) / 60000));
+  let total = 0;
+  for (let day = Math.floor(fromMs / DAY) * DAY - DAY; day <= toMs + DAY; day += DAY) {
+    const off = tzOffsetMin(timeZone || 'UTC', day + 12 * 3600e3) * 60000;
+    const localMidnight = Math.floor((day + off) / DAY) * DAY - off;
+    const dow = new Date(localMidnight + off).getUTCDay();
+    if (!win.days.includes(dow)) continue;
+    const a = Math.max(localMidnight + win.start * 3600e3, fromMs), b = Math.min(localMidnight + win.end * 3600e3, toMs);
+    if (b > a) total += b - a;
+  }
+  return Math.round(total / 60000);
+}
+// Which clock a lead's speed to lead runs on. Business-hours leads: Mon–Fri 9am–6pm.
+// After-hours leads: the calling window (default every day 9am–9pm), so 6–9pm weeknights and 9am–9pm weekends count,
+// and the clock pauses overnight until 9am.
+export function speedWindow(createdAt, cfg) {
+  const S = cfg.speedToLead || {};
+  if (!S.useBusinessHours) return null;
+  return isAfterHours(createdAt, cfg) ? (S.afterHoursWindow || { days: [0, 1, 2, 3, 4, 5, 6], start: 9, end: 21 }) : S.businessHours;
 }
 
 // Builds every drill-down list for one period. Tiles are derived from these.
@@ -183,13 +208,24 @@ export function buildLists(records, cfg, from, to) {
   const bhLeads = leads.filter(l => !isAfterHours(l.createdAt, cfg));
   // Speed to lead (avg, median, within 5 min, slow) uses business-hours leads only. After-hours leads often
   // show 0 min (called before the next opening), which flattered the main numbers; they have their own row.
-  const withStl = bhLeads.filter(l => l.stlMin !== null && l.stlMin !== undefined);
-  const ahStl = ahLeads.filter(l => l.stlMin !== null && l.stlMin !== undefined);
+  // Leads that booked a call before their first call are judged on show rate, not speed to lead (same rule as MKM).
+  const consultByContact = {};
+  for (const a of records.appointments || []) if (a.consult && a.bookedAt && !['cancelled', 'invalid'].includes(norm(a.status))) (consultByContact[a.contactId] ||= []).push(Date.parse(a.bookedAt));
+  const bookedBeforeCall = l => {
+    const t0 = Date.parse(l.createdAt), fc = l.firstCallAt ? Date.parse(l.firstCallAt) : null;
+    if (l.stlFrom === 'Entered in GHL') return false;
+    return (consultByContact[l.contactId] || []).some(b => b >= t0 - 60000 && (fc === null || b < fc));
+  };
+  const bookedFirst = leads.filter(bookedBeforeCall);
+  const bookedFirstIds = new Set(bookedFirst.map(l => l.oppId));
+  const withStl = bhLeads.filter(l => !bookedFirstIds.has(l.oppId) && l.stlMin !== null && l.stlMin !== undefined);
+  const ahStl = ahLeads.filter(l => !bookedFirstIds.has(l.oppId) && l.stlMin !== null && l.stlMin !== undefined);
   return {
     newLeads: leads,
     contacted: leads.filter(l => l.contacted),
     // Slowest first; leads nobody has called yet go to the very top.
-    speed: [...bhLeads].sort((a, b) => (b.stlMin ?? 1e12) - (a.stlMin ?? 1e12)),
+    speed: bhLeads.filter(l => !bookedFirstIds.has(l.oppId)).sort((a, b) => (b.stlMin ?? 1e12) - (a.stlMin ?? 1e12)),
+    bookedFirst,
     speedMeasured: withStl,
     within5: withStl.filter(l => l.stlMin <= 5),
     // Leads whose first call took longer than the slow threshold (default 30 business-hours minutes), slowest first.
@@ -208,7 +244,7 @@ export function buildLists(records, cfg, from, to) {
     showed,
     ahLeads,
     ahContacted: ahLeads.filter(l => l.contacted),
-    ahSpeed: [...ahLeads].sort((a, b) => (b.stlMin ?? 1e12) - (a.stlMin ?? 1e12)),
+    ahSpeed: ahLeads.filter(l => !bookedFirstIds.has(l.oppId)).sort((a, b) => (b.stlMin ?? 1e12) - (a.stlMin ?? 1e12)),
     ahSpeedMeasured: ahStl,
     ahWithin5: ahStl.filter(l => l.stlMin <= 5),
     ahQuoted: ahLeads.filter(l => l.quote),
@@ -299,6 +335,32 @@ export function summarize(L) {
     ...summarizeAfterHours(L),
     ...summarizeVoice(L.aiCalls ? L : null),
     bySource,
+    // The counts behind each rate ([part, whole]), so a card can show "50% · 14 of 28". Numbers only, no names.
+    counts: (() => {
+      const n = x => (x ? x.length : 0);
+      const c = {
+        calledWithin5Pct: [n(L.within5), n(L.speedMeasured)],
+        contactRatePct: [n(L.contacted), n(L.newLeads)],
+        leadToBookedPct: [n(L.booked), n(L.newLeads)],
+        noShowPct: [n(L.noShows), n(L.bookedPast)],
+        bookedToShowPct: [n(L.showed), n(L.bookedPast)],
+        leadToShowPct: [n(L.showed), n(L.newLeads)],
+        contactToQuotePct: [n(L.quotes), n(L.contacted)],
+        quoteToContractPct: [n(L.contracts), n(L.quotes)],
+        quoteToClosePct: [n(L.won), n(L.quotes)],
+        speedToLeadAvgMin: [n(L.speedMeasured), n(L.speed)],
+        speedToLeadMedianMin: [n(L.speedMeasured), n(L.speed)],
+        slowLeads: [n(L.slowLeads), n(L.speedMeasured)],
+      };
+      if (L.inboundCalls) c.missedCallPct = [n(L.missed), n(L.inboundCalls)];
+      if (L.ahLeads) Object.assign(c, {
+        ahSharePct: [n(L.ahLeads), n(L.newLeads)], ahContactRatePct: [n(L.ahContacted), n(L.ahLeads)],
+        bhContactRatePct: [n(L.bhContacted), n(L.bhLeads)], ahWithin5Pct: [n(L.ahWithin5), n(L.ahSpeedMeasured)],
+        ahSpeedAvgMin: [n(L.ahSpeedMeasured), n(L.ahSpeed)],
+      });
+      return c;
+    })(),
+    bookedFirst: L.bookedFirst ? L.bookedFirst.length : null,
     funnel: [
       ['Leads', L.newLeads.length, 'newLeads'], ['Contacted', L.contacted.length, 'contacted'],
       ['Qualified', L.qualified.length, 'qualified'], ['Quotes', L.fQuotes.length, 'fQuotes'],

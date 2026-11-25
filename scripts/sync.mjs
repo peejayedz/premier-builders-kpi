@@ -8,7 +8,7 @@
 //      DISPATCH_TOKEN (optional; fine-grained PAT, Actions: write on this repo only, for the Refresh button)
 
 import { readFile, writeFile, mkdir, rm } from 'node:fs/promises';
-import { computeAll, encryptJSON, tzOffsetMin } from './kpi-core.mjs';
+import { computeAll, encryptJSON, tzOffsetMin, windowMinutes, speedWindow } from './kpi-core.mjs';
 
 const API = 'https://services.leadconnectorhq.com';
 const TOKEN = process.env.GHL_TOKEN;
@@ -246,21 +246,9 @@ if (calls) {
 //                  >= 60 s (either direction), or an appointment booked after the lead came in.
 // A GHL custom field value, if a workflow ever fills it, takes priority.
 const STL = cfg.speedToLead || {};
-const businessMinutes = (fromMs, toMs) => {
-  const bh = STL.businessHours;
-  if (!STL.useBusinessHours || !bh) return Math.round((toMs - fromMs) / 60000);
-  let total = 0;
-  for (let day = Math.floor(fromMs / DAY) * DAY - DAY; day <= toMs + DAY; day += DAY) {
-    const off = tzOffsetMin(cfg.timezone, day + 12 * 3600e3) * 60000;
-    const localMidnight = Math.floor((day + off) / DAY) * DAY - off;
-    const dow = new Date(localMidnight + off).getUTCDay();
-    if (!bh.days.includes(dow)) continue;
-    const open = localMidnight + bh.start * 3600e3, close = localMidnight + bh.end * 3600e3;
-    const a = Math.max(open, fromMs), b = Math.min(close, toMs);
-    if (b > a) total += b - a;
-  }
-  return Math.round(total / 60000);
-};
+// Business-hours leads run on Mon–Fri 9am–6pm; after-hours leads on the calling window (every day 9am–9pm).
+// See speedWindow() in kpi-core.
+const clockMinutes = (lead, fromMs, toMs) => windowMinutes(fromMs, toMs, speedWindow(lead.createdAt, cfg), cfg.timezone);
 const byContact = (rows, key = 'contactId') => { const m = {}; for (const r of rows || []) (m[r[key]] ||= []).push(r); for (const l of Object.values(m)) l.sort((x, y) => Date.parse(x.at) - Date.parse(y.at)); return m; };
 const callsBy = byContact(calls), repliesBy = byContact(replies);
 const apptsBy = byContact((appointments || []).map(a => ({ ...a, at: a.bookedAt })));
@@ -287,8 +275,8 @@ for (const l of leads) {
   if (l.cellCallAt && !cellOk) cellIgnored++;
   if (!l.cellCallAt && (l.tags || []).map(norm).some(t => (cfg.tags?.cellCall || []).map(norm).includes(t))) cellNoTime++;
   if (l.stlMin === null) {
-    if (cellOk && (!firstOut || cellAt < Date.parse(firstOut.at))) { l.stlMin = businessMinutes(t0, Math.max(cellAt, t0)); l.firstCallAt = new Date(Math.max(cellAt, t0)).toISOString(); l.stlFrom = 'Cell call (tag)'; stlComputed++; cellUsed++; }
-    else if (firstOut) { l.stlMin = businessMinutes(t0, Date.parse(firstOut.at)); l.firstCallAt = firstOut.at; l.stlFrom = 'GHL call'; stlComputed++; }
+    if (cellOk && (!firstOut || cellAt < Date.parse(firstOut.at))) { l.stlMin = clockMinutes(l, t0, Math.max(cellAt, t0)); l.firstCallAt = new Date(Math.max(cellAt, t0)).toISOString(); l.stlFrom = 'Cell call (tag)'; stlComputed++; cellUsed++; }
+    else if (firstOut) { l.stlMin = clockMinutes(l, t0, Date.parse(firstOut.at)); l.firstCallAt = firstOut.at; l.stlFrom = 'GHL call'; stlComputed++; }
     else if (first && first.method === 'Inbound call') { l.stlMin = 0; l.firstCallAt = first.at; l.stlFrom = 'They called in'; stlComputed++; }   // they called us and we answered
   }
   if (!l.firstContactedAt && first) { l.firstContactedAt = first.at; l.contactMethod = first.method; contactComputed++; }
