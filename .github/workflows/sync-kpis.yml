@@ -29,6 +29,7 @@ jobs:
           GHL_LOCATION_ID: ${{ vars.GHL_LOCATION_ID|| 'my5ArG3gKkE3zHdJp821'  }}
           DASHBOARD_PASSPHRASE: ${{ secrets.DASHBOARD_PASSPHRASE }}
           DISPATCH_TOKEN: ${{ secrets.DISPATCH_TOKEN }}
+          SPEND_CSV_URL: ${{ secrets.SPEND_CSV_URL || vars.SPEND_CSV_URL }}
         run: node scripts/sync.mjs
 
       - name: Commit if changed
