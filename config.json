@@ -79,6 +79,12 @@
       "start": 9,
       "end": 18
     },
+    "afterHoursWindow": {
+      "_note": "Clock for leads that come in outside business hours: counts 9am-9pm every day (6-9pm weeknights, 9am-9pm weekends), paused overnight.",
+      "days": [0, 1, 2, 3, 4, 5, 6],
+      "start": 9,
+      "end": 21
+    },
     "connectedCallSeconds": 60
   },
   "booking": {

@@ -72,6 +72,7 @@
   .tile .label { font-size: 13px; color: var(--ink-2); font-weight: 600; }
   .tile .value { font-size: 34px; font-weight: 650; letter-spacing: -0.02em; margin: 6px 0 8px; font-variant-numeric: tabular-nums; }
   .tile .value.muted { color: var(--ink-3); }
+  .tile .frac { font-size: 12px; color: var(--ink-2); margin: -4px 0 8px; font-variant-numeric: tabular-nums; }
   .tile .foot { margin-top: auto; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: 12px; color: var(--ink-2); }
   .tile .view { margin-left: auto; color: var(--link); font-weight: 600; opacity: .85; }
   button.tile:hover .view { opacity: 1; text-decoration: underline; }
@@ -446,7 +447,7 @@ const DRILLS = {
     def: 'All new leads, with how far contact got. Filter by Contact status to see who still needs a call.',
     cols: [col.name, col.email, col.phone, col.created, { label: 'Contact status', key: 'contactStatus', type: 'badge', filter: 'contactStatus' }, { label: 'Method', key: 'contactMethod' }, col.assigned] },
   speed: { title: 'Speed to lead', unit: 'leads', list: L => L.speed,
-    def: 'Leads that came in during business hours (Mon–Fri 9am–6pm Eastern): business-hours minutes from lead created to the first outbound call. After-hours leads are in the After-hours section. Slowest first; leads nobody has called yet are at the top.',
+    def: 'Leads that came in during business hours (Mon–Fri 9am–6pm Eastern): business-hours minutes from lead created to the first outbound call. After-hours leads are in the After-hours section. Leads that booked a call before their first call are judged on show rate instead, so they’re not in this list. Slowest first; leads nobody has called yet are at the top.',
     cols: [col.name, col.created, { label: 'First response', key: '_firstResponse', type: 'dt' }, { label: 'Speed to lead', key: 'stlMin', type: 'stl', num: true }, { label: 'Measured from', key: 'stlFrom', filter: 'stlFrom' }, { label: 'Contact method', key: 'contactMethod' }, col.assigned, col.phone],
     prep: r => ({ ...r, _firstResponse: r.firstCallAt || (r.stlMin === null || r.stlMin === undefined ? null : new Date(Date.parse(r.createdAt) + r.stlMin * 60000).toISOString()) }) },
   qualified: { title: 'Qualified leads', unit: 'leads', list: L => L.qualified,
@@ -495,8 +496,8 @@ DRILLS.ahContactRate = { ...DRILLS.ahLeads, title: 'Contact rate (after hours)',
 DRILLS.bhContactRate = { ...DRILLS.ahLeads, title: 'Contact rate (business hours)', list: L => L.bhLeads || [], numerator: L => (L.bhContacted || []).length, numLabel: 'contacted',
   def: 'Leads created during business hours (Mon–Fri 9am–6pm Eastern), with how far contact got.' };
 DRILLS.ahSpeed = { ...DRILLS.ahLeads, title: 'Speed to lead (after hours)', list: L => L.ahSpeed || [], numerator: L => (L.ahSpeedMeasured || []).length, numLabel: 'have had a first call',
-  def: 'Business-hours minutes from the next opening (9am on the next business day) to the first outbound call. Slowest first.' };
-DRILLS.ahWithin5 = { ...DRILLS.ahSpeed, title: 'After hours: called within 5 min of opening', numerator: L => (L.ahWithin5 || []).length, numLabel: 'called within 5 min' };
+  def: 'Minutes inside the calling window (every day 9am–9pm Eastern) from lead created to the first outbound call: 6–9pm on weeknights and 9am–9pm on weekends count, and the clock pauses 9pm–9am. Leads that booked a call before their first call are judged on show rate instead. Slowest first.' };
+DRILLS.ahWithin5 = { ...DRILLS.ahSpeed, title: 'After hours: called within 5 min', numerator: L => (L.ahWithin5 || []).length, numLabel: 'called within 5 min' };
 DRILLS.ahQuoted = { ...DRILLS.ahLeads, title: 'After-hours leads quoted', list: L => (L.ahLeads || []).filter(l => l.quote), def: 'After-hours leads from these dates that have since been quoted (tag, Quote Sent Date or stage).' };
 DRILLS.speed.numerator = L => L.speedMeasured.length; DRILLS.speed.numLabel = 'have had a first call';
 DRILLS.speedWithin5 = { ...DRILLS.speed, title: 'Called within 5 minutes', numerator: L => L.within5.length, numLabel: 'called within 5 min' };
@@ -538,6 +539,7 @@ const ROWS = [
     ['calledWithin5Pct', 'Called within 5 min', 'pct', 'calledWithin5Pct', false, 'speedWithin5'],
     ['slowLeads', 'Slow first calls (30+ min)', 'n', null, true, 'speedSlow'],
     ['contactRatePct', 'Contact rate', 'pct', 'contactRatePct', false, 'contactRate'],
+    ['bhContactRatePct', 'Contact rate (business hours)', 'pct', 'contactRatePct', false, 'bhContactRate'],
   ]],
   ['2 · Appointments', [
     ['leadToBookedPct', 'Lead → booked call', 'pct', 'leadToBookedPct', false, 'leadToBooked'],
@@ -574,7 +576,7 @@ function deltaTxt(c, p, f) {
   return `<span>${d > 0 ? '▲' : '▼'} ${v} vs prior</span>`;
 }
 // ---------- period comparison helpers ----------
-const LOWER_BETTER = new Set(['speedToLeadAvgMin', 'speedToLeadMedianMin', 'slowLeads', 'missedCallPct', 'noShowPct', 'ahSpeedAvgMin']);
+const LOWER_BETTER = new Set(['speedToLeadAvgMin', 'speedToLeadMedianMin', 'slowLeads', 'missedCallPct', 'missedCalls', 'noShowPct', 'ahSpeedAvgMin']);
 const NEUTRAL = new Set(['aiAvgDurationSec', 'aiTotalDurationSec', 'ahSharePct']);   // longer or shorter isn't better or worse
 const PCT_KEYS = k => /Pct$/.test(k);
 const fmtSpan = (from, to) => {
@@ -610,6 +612,19 @@ function cmpBox(k, v, f) {
     <div class="chg ${ch.state}">${esc(ch.text)}</div></div>`;
 }
 
+// "14 of 28 leads": the numbers behind a rate, from summarize().counts.
+const FRAC_UNIT = {
+  calledWithin5Pct: 'called leads', contactRatePct: 'leads', leadToBookedPct: 'leads booked a call', noShowPct: 'past booked calls',
+  bookedToShowPct: 'past booked calls', leadToShowPct: 'leads showed', contactToQuotePct: 'contacted leads quoted', quoteToContractPct: 'quotes',
+  quoteToClosePct: 'quotes', missedCallPct: 'inbound calls missed', ahSharePct: 'leads', ahContactRatePct: 'after-hours leads',
+  bhContactRatePct: 'business-hours leads', ahWithin5Pct: 'called leads', slowLeads: 'called leads',
+  speedToLeadAvgMin: 'leads called', speedToLeadMedianMin: 'leads called', ahSpeedAvgMin: 'leads called',
+};
+function fracLine(k) {
+  const c = cur?.counts?.[k];
+  if (!c || !FRAC_UNIT[k] || !c[1]) return '';
+  return `<div class="frac">${c[0].toLocaleString()} of ${c[1].toLocaleString()} ${esc(FRAC_UNIT[k])}</div>`;
+}
 function tile(k, label, f, goalKey, lowerBetter, drill, note) {
   const v = cur[k];
   if (note && (v === null || v === undefined)) return `<div class="tile" data-k="${k}" data-d="${drill || ''}" data-l="${esc(label)}"><div class="label">${esc(label)}</div><div class="value muted">—</div><div class="foot"><span class="chip none">Not tracked yet</span></div><div class="hint2">${esc(note)}</div></div>`;
@@ -618,6 +633,7 @@ function tile(k, label, f, goalKey, lowerBetter, drill, note) {
   return `<${tag} class="tile${cmp.on ? ' cmp' : ''}" data-k="${k}" data-d="${drill || ''}" data-l="${esc(label)}" data-g="${goalKey || ''}" data-f="${f}" data-lb="${lowerBetter ? 1 : ''}" ${can ? `data-drill="${drill}" aria-label="${esc(label)}: view the list"` : ''}>
     <div class="label">${esc(label)}</div>
     <div class="value ${v === null || v === undefined ? 'muted' : ''}">${fmt[f](v)}</div>
+    ${fracLine(k)}
     ${cmp.on ? cmpBox(k, v, f) : ''}
     <div class="foot">${goalChip(v, goalKey ? pub.targets[goalKey] : null, lowerBetter, f)}${cmp.on ? '' : deltaTxt(v, prev?.[k], f)}${can ? `<span class="view">${records || window.__VOICE_PREVIEW__ ? 'View list →' : '🔒 View list'}</span>` : ''}</div>
   </${tag}>`;
@@ -653,11 +669,9 @@ function render() {
     <div class="panel"><h3>Funnel · ${esc(range.label)}</h3>${barList(cur.funnel, cur.totalLeads, 'funnel')}</div>
     <div class="panel"><h3>Leads by source</h3>${sources.length ? barList(sources, cur.totalLeads, 'source') : '<div class="sub">No leads in these dates.</div>'}</div>
   </div></section>`;
-  html += `<section class="row sec-6">${head(6, 'Phones & appointments')}<div class="tiles">
+  html += `<section class="row sec-6">${head(6, 'Missed calls')}<div class="tiles">
     ${tile('missedCallPct', 'Missed call rate (inbound)', 'pct', 'missedCallPct', true, 'missedRate')}
-    ${tile('bookedCalls', 'Booked calls', 'n', null, false, 'booked')}
-    ${tile('bookedToShowPct', 'Booked call → show', 'pct', 'bookedToShowPct', false, 'bookedToShow')}
-    ${tile('contacted', 'Contacted leads', 'n', null, false, 'contacted')}
+    ${tile('missedCalls', 'Missed inbound calls', 'n', null, true, 'missed')}
   </div></section>`;
   html += afterHoursSection();
   html += voiceSection();
@@ -685,9 +699,8 @@ function afterHoursSection() {
       ${tile('ahLeads', 'After-hours leads', 'n', null, false, 'ahLeads')}
       ${tile('ahSharePct', 'Share of all new leads', 'pct', null, false, 'ahShare')}
       ${tile('ahContactRatePct', 'Contact rate (after hours)', 'pct', 'contactRatePct', false, 'ahContactRate')}
-      ${tile('bhContactRatePct', 'Contact rate (business hours)', 'pct', 'contactRatePct', false, 'bhContactRate')}
       ${tile('ahSpeedAvgMin', 'Speed to lead (after hours)', 'min', 'speedToLeadMin', true, 'ahSpeed')}
-      ${tile('ahWithin5Pct', 'Called within 5 min of opening', 'pct', 'calledWithin5Pct', false, 'ahWithin5')}
+      ${tile('ahWithin5Pct', 'Called within 5 min (after hours)', 'pct', 'calledWithin5Pct', false, 'ahWithin5')}
       ${tile('ahQuoted', 'After-hours leads quoted', 'n', null, false, 'ahQuoted')}
     </div></section>`;
 }
@@ -713,6 +726,7 @@ const TIP_WHAT = {
   revenue: 'The value of the deals won.',
   quoteToClosePct: 'Deals won compared with quotes sent.',
   missedCallPct: 'Inbound calls nobody answered. Lower is better.',
+  missedCalls: 'How many inbound calls nobody answered, one per call. Open the list to see who called and whether they were called back.',
   bookedCalls: 'Calls booked on Lisa’s calendars that start in these dates.',
   bookedToShowPct: 'Of the booked calls whose time has passed, the share that happened.',
   contacted: 'New leads we actually reached.',
@@ -720,8 +734,8 @@ const TIP_WHAT = {
   ahSharePct: 'After-hours leads as a share of all new leads.',
   ahContactRatePct: 'The contact rate for after-hours leads only. Compare it with the business-hours card next to it.',
   bhContactRatePct: 'The contact rate for leads that came in during business hours.',
-  ahSpeedAvgMin: 'Speed to lead for after-hours leads, counted from the next opening (9am on the next business day).',
-  ahWithin5Pct: 'After-hours leads called within 5 minutes of the next opening.',
+  ahSpeedAvgMin: 'Speed to lead for after-hours leads. The clock runs 9am–9pm every day (6–9pm weeknights, 9am–9pm weekends) and pauses overnight.',
+  ahWithin5Pct: 'After-hours leads called within 5 minutes on the after-hours clock (9am–9pm every day).',
   ahQuoted: 'After-hours leads from these dates that have since been quoted.',
   aiCalls: 'Live calls the Voice AI agent picked up.',
   aiAvgDurationSec: 'The average length of a Voice AI call.',

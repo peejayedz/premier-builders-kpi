@@ -2,6 +2,19 @@
   "_note": "Newest first. Add an entry here whenever the dashboard or sync code changes. Automatic data syncs are not listed.",
   "versions": [
     {
+      "version": "1.11.0",
+      "date": "2026-11-25",
+      "title": "Nov 17 call fixes: counts on every rate, fairer after-hours clock, cleaner cards",
+      "changes": [
+        "Every rate shows the numbers behind it, e.g. \"50% · 14 of 28 leads\", including booked calls, shows and no-shows.",
+        "Contact rate (business hours) moved up to row 1, next to the overall contact rate.",
+        "\"Missed call\" status: once Lisa has called a lead, a later missed call from them shows as \"Attempted, no response\". \"Missed call\" now only means they called and we haven't called them yet.",
+        "After-hours speed to lead: the clock runs 9am–9pm every day (6–9pm weeknights, 9am–9pm weekends) and pauses overnight. A Sunday 1:51am lead called at 1:12pm now shows 4 h 12 m instead of 0.",
+        "Leads that book a call before their first call are judged on show rate, not speed to lead, so they no longer show as \"not called yet\".",
+        "Removed the duplicate Booked calls, Booked call → show and Contacted leads cards; section 6 is now Missed calls (rate and count)."
+      ]
+    },
+    {
       "version": "1.10.0",
       "date": "2026-11-03",
       "title": "Cell calls count with one tag",
