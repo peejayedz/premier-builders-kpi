@@ -64,11 +64,12 @@ export function classify(lead, cfg) {
   const vals = (lead.qualValues || []).map(norm);
   const markedNo = (Q.notTags || []).map(norm).some(t => tags.includes(t)) || vals.some(v => (Q.noValues || []).map(norm).includes(v));
   const markedYes = !markedNo && ((Q.tags || []).map(norm).some(t => tags.includes(t)) || vals.some(v => (Q.yesValues || []).map(norm).includes(v)));
-  // Quotes / contracts: Lisa's tags or the date fields her tag workflows stamp, plus the pipeline stages as a backup.
+  // Quotes / contracts: Lisa's tag or the pipeline stage must be on the lead right now. The date fields her tag
+  // workflows stamp only say WHEN; they stay behind if a tag is removed, so on their own they don't count (v1.12.0).
   const T = cfg.tags || {};
   const hasTag = list => (list || []).map(norm).some(t => tags.includes(t));
-  const contractSignal = st('contract') || won || hasTag(T.underContract) || !!lead.contractAt;
-  const quoteSignal = st('quote') || contractSignal || hasTag(T.quoteSent) || !!lead.quoteSentAt;
+  const contractSignal = st('contract') || won || hasTag(T.underContract);
+  const quoteSignal = st('quote') || contractSignal || hasTag(T.quoteSent);
   const wonAt = lead.status === 'won' ? lead.statusChangedAt : won ? lead.stageChangedAt : null;
   const qualifiedBy = markedYes ? 'Tagged qualified' : (!markedNo && (st('qualified') || quoteSignal)) ? (won ? 'Won' : 'Quote sent or later') : null;
   return {
@@ -139,7 +140,11 @@ export function buildLists(records, cfg, from, to) {
   for (const k of records.calls || []) (callsByContact[k.contactId] ||= []).push(k);
   for (const list of Object.values(callsByContact)) list.sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
 
-  const all = records.leads.map(l => ({ ...l, ...classify(l, cfg) }));
+  // Internal test leads (config excludeLeads: names / tags) never count.
+  const X = cfg.excludeLeads || {};
+  const xNames = (X.names || []).map(norm), xTags = (X.tags || []).map(norm);
+  const isTest = l => xNames.includes(norm(l.name)) || (l.tags || []).some(t => xTags.includes(norm(t)));
+  const all = records.leads.filter(l => !isTest(l)).map(l => ({ ...l, ...classify(l, cfg) }));
   const leads = all
     .filter(l => inRange(l.createdAt, from, to))
     .map(l => ({ ...l, contactStatus: contactStatus(l, l, callsByContact) }))
@@ -189,6 +194,11 @@ export function buildLists(records, cfg, from, to) {
   const withOutcome = bookedPast.map(a => { const [o, by] = outcome(a); return { ...a, outcome: o, outcomeBy: by, noShowBy: by, leadStage: latestLead[a.contactId]?.stage || '—' }; });
   const showed = withOutcome.filter(a => a.outcome === 'showed');
   const noShows = withOutcome.filter(a => a.outcome === 'noshow');
+  // Past booked calls nobody marked showed / no-show yet. Showed + no-show + not marked = booked calls so far.
+  const unmarked = withOutcome.filter(a => !a.outcome);
+  // Calls still to come, from now on (the same in every period; they aren't in any show / no-show rate yet).
+  const upcoming = (records.appointments || []).filter(a => a.consult && !['cancelled', 'invalid'].includes(norm(a.status)) && Date.parse(a.startTime) > nowMs)
+    .sort((a, b) => Date.parse(a.startTime) - Date.parse(b.startTime));
 
   let missed = null, inboundCalls = null;
   if (records.calls) {
@@ -242,6 +252,8 @@ export function buildLists(records, cfg, from, to) {
     bookedPast,
     noShows,
     showed,
+    unmarked,
+    upcoming,
     ahLeads,
     ahContacted: ahLeads.filter(l => l.contacted),
     ahSpeed: ahLeads.filter(l => !bookedFirstIds.has(l.oppId)).sort((a, b) => (b.stlMin ?? 1e12) - (a.stlMin ?? 1e12)),
@@ -320,6 +332,8 @@ export function summarize(L) {
     noShows: L.noShows ? L.noShows.length : null,
     noShowPct: L.noShows ? pct(L.noShows.length, L.bookedPast.length) : null,
     leadToShowPct: pct(L.showed.length, L.newLeads.length),
+    unmarkedCalls: L.unmarked ? L.unmarked.length : null,
+    upcomingCalls: L.upcoming ? L.upcoming.length : null,
     qualified: L.qualified.length,
     quotesSent: L.quotes.length,
     quoteValue: sum(L.quotes),
@@ -345,6 +359,8 @@ export function summarize(L) {
         noShowPct: [n(L.noShows), n(L.bookedPast)],
         bookedToShowPct: [n(L.showed), n(L.bookedPast)],
         leadToShowPct: [n(L.showed), n(L.newLeads)],
+        unmarkedCalls: [n(L.unmarked), n(L.bookedPast)],
+        quoteValue: [L.quotes.filter(q => Number(q.value) > 0).length, n(L.quotes)],
         contactToQuotePct: [n(L.quotes), n(L.contacted)],
         quoteToContractPct: [n(L.contracts), n(L.quotes)],
         quoteToClosePct: [n(L.won), n(L.quotes)],
