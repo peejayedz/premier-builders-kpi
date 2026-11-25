@@ -2,6 +2,18 @@
   "_note": "Newest first. Add an entry here whenever the dashboard or sync code changes. Automatic data syncs are not listed.",
   "versions": [
     {
+      "version": "1.13.0",
+      "date": "2026-11-26",
+      "title": "Ad spend, cost per result and profit per deal",
+      "changes": [
+        "New section 9 · Ad spend & cost per result: ad spend, cost per lead (all leads and PPC only), cost per booked call, cost per quote, cost per contract, cost per closed deal and return on ad spend.",
+        "Spend comes from the Premier Builders Monthly Ad Spend sheet (Month | Source | Spend ($)). PPC Launch spend is filled in daily by the Google Ads script; other sources are typed in by hand. A blank Spend cell means not entered yet.",
+        "A month's spend is spread evenly over its days (the current month over the days so far), so weekly numbers get their share.",
+        "Dollar amounts are encrypted like contact details: they show after unlocking.",
+        "Profit: new Deal Profit field on each opportunity in GHL. Results row shows Profit (won deals) and Profit per deal; Ad spend section adds Profit \u00f7 ad spend."
+      ]
+    },
+    {
       "version": "1.12.0",
       "date": "2026-11-25",
       "title": "Nov 24 call fixes: booked calls add up to 100%, contract mistakes clear, quote $ check",

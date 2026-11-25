@@ -62,6 +62,9 @@
       "Quote Value",
       "Quote $"
     ],
+    "dealProfit": [
+      "Deal Profit"
+    ],
     "cellCallTime": [
       "Cell Call Time"
     ]

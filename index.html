@@ -159,7 +159,7 @@
   .row h2::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, color-mix(in srgb, var(--sec, var(--border)) 45%, transparent), var(--border) 30%, transparent); }
   .row h2 .num { color: var(--sec); font-variant-numeric: tabular-nums; }
   .sec-1 { --sec: var(--sec-1); } .sec-2 { --sec: var(--sec-2); } .sec-3 { --sec: var(--sec-3); }
-  .sec-4 { --sec: var(--sec-4); } .sec-5 { --sec: var(--sec-5); } .sec-6 { --sec: var(--sec-6); } .sec-7 { --sec: var(--sec-7); } .sec-8 { --sec: var(--sec-8); }
+  .sec-4 { --sec: var(--sec-4); } .sec-5 { --sec: var(--sec-5); } .sec-6 { --sec: var(--sec-6); } .sec-7 { --sec: var(--sec-7); } .sec-8 { --sec: var(--sec-8); } .sec-9 { --sec: var(--sec-4); }
   /* executive summary */
   .exec { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-top: 12px; }
   .exec h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-2); margin: 0 0 10px; font-weight: 600; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
@@ -339,6 +339,7 @@ const fmt = {
   usd: v => v === null || v === undefined ? '—' : '$' + Math.round(v).toLocaleString(),
   min: v => v === null || v === undefined ? '—' : `${v} min`,
   dt: v => v ? new Date(v).toLocaleString('en-US', { timeZone: TZ(), month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '—',
+  x: v => v === null || v === undefined ? '—' : `${(Math.round(v * 100) / 100).toFixed(2)}×`,
   dur: v => { if (v === null || v === undefined) return '—'; v = Math.round(v); const h = Math.floor(v / 3600), m = Math.floor((v % 3600) / 60), s = v % 60; return h ? `${h}h ${m}m` : m ? `${m}m ${String(s).padStart(2, '0')}s` : `${s}s`; },
   date: v => v ? new Date(v).toLocaleDateString('en-US', { timeZone: TZ(), month: 'short', day: 'numeric', year: 'numeric' }) : '—',
 };
@@ -476,9 +477,12 @@ const DRILLS = {
     def: 'Contracts in the selected dates (contract date, or the date won), whenever the lead came in. A deal counts while the contact has the "under contract" tag, the opportunity is Won, or the card is in Under Contract / Closed. The contract date field only sets the date, so removing a tag added by mistake takes the deal off.',
     cols: [col.name, col.email, col.phone, { label: 'Contract date', key: 'contractOn', type: 'dt' }, { label: 'Date from', key: 'contractDateFrom', filter: 'contractDateFrom' }, { label: 'Contract value', key: 'value', type: 'usd', num: true }, col.assigned, { label: 'Contract status', key: '_cstatus', type: 'badge', filter: '_cstatus' }],
     prep: r => ({ ...r, _cstatus: r.won ? 'Signed (won)' : r.status === 'lost' ? 'Lost' : 'Open' }) },
+  spend: { title: 'Ad spend (from the spend sheet)', unit: 'rows', list: L => L.spendRows || [],
+    def: 'Every row in the "Premier Builders Monthly Ad Spend" sheet. PPC Launch rows come from the Google Ads script daily (the current month is month to date); other sources are typed in by hand. A month\'s spend is spread evenly over its days, so a week shows its share. All rows are listed, whatever dates are selected.',
+    cols: [{ label: 'Month', key: 'month' }, { label: 'Source', key: 'source', filter: 'source' }, { label: 'Spend', key: 'amount', type: 'usd', num: true }] },
   won: { title: 'Closed deals', unit: 'deals', list: L => L.won, total: true,
     def: 'Opportunities marked Won in the selected dates (the date they were won), whenever the lead came in. The total is the revenue (opportunity value).',
-    cols: [col.name, col.email, col.phone, { label: 'Won on', key: 'wonOn', type: 'dt' }, { label: 'Deal value', key: 'value', type: 'usd', num: true }, col.assigned, col.source] },
+    cols: [col.name, col.email, col.phone, { label: 'Won on', key: 'wonOn', type: 'dt' }, { label: 'Deal value', key: 'value', type: 'usd', num: true }, { label: 'Deal Profit', key: 'profit', type: 'usd', num: true }, col.assigned, col.source] },
   fQuotes: { title: 'Funnel: leads that got a quote', unit: 'leads', list: L => L.fQuotes,
     def: 'Leads that came in during the selected dates and have since been quoted (tag, Quote Sent Date or stage).',
     cols: [col.name, col.email, col.phone, col.created, col.source, col.assigned, col.stage] },
@@ -566,6 +570,8 @@ const ROWS = [
     ['underContract', 'Under contract', 'n', null, false, 'contracts'],
     ['closedDeals', 'Closed deals', 'n', null, false, 'won'],
     ['revenue', 'Revenue (won)', 'usd', null, false, 'revenue'],
+    ['profit', 'Profit (won deals)', 'usd', null, false, 'won'],
+    ['profitPerDeal', 'Profit per deal', 'usd', null, false, 'won'],
     ['quoteToClosePct', 'Quote → close', 'pct', 'quoteToClosePct', false, 'quoteToClose'],
   ]],
 ];
@@ -585,8 +591,8 @@ function deltaTxt(c, p, f) {
   return `<span>${d > 0 ? '▲' : '▼'} ${v} vs prior</span>`;
 }
 // ---------- period comparison helpers ----------
-const LOWER_BETTER = new Set(['unmarkedCalls', 'speedToLeadAvgMin', 'speedToLeadMedianMin', 'slowLeads', 'missedCallPct', 'missedCalls', 'noShowPct', 'ahSpeedAvgMin']);
-const NEUTRAL = new Set(['upcomingCalls', 'aiAvgDurationSec', 'aiTotalDurationSec', 'ahSharePct']);   // longer or shorter isn't better or worse
+const LOWER_BETTER = new Set(['costPerLead', 'costPerPpcLead', 'costPerBooked', 'costPerQuote', 'costPerContract', 'costPerClosed', 'unmarkedCalls', 'speedToLeadAvgMin', 'speedToLeadMedianMin', 'slowLeads', 'missedCallPct', 'missedCalls', 'noShowPct', 'ahSpeedAvgMin']);
+const NEUTRAL = new Set(['adSpend', 'upcomingCalls', 'aiAvgDurationSec', 'aiTotalDurationSec', 'ahSharePct']);   // longer or shorter isn't better or worse
 const PCT_KEYS = k => /Pct$/.test(k);
 const fmtSpan = (from, to) => {
   const end = to - 1, o = { timeZone: TZ(), month: 'short', day: 'numeric' };
@@ -601,7 +607,8 @@ const B_NAMES = {
 function bName() { if (!crange) return ''; if (crange.mode === 'custom') return 'Period B'; return B_NAMES[crange.mode]?.[sel.key] || 'Previous period'; }
 function aName() { return cmp.on && sel.key === 'custom' ? 'Period A' : range.label; }
 function bShort() { return bName().replace(/, same (point|time)$/, ''); }
-const FMT_OF = { speedToLeadAvgMin: 'min', speedToLeadMedianMin: 'min', ahSpeedAvgMin: 'min', quoteValue: 'usd', revenue: 'usd', aiAvgDurationSec: 'dur', aiTotalDurationSec: 'dur' };
+const FMT_OF = { speedToLeadAvgMin: 'min', speedToLeadMedianMin: 'min', ahSpeedAvgMin: 'min', quoteValue: 'usd', revenue: 'usd',
+  profit: 'usd', profitPerDeal: 'usd', profitRoi: 'x', adSpend: 'usd', costPerLead: 'usd', costPerPpcLead: 'usd', costPerBooked: 'usd', costPerQuote: 'usd', costPerContract: 'usd', costPerClosed: 'usd', roas: 'x', aiAvgDurationSec: 'dur', aiTotalDurationSec: 'dur' };
 const fmtOf = k => FMT_OF[k] || (PCT_KEYS(k) ? 'pct' : 'n');
 // One comparison rule, reused by the tiles, the summary and the chart.
 function change(k, c, p) {
@@ -625,7 +632,7 @@ function cmpBox(k, v, f) {
 const FRAC_UNIT = {
   calledWithin5Pct: 'called leads', contactRatePct: 'leads', leadToBookedPct: 'leads booked a call', noShowPct: 'past booked calls',
   bookedToShowPct: 'past booked calls', leadToShowPct: 'leads showed', contactToQuotePct: 'contacted leads quoted', quoteToContractPct: 'quotes',
-  quoteToClosePct: 'quotes', quoteValue: 'quotes have a $ amount', unmarkedCalls: 'past booked calls', missedCallPct: 'inbound calls missed', ahSharePct: 'leads', ahContactRatePct: 'after-hours leads',
+  quoteToClosePct: 'quotes', quoteValue: 'quotes have a $ amount', profit: 'won deals have a profit entered', unmarkedCalls: 'past booked calls', missedCallPct: 'inbound calls missed', ahSharePct: 'leads', ahContactRatePct: 'after-hours leads',
   bhContactRatePct: 'business-hours leads', ahWithin5Pct: 'called leads', slowLeads: 'called leads',
   speedToLeadAvgMin: 'leads called', speedToLeadMedianMin: 'leads called', ahSpeedAvgMin: 'leads called',
 };
@@ -684,6 +691,7 @@ function render() {
   </div></section>`;
   html += afterHoursSection();
   html += voiceSection();
+  html += spendSection();
   $('app').innerHTML = html;
   execSummary();
   compareSummary();
@@ -737,6 +745,17 @@ const TIP_WHAT = {
   missedCallPct: 'Inbound calls nobody answered. Lower is better.',
   missedCalls: 'How many inbound calls nobody answered, one per call. Open the list to see who called and whether they were called back.',
   bookedCalls: 'Calls booked on Lisa’s calendars that start in these dates.',
+  adSpend: 'Ad spend in these dates, from the ad spend sheet. A month’s spend is spread evenly over its days (the current month over the days so far).',
+  costPerLead: 'Ad spend ÷ all new leads in these dates (every source).',
+  costPerPpcLead: 'PPC Launch spend ÷ PPC Launch leads in these dates.',
+  costPerBooked: 'Ad spend ÷ booked calls in these dates.',
+  costPerQuote: 'Ad spend ÷ quotes sent in these dates.',
+  costPerContract: 'Ad spend ÷ deals under contract in these dates (cost per acquisition).',
+  costPerClosed: 'Ad spend ÷ deals won in these dates.',
+  profit: 'Total profit on deals won in these dates, from the Deal Profit field on each opportunity. Fill it in when a deal is won.',
+  profitPerDeal: 'Average profit per won deal (only deals with Deal Profit filled in).',
+  profitRoi: 'Profit from won deals ÷ ad spend. 3.00× means $3 of profit for every $1 spent on ads.',
+  roas: 'Revenue from won deals ÷ ad spend. 3.00× means $3 of revenue for every $1 spent.',
   bookedToShowPct: 'Of the booked calls whose time has passed, the share that happened. Show + no-show + not marked yet = 100%.',
   unmarkedCalls: 'Past booked calls nobody marked showed or no-show yet. Mark them in GHL so the show and no-show rates add up.',
   upcomingCalls: 'Booked calls still to come, from now on (same for any dates). They join the show / no-show rates once their time passes.',
@@ -844,6 +863,36 @@ function voiceSection() {
     <div class="panel vsum"><div><h3>Voice AI summary</h3><p>${voiceSentence()}</p></div>
       ${can ? '<button class="lnk" data-drill="aiCalls">View AI calls →</button>' : ''}</div>
     <div class="vnote">Answered calls = AI calls received (every logged Voice AI call was picked up by the agent). Missed / unanswered calls: not tracked yet. ${esc(NOT_LOGGED)}</div>
+  </section>`;
+}
+
+// ---------- Ad spend & cost per result ----------
+function spendSection() {
+  const hasRows = !!(records?.spend && records.spend.length);
+  const note = !pub.hasSpendSheet && !hasRows ? 'The ad spend sheet isn\'t connected yet.'
+    : !records ? '🔒 Unlock to see ad spend and cost per result.'
+    : !hasRows ? 'No spend has been entered in the ad spend sheet yet.'
+    : cur.adSpend === null || cur.adSpend === undefined ? 'No spend in the sheet for these dates.'
+    : 'None of these in the selected dates yet, so there\'s no cost per result.';
+  const months = (pub.spendMonths || []).map(x => x.replace('|', ' · '));
+  const intro = `Spend comes from the <a href="https://docs.google.com/spreadsheets/d/1i-ok4wNKyRNzDC77eXl2HSwb9TjY7eZyRKf9N6cTLkI/edit" target="_blank" rel="noopener">ad spend sheet</a>: PPC Launch is filled in daily by the Google Ads script, other sources by hand. Cost per result = spend in these dates ÷ how many results in the same dates.` +
+    (months.length ? ` Spend entered for: ${esc(months.join(', '))}.` : '');
+  const t = (k, label, f, drill) => tile(k, label, f, null, LOWER_BETTER.has(k), drill, note);
+  return `<section class="row sec-9"><h2><span><span class="num">9</span> · Ad spend &amp; cost per result</span></h2>
+    <div class="sub" style="margin:-4px 0 10px">${intro}</div>
+    <div class="tiles">
+      ${t('adSpend', 'Ad spend', 'usd', 'spend')}
+      ${t('costPerLead', 'Cost per lead (all leads)', 'usd', null)}
+      ${t('costPerPpcLead', 'Cost per PPC lead', 'usd', null)}
+      ${t('costPerBooked', 'Cost per booked call', 'usd', null)}
+    </div>
+    <div class="tiles">
+      ${t('costPerQuote', 'Cost per quote', 'usd', null)}
+      ${t('costPerContract', 'Cost per contract', 'usd', null)}
+      ${t('costPerClosed', 'Cost per closed deal', 'usd', null)}
+      ${t('roas', 'Return on ad spend (revenue ÷ spend)', 'x', null)}
+      ${t('profitRoi', 'Profit ÷ ad spend', 'x', null)}
+    </div>
   </section>`;
 }
 
