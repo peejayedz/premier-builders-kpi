@@ -2,6 +2,18 @@
   "_note": "Newest first. Add an entry here whenever the dashboard or sync code changes. Automatic data syncs are not listed.",
   "versions": [
     {
+      "version": "1.12.0",
+      "date": "2026-11-25",
+      "title": "Nov 24 call fixes: booked calls add up to 100%, contract mistakes clear, quote $ check",
+      "changes": [
+        "Appointments row shows every outcome of booked calls: Booked call → show, Booked call → no-show and a new Booked call → not marked yet card, which together add up to 100% of booked calls so far. A new Upcoming booked calls card shows calls still to come from now on.",
+        "\"Lead → show\" is now labelled \"(of all leads)\" so it isn't read as the show rate of booked calls.",
+        "Quotes and contracts only count while the tag or pipeline stage is on the lead. Removing a tag added by mistake (e.g. \"under contract\") now takes the deal off; the date field alone no longer counts.",
+        "Total $ of quotes shows how many quotes have a dollar amount (e.g. \"0 of 9 quotes have a $ amount\"). Enter amounts in the Opportunity Value on the opportunity card.",
+        "Internal test leads (config excludeLeads) are left out of every number."
+      ]
+    },
+    {
       "version": "1.11.0",
       "date": "2026-11-25",
       "title": "Nov 17 call fixes: counts on every rate, fairer after-hours clock, cleaner cards",

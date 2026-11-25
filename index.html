@@ -463,11 +463,17 @@ const DRILLS = {
   noShows: { title: 'No-shows', unit: 'appointments', list: L => L.noShows || [],
     def: 'Booked calls in the selected dates whose time has passed and that were a no-show: the appointment is marked No-show, the contact has the "no show" tag, or the card is in the No Show stage (tags and stage apply to the contact\'s most recent booked call; a "showed" tag wins). Future calls are not counted.',
     cols: [col.name, col.email, col.phone, { label: 'Appointment', key: 'startTime', type: 'dt' }, { label: 'How we know', key: 'noShowBy', type: 'badge', filter: 'noShowBy' }, { label: 'Pipeline stage now', key: 'leadStage', filter: 'leadStage' }, col.assigned, { label: 'Booked on', key: 'bookedAt', type: 'dt' }] },
+  unmarked: { title: 'Booked calls with no outcome marked', unit: 'appointments', list: L => L.unmarked || [],
+    def: 'Booked calls whose time has passed but nobody marked them showed or no-show yet. Mark the appointment Showed / No-show in GHL (or add the "showed" / "no show" tag) and it moves to the right card. Showed + no-show + not marked = all booked calls so far.',
+    cols: [col.name, col.email, col.phone, { label: 'Appointment', key: 'startTime', type: 'dt' }, { label: 'GHL status', key: 'status', type: 'badge', filter: 'status' }, { label: 'Pipeline stage now', key: 'leadStage', filter: 'leadStage' }, col.assigned, { label: 'Booked on', key: 'bookedAt', type: 'dt' }] },
+  upcoming: { title: 'Upcoming booked calls', unit: 'appointments', list: L => L.upcoming || [],
+    def: 'Booked calls from now on, whatever dates are selected. They join the show / no-show rates once their time passes.',
+    cols: [col.name, col.email, col.phone, { label: 'Appointment', key: 'startTime', type: 'dt' }, { label: 'Type', key: 'calendar', filter: 'calendar' }, col.assigned, { label: 'Booked on', key: 'bookedAt', type: 'dt' }, { label: 'Status', key: 'status', type: 'badge', filter: 'status' }] },
   quotes: { title: 'Quotes sent', unit: 'quotes', list: L => L.quotes, total: true,
-    def: 'Quotes sent in the selected dates (Quote Sent Date), whenever the lead came in. A quote counts when the contact has the "quotes sent" tag, a Quote Sent Date, or the card reached Sent Quote or later. With no date yet, the lead\'s created date is used.',
+    def: 'Quotes sent in the selected dates (Quote Sent Date), whenever the lead came in. A quote counts while the contact has the "quotes sent" tag or the card is at Sent Quote or later; the Quote Sent Date only sets the date. The amount comes from Quote Amount, or else the opportunity\'s Opportunity Value. With no date yet, the lead\'s created date is used.',
     cols: [col.name, col.email, col.phone, { label: 'Quote sent', key: 'quoteOn', type: 'dt' }, { label: 'Date from', key: 'quoteDateFrom', filter: 'quoteDateFrom' }, { label: 'Quote amount', key: 'value', type: 'usd', num: true }, col.assigned, col.stage] },
   contracts: { title: 'Under contract', unit: 'deals', list: L => L.contracts, total: true,
-    def: 'Contracts in the selected dates (contract date, or the date won), whenever the lead came in. A deal counts when the contact has the "under contract" tag, a contract date, the opportunity is Won, or the card is in Under Contract / Closed.',
+    def: 'Contracts in the selected dates (contract date, or the date won), whenever the lead came in. A deal counts while the contact has the "under contract" tag, the opportunity is Won, or the card is in Under Contract / Closed. The contract date field only sets the date, so removing a tag added by mistake takes the deal off.',
     cols: [col.name, col.email, col.phone, { label: 'Contract date', key: 'contractOn', type: 'dt' }, { label: 'Date from', key: 'contractDateFrom', filter: 'contractDateFrom' }, { label: 'Contract value', key: 'value', type: 'usd', num: true }, col.assigned, { label: 'Contract status', key: '_cstatus', type: 'badge', filter: '_cstatus' }],
     prep: r => ({ ...r, _cstatus: r.won ? 'Signed (won)' : r.status === 'lost' ? 'Lost' : 'Open' }) },
   won: { title: 'Closed deals', unit: 'deals', list: L => L.won, total: true,
@@ -543,8 +549,11 @@ const ROWS = [
   ]],
   ['2 · Appointments', [
     ['leadToBookedPct', 'Lead → booked call', 'pct', 'leadToBookedPct', false, 'leadToBooked'],
+    ['bookedToShowPct', 'Booked call → show', 'pct', 'bookedToShowPct', false, 'bookedToShow'],
     ['noShowPct', 'Booked call → no-show', 'pct', 'noShowPct', true, 'noShowRate'],
-    ['leadToShowPct', 'Lead → show', 'pct', 'leadToShowPct', false, 'leadToShow'],
+    ['unmarkedCalls', 'Booked call → not marked yet', 'n', null, true, 'unmarked'],
+    ['upcomingCalls', 'Upcoming booked calls (from now)', 'n', null, false, 'upcoming'],
+    ['leadToShowPct', 'Lead → show (of all leads)', 'pct', 'leadToShowPct', false, 'leadToShow'],
     ['qualified', 'Qualified leads', 'n', null, false, 'qualified'],
   ]],
   ['3 · Quotes', [
@@ -576,8 +585,8 @@ function deltaTxt(c, p, f) {
   return `<span>${d > 0 ? '▲' : '▼'} ${v} vs prior</span>`;
 }
 // ---------- period comparison helpers ----------
-const LOWER_BETTER = new Set(['speedToLeadAvgMin', 'speedToLeadMedianMin', 'slowLeads', 'missedCallPct', 'missedCalls', 'noShowPct', 'ahSpeedAvgMin']);
-const NEUTRAL = new Set(['aiAvgDurationSec', 'aiTotalDurationSec', 'ahSharePct']);   // longer or shorter isn't better or worse
+const LOWER_BETTER = new Set(['unmarkedCalls', 'speedToLeadAvgMin', 'speedToLeadMedianMin', 'slowLeads', 'missedCallPct', 'missedCalls', 'noShowPct', 'ahSpeedAvgMin']);
+const NEUTRAL = new Set(['upcomingCalls', 'aiAvgDurationSec', 'aiTotalDurationSec', 'ahSharePct']);   // longer or shorter isn't better or worse
 const PCT_KEYS = k => /Pct$/.test(k);
 const fmtSpan = (from, to) => {
   const end = to - 1, o = { timeZone: TZ(), month: 'short', day: 'numeric' };
@@ -616,7 +625,7 @@ function cmpBox(k, v, f) {
 const FRAC_UNIT = {
   calledWithin5Pct: 'called leads', contactRatePct: 'leads', leadToBookedPct: 'leads booked a call', noShowPct: 'past booked calls',
   bookedToShowPct: 'past booked calls', leadToShowPct: 'leads showed', contactToQuotePct: 'contacted leads quoted', quoteToContractPct: 'quotes',
-  quoteToClosePct: 'quotes', missedCallPct: 'inbound calls missed', ahSharePct: 'leads', ahContactRatePct: 'after-hours leads',
+  quoteToClosePct: 'quotes', quoteValue: 'quotes have a $ amount', unmarkedCalls: 'past booked calls', missedCallPct: 'inbound calls missed', ahSharePct: 'leads', ahContactRatePct: 'after-hours leads',
   bhContactRatePct: 'business-hours leads', ahWithin5Pct: 'called leads', slowLeads: 'called leads',
   speedToLeadAvgMin: 'leads called', speedToLeadMedianMin: 'leads called', ahSpeedAvgMin: 'leads called',
 };
@@ -715,10 +724,10 @@ const TIP_WHAT = {
   contactRatePct: 'The share of new leads we actually reached: a connected call, a reply, or Lisa tagged them contacted / showed. Booking a call alone doesn’t count.',
   leadToBookedPct: 'Booked calls compared with new leads.',
   noShowPct: 'Of the booked calls whose time has passed, the share that were no-shows. Lower is better.',
-  leadToShowPct: 'Calls that actually happened compared with new leads.',
+  leadToShowPct: 'Showed calls compared with ALL new leads, not with booked calls. For the share of booked calls that happened, see Booked call → show.',
   qualified: 'New leads tagged qualified_lead, plus any that have been quoted or later.',
   quotesSent: 'Quotes that went out in these dates, whenever the lead came in.',
-  quoteValue: 'The total dollar amount of the quotes sent (Quote Amount field, otherwise the opportunity value).',
+  quoteValue: 'The total dollar amount of the quotes sent. Enter each quote’s amount once, in the Opportunity Value on the lead’s opportunity card in GHL.',
   contactToQuotePct: 'Quotes sent compared with leads we reached.',
   quoteToContractPct: 'Contracts compared with quotes sent.',
   underContract: 'Deals that went under contract in these dates.',
@@ -728,7 +737,9 @@ const TIP_WHAT = {
   missedCallPct: 'Inbound calls nobody answered. Lower is better.',
   missedCalls: 'How many inbound calls nobody answered, one per call. Open the list to see who called and whether they were called back.',
   bookedCalls: 'Calls booked on Lisa’s calendars that start in these dates.',
-  bookedToShowPct: 'Of the booked calls whose time has passed, the share that happened.',
+  bookedToShowPct: 'Of the booked calls whose time has passed, the share that happened. Show + no-show + not marked yet = 100%.',
+  unmarkedCalls: 'Past booked calls nobody marked showed or no-show yet. Mark them in GHL so the show and no-show rates add up.',
+  upcomingCalls: 'Booked calls still to come, from now on (same for any dates). They join the show / no-show rates once their time passes.',
   contacted: 'New leads we actually reached.',
   ahLeads: 'New leads that came in outside Mon–Fri 9am–6pm Eastern.',
   ahSharePct: 'After-hours leads as a share of all new leads.',

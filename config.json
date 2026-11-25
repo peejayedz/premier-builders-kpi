@@ -157,5 +157,10 @@
     "cellCall": [
       "called from cell"
     ]
+  },
+  "excludeLeads": {
+    "_note": "Internal test leads that never count on the dashboard. Matching ignores case. Tag a test contact 'test lead' to leave it out.",
+    "names": ["pj edrozo", "matt test"],
+    "tags": ["test lead"]
   }
 }
