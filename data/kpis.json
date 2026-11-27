@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-27T15:51:07.931Z",
+  "generatedAt": "2026-11-27T15:59:37.003Z",
   "location": "Premier Builders",
   "targets": {
     "speedToLeadMin": 5,
@@ -30,7 +30,7 @@
     "today": {
       "label": "Today",
       "from": 1795755600000,
-      "to": 1795794667931,
+      "to": 1795795177003,
       "current": {
         "totalLeads": 1,
         "speedToLeadAvgMin": 3,
@@ -611,8 +611,8 @@
         "ahSharePct": 100,
         "ahContactRatePct": 50,
         "bhContactRatePct": null,
-        "ahSpeedAvgMin": 0,
-        "ahWithin5Pct": 100,
+        "ahSpeedAvgMin": 458,
+        "ahWithin5Pct": 50,
         "ahQuoted": 0,
         "aiCalls": 0,
         "aiTotalDurationSec": 0,
@@ -703,10 +703,10 @@
           ],
           "ahWithin5Pct": [
             1,
-            1
+            2
           ],
           "ahSpeedAvgMin": [
-            1,
+            2,
             2
           ]
         },
@@ -748,7 +748,7 @@
     "thisWeek": {
       "label": "This week",
       "from": 1795410000000,
-      "to": 1795794667931,
+      "to": 1795795177003,
       "current": {
         "totalLeads": 10,
         "speedToLeadAvgMin": 202,
@@ -793,8 +793,8 @@
         "ahSharePct": 50,
         "ahContactRatePct": 80,
         "bhContactRatePct": 60,
-        "ahSpeedAvgMin": 393,
-        "ahWithin5Pct": 50,
+        "ahSpeedAvgMin": 567,
+        "ahWithin5Pct": 33.3,
         "ahQuoted": 1,
         "aiCalls": 1,
         "aiTotalDurationSec": 172,
@@ -886,10 +886,10 @@
           ],
           "ahWithin5Pct": [
             1,
-            2
+            3
           ],
           "ahSpeedAvgMin": [
-            2,
+            3,
             3
           ]
         },
@@ -1467,8 +1467,8 @@
     },
     "last7": {
       "label": "Last 7 days",
-      "from": 1795189867931,
-      "to": 1795794667931,
+      "from": 1795190377003,
+      "to": 1795795177003,
       "current": {
         "totalLeads": 23,
         "speedToLeadAvgMin": 122,
@@ -1513,8 +1513,8 @@
         "ahSharePct": 69.6,
         "ahContactRatePct": 50,
         "bhContactRatePct": 57.1,
-        "ahSpeedAvgMin": 550,
-        "ahWithin5Pct": 18.2,
+        "ahSpeedAvgMin": 580,
+        "ahWithin5Pct": 16.7,
         "ahQuoted": 4,
         "aiCalls": 1,
         "aiTotalDurationSec": 172,
@@ -1606,10 +1606,10 @@
           ],
           "ahWithin5Pct": [
             2,
-            11
+            12
           ],
           "ahSpeedAvgMin": [
-            11,
+            12,
             12
           ]
         },
@@ -1827,8 +1827,8 @@
     },
     "last30": {
       "label": "Last 30 days",
-      "from": 1793202667931,
-      "to": 1795794667931,
+      "from": 1793203177003,
+      "to": 1795795177003,
       "current": {
         "totalLeads": 57,
         "speedToLeadAvgMin": 34,
@@ -1873,8 +1873,8 @@
         "ahSharePct": 61.4,
         "ahContactRatePct": 45.7,
         "bhContactRatePct": 59.1,
-        "ahSpeedAvgMin": 370,
-        "ahWithin5Pct": 28.6,
+        "ahSpeedAvgMin": 389,
+        "ahWithin5Pct": 27.6,
         "ahQuoted": 6,
         "aiCalls": 3,
         "aiTotalDurationSec": 191,
@@ -1966,10 +1966,10 @@
           ],
           "ahWithin5Pct": [
             8,
-            28
+            29
           ],
           "ahSpeedAvgMin": [
-            28,
+            29,
             29
           ]
         },
@@ -2189,8 +2189,8 @@
     },
     "last90": {
       "label": "Last 90 days",
-      "from": 1788018667931,
-      "to": 1795794667931,
+      "from": 1788019177003,
+      "to": 1795795177003,
       "current": {
         "totalLeads": 123,
         "speedToLeadAvgMin": 55,
@@ -2235,8 +2235,8 @@
         "ahSharePct": 63.4,
         "ahContactRatePct": 48.7,
         "bhContactRatePct": 57.8,
-        "ahSpeedAvgMin": 305,
-        "ahWithin5Pct": 25.9,
+        "ahSpeedAvgMin": 316,
+        "ahWithin5Pct": 25.5,
         "ahQuoted": 13,
         "aiCalls": 10,
         "aiTotalDurationSec": 747,
@@ -2330,10 +2330,10 @@
           ],
           "ahWithin5Pct": [
             14,
-            54
+            55
           ],
           "ahSpeedAvgMin": [
-            54,
+            55,
             64
           ]
         },
@@ -2552,7 +2552,7 @@
     "thisMonth": {
       "label": "This month",
       "from": 1793505600000,
-      "to": 1795794667931,
+      "to": 1795795177003,
       "current": {
         "totalLeads": 55,
         "speedToLeadAvgMin": 34,
@@ -2597,8 +2597,8 @@
         "ahSharePct": 61.8,
         "ahContactRatePct": 47.1,
         "bhContactRatePct": 57.1,
-        "ahSpeedAvgMin": 382,
-        "ahWithin5Pct": 29.6,
+        "ahSpeedAvgMin": 401,
+        "ahWithin5Pct": 28.6,
         "ahQuoted": 6,
         "aiCalls": 3,
         "aiTotalDurationSec": 191,
@@ -2690,10 +2690,10 @@
           ],
           "ahWithin5Pct": [
             8,
-            27
+            28
           ],
           "ahSpeedAvgMin": [
-            27,
+            28,
             28
           ]
         },
@@ -3277,7 +3277,7 @@
     "thisQuarter": {
       "label": "This quarter",
       "from": 1790827200000,
-      "to": 1795794667931,
+      "to": 1795795177003,
       "current": {
         "totalLeads": 94,
         "speedToLeadAvgMin": 50,
@@ -3322,8 +3322,8 @@
         "ahSharePct": 60.6,
         "ahContactRatePct": 45.6,
         "bhContactRatePct": 62.2,
-        "ahSpeedAvgMin": 285,
-        "ahWithin5Pct": 26.1,
+        "ahSpeedAvgMin": 298,
+        "ahWithin5Pct": 25.5,
         "ahQuoted": 9,
         "aiCalls": 9,
         "aiTotalDurationSec": 616,
@@ -3416,10 +3416,10 @@
           ],
           "ahWithin5Pct": [
             12,
-            46
+            47
           ],
           "ahSpeedAvgMin": [
-            46,
+            47,
             48
           ]
         },
